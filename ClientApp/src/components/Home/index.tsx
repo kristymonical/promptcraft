@@ -1,8 +1,10 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 
 import BigButton from './BigButton';
+import TitleCol from '../TitleCol';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles({
   buttonGroup: {
@@ -12,12 +14,10 @@ const useStyles = makeStyles({
     margin: '0 auto',
     maxWidth: '800px'
   },
-  title: {
-    display: 'flex',
-    flexDirection: 'column',
-    margin: '0 auto',
-    maxWidth: '675px',
-    textAlign: 'center'
+  link: {
+    '&:hover': {
+      textDecoration: 'none'
+    }
   }
 });
 
@@ -26,20 +26,26 @@ export default function Home() {
   return (
     <Container>
       <Row>
-        <Col className={classes.title}>
-          <Typography variant='h3'>Title</Typography>
-          <Typography variant='subtitle1'>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry’s standard dummy
-          </Typography>
-        </Col>
+        <TitleCol
+          title='Title'
+          subtitle='Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry. Lorem Ipsum has been the industry’s standard dummy'
+        />
       </Row>
       <Row>
         <Col className={classes.buttonGroup}>
-          <BigButton>Request</BigButton>
-          <BigButton>Deliveries</BigButton>
-          <BigButton variant='secondary'>Mapping</BigButton>
-          <BigButton variant='secondary'>Configuration</BigButton>
+          <Link className={classes.link} to='/request/manual'>
+            <BigButton>Request</BigButton>
+          </Link>
+          <Link className={classes.link} to='/deliveries'>
+            <BigButton>Deliveries</BigButton>
+          </Link>
+          <Link className={classes.link} to='/mapping'>
+            <BigButton variant='secondary'>Mapping</BigButton>
+          </Link>
+          <Link className={classes.link} to='/configure'>
+            <BigButton variant='secondary'>Configuration</BigButton>
+          </Link>
         </Col>
       </Row>
     </Container>
