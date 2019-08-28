@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 
 import BigButton from './BigButton';
 
@@ -11,6 +11,13 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     margin: '0 auto',
     maxWidth: '800px'
+  },
+  title: {
+    display: 'flex',
+    flexDirection: 'column',
+    margin: '0 auto',
+    maxWidth: '675px',
+    textAlign: 'center'
   }
 });
 
@@ -19,7 +26,13 @@ export default function Home() {
   return (
     <Container>
       <Row>
-        <Col>Title</Col>
+        <Col className={classes.title}>
+          <Typography variant='h3'>Title</Typography>
+          <Typography variant='subtitle1'>
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry. Lorem Ipsum has been the industry’s standard dummy
+          </Typography>
+        </Col>
       </Row>
       <Row>
         <Col className={classes.buttonGroup}>
