@@ -7,13 +7,13 @@ import Footer from './components/Footer';
 
 export default function App() {
   return (
-    <>
+    <div>
       <Header />
       <Switch>
         <Route exact path='/' component={Home} />
         <Redirect to='/' />
       </Switch>
       <Footer />
-    </>
+    </div>
   );
 }

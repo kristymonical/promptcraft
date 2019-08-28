@@ -1,13 +1,38 @@
 import React from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
+import { CssBaseline } from '@material-ui/core';
 
-const theme = createMuiTheme({
+export const SVT_THEME = {
+  primary: {
+    background: '#405A74'
+  },
+  secondary: {
+    background: '#E67E22'
+  }
+};
+
+const baseTheme = createMuiTheme({
+  palette: {
+    background: {
+      default: '#EEEEEE'
+    }
+  },
   typography: {
-    fontFamily: ['"Helvetica Neue"'].join(',')
+    fontFamily: '"Helvetica Neue"',
+    h5: {
+      fontSize: '22px' // regular 24px
+    }
   }
 });
 
 export default function ThemeProvider({ children }: { children: any }) {
-  return <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>;
+  return (
+    <MuiThemeProvider theme={baseTheme}>
+      <MuiThemeProvider theme={SVT_THEME}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
+    </MuiThemeProvider>
+  );
 }
