@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import TitleCol from '../components/TitleCol';
+import TitleCol from '../../components/TitleCol';
 
 export default function ManualRequest() {
   return (

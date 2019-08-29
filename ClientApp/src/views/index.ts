@@ -1,4 +1,4 @@
-import ManualRequest from './ManualRequest';
-import Menu from './Menu';
+import ManualRequest from './ManualRequest/ManualRequest';
+import Menu from './Menu/Menu';
 
 export { ManualRequest, Menu };

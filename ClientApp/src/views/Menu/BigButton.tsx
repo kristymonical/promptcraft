@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
 
-import { SVT_THEME } from './ThemeProvider';
+import { SVT_THEME } from '../../components/ThemeProvider';
 
 interface BigButtonProps {
   variant?: 'primary' | 'secondary';

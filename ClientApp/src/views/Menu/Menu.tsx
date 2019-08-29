@@ -2,8 +2,8 @@ import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { makeStyles } from '@material-ui/core';
 
-import BigButton from '../components/BigButton';
-import TitleCol from '../components/TitleCol';
+import BigButton from './BigButton';
+import TitleCol from '../../components/TitleCol';
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles({
