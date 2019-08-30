@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { TextFieldProps } from '@material-ui/core/TextField';
 
-import { KeypadIcon } from '../../icons';
+import { KeypadIcon, BarcodeIcon } from '../../icons';
 import { SVT_THEME } from '../../components/ThemeProvider';
 import Keypad from './Keypad';
 
@@ -52,11 +52,22 @@ const useStyles = makeStyles(({ secondary }: typeof SVT_THEME) => ({
   },
   keypadContainer: {
     display: 'flex',
-    background: 'white',
-    boxShadow: '0px 0px 100px #2C3E50'
+    position: 'relative'
   },
   textField: {
     background: 'white'
+  },
+  customBackdrop: {
+    background: 'white',
+    border: '1px solid #363636CC',
+    boxShadow: '0px 0px 100px #2C3E50',
+    filter: 'blur(15px)',
+    height: '125%',
+    marginTop: '-6.25%',
+    opacity: 0.96,
+    position: 'absolute',
+    width: '100%',
+    zIndex: -1
   }
 }));
 
@@ -95,7 +106,8 @@ export default function ScannableTextField({
           }}
         />
         <Button variant='contained' className={classes.button}>
-          <Typography>Scan</Typography> [I]
+          <Typography>Scan</Typography>
+          <BarcodeIcon />
         </Button>
       </div>
       <Modal
@@ -104,7 +116,6 @@ export default function ScannableTextField({
         onClose={() => setModalOpen(false)}
       >
         <div className={classes.keypadContainer}>
-          {/* This div is needed because Modal requires an Element as the child. Fix for later: Change Keypad to accept a ref so we can get rid of this div. */}
           <Keypad
             initialValue={value}
             onCancel={() => setModalOpen(false)}
@@ -114,6 +125,7 @@ export default function ScannableTextField({
             }}
             title={`Enter ${label} Manually`}
           />
+          <div className={classes.customBackdrop} />
         </div>
       </Modal>
     </>

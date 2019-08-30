@@ -3,6 +3,7 @@ import { Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import { SVT_THEME } from '../../components/ThemeProvider';
+import { XIcon, BackIcon } from '../../icons';
 
 interface KeypadProps {
   initialValue?: string;
@@ -64,7 +65,7 @@ const useStyles = makeStyles(
   })
 );
 
-const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'ClearIcon', 0, 'BkspIcon'];
+const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'clear', 0, 'backspace'];
 
 export default function Keypad({
   initialValue = '',
@@ -80,12 +81,26 @@ export default function Keypad({
       return setValue(`${value}${key}`);
     }
 
-    if (key === 'ClearIcon') {
+    if (key === 'clear') {
       return setValue('');
     }
 
-    if (key === 'BkspIcon') {
+    if (key === 'backspace') {
       return setValue(value.slice(0, -1));
+    }
+  };
+
+  const renderKey = (key: string | number) => {
+    if (typeof key === 'number') {
+      return key;
+    }
+
+    if (key === 'clear') {
+      return <XIcon />;
+    }
+
+    if (key === 'backspace') {
+      return <BackIcon />;
     }
   };
 
@@ -100,7 +115,7 @@ export default function Keypad({
             key={`keypad-key-${idx}`}
             onClick={() => handleKeyPress(key)}
           >
-            <Typography>{key}</Typography>
+            <Typography variant='h5'>{renderKey(key)}</Typography>
           </div>
         ))}
       </div>
