@@ -9,7 +9,7 @@ interface BigButtonProps {
 }
 
 const useStyles = makeStyles(({ primary, secondary }: typeof SVT_THEME) => ({
-  root: {
+  bigButtonRoot: {
     alignItems: 'center',
     background: ({ variant }: BigButtonProps) =>
       variant === 'primary' ? primary.background : secondary.background,
@@ -29,7 +29,7 @@ const useStyles = makeStyles(({ primary, secondary }: typeof SVT_THEME) => ({
 function BigButton(props: BigButtonProps) {
   const classes = useStyles(props);
   return (
-    <div className={classes.root}>
+    <div className={classes.bigButtonRoot}>
       <Typography variant='h5'>{props.children}</Typography>
     </div>
   );

@@ -4,11 +4,16 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
 
 export const SVT_THEME = {
+  flex: {
+    verticalSpacing: 10
+  },
   primary: {
-    background: '#405A74'
+    background: '#405A74',
+    color: 'white'
   },
   secondary: {
-    background: '#E67E22'
+    background: '#E67E22',
+    color: 'white'
   }
 };
 

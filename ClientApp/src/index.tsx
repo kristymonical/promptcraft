@@ -7,7 +7,7 @@ import { Menu, ManualRequest } from './views';
 
 const baseUrl =
   document.getElementsByTagName('base')[0].getAttribute('href') ||
-  'https://localhost:5001';
+  'https://localhost:5001'; // default to localhost for dev. technically this should never happen unless the browser itself is broken.
 
 const rootElement = document.getElementById('root');
 
