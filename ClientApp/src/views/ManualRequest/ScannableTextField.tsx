@@ -7,7 +7,6 @@ import {
   Button,
   Modal
 } from '@material-ui/core';
-import { TextFieldProps } from '@material-ui/core/TextField';
 
 import { KeypadIcon, BarcodeIcon } from '../../icons';
 import { SVT_THEME } from '../../components/ThemeProvider';
