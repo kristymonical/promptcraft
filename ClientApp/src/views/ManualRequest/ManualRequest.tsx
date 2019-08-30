@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import TitleCol from '../../components/TitleCol';
 import ScannableTextField from './ScannableTextField';
@@ -18,6 +18,16 @@ const useStyles = makeStyles(
 
 export default function ManualRequest() {
   const classes = useStyles({});
+  const [values, setValues] = useState({
+    cartId: '',
+    cartLocation: '',
+    orderNumber: ''
+  });
+
+  const handleChange = (name: keyof typeof values) => (newValue: string) => {
+    setValues({ ...values, [name]: newValue });
+  };
+
   return (
     <Container>
       <Row>
@@ -33,9 +43,24 @@ export default function ManualRequest() {
       </Row>
       <Row>
         <Col className={classes.textFieldContainer}>
-          <ScannableTextField label='Cart ID' required />
-          <ScannableTextField label='Cart Location' required />
-          <ScannableTextField label='Order Number' required />
+          <ScannableTextField
+            label='Cart ID'
+            handleChange={handleChange('cartId')}
+            required
+            value={values.cartId}
+          />
+          <ScannableTextField
+            label='Cart Location'
+            handleChange={handleChange('cartLocation')}
+            required
+            value={values.cartLocation}
+          />
+          <ScannableTextField
+            label='Order Number'
+            handleChange={handleChange('orderNumber')}
+            required
+            value={values.orderNumber}
+          />
         </Col>
       </Row>
     </Container>

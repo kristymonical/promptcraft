@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   makeStyles,
@@ -13,9 +13,13 @@ import { KeypadIcon, BarcodeIcon } from '../../icons';
 import { SVT_THEME } from '../../components/ThemeProvider';
 import Keypad from './Keypad';
 
-type ScannableTextFieldProps = TextFieldProps & {
+interface ScannableTextFieldProps {
+  label: string;
+  handleChange: (value: string) => void;
   maxWidth?: number;
-};
+  required: boolean;
+  value: string;
+}
 
 const useStyles = makeStyles(({ secondary }: typeof SVT_THEME) => ({
   scannableTextField: {
@@ -71,14 +75,13 @@ const useStyles = makeStyles(({ secondary }: typeof SVT_THEME) => ({
   }
 }));
 
-export default function ScannableTextField({
-  label,
-  maxWidth = 275,
-  required = false
-}: ScannableTextFieldProps) {
-  const classes = useStyles({ maxWidth });
-  const [value, setValue] = useState('');
+function ScannableTextField(props: ScannableTextFieldProps) {
+  const classes = useStyles(props);
+  const { label, handleChange, required, value } = props;
+  const [localValue, setValue] = useState(`${value || ''}`);
   const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => setValue(value), [value]);
   return (
     <>
       <div className={classes.scannableTextField}>
@@ -92,7 +95,7 @@ export default function ScannableTextField({
         </Typography>
         <TextField
           className={classes.textField}
-          value={value}
+          value={localValue}
           onChange={({ target: { value } }) => setValue(value)}
           variant='outlined'
           InputProps={{
@@ -117,10 +120,10 @@ export default function ScannableTextField({
       >
         <div className={classes.keypadContainer}>
           <Keypad
-            initialValue={value}
+            initialValue={localValue}
             onCancel={() => setModalOpen(false)}
             onConfirm={v => {
-              setValue(v);
+              handleChange(v);
               setModalOpen(false);
             }}
             title={`Enter ${label} Manually`}
@@ -131,3 +134,10 @@ export default function ScannableTextField({
     </>
   );
 }
+
+ScannableTextField.defaultProps = {
+  maxWidth: 275,
+  required: false
+};
+
+export default ScannableTextField;
