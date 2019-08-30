@@ -11,6 +11,7 @@ import {
 import { KeypadIcon, BarcodeIcon } from '../../icons';
 import { SVT_THEME } from '../../components/ThemeProvider';
 import Keypad from './Keypad';
+import { fade } from '@material-ui/core/styles';
 
 interface ScannableTextFieldProps {
   label: string;
@@ -35,7 +36,10 @@ const useStyles = makeStyles(({ secondary }: typeof SVT_THEME) => ({
     color: 'white',
     justifyContent: 'space-between',
     maxHeight: 40,
-    maxWidth: 100
+    maxWidth: 100,
+    '&:hover': {
+      background: fade(secondary.background, 0.75)
+    }
   },
   modal: {
     alignItems: 'center',

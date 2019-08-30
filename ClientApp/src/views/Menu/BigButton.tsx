@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
 
 import { SVT_THEME } from '../../components/ThemeProvider';
+import { fade } from '@material-ui/core/styles';
 
 interface BigButtonProps {
   variant?: 'primary' | 'secondary';
@@ -22,7 +23,14 @@ const useStyles = makeStyles(({ primary, secondary }: typeof SVT_THEME) => ({
     margin: '10px',
     textTransform: 'uppercase',
     userSelect: 'none',
-    width: '330px'
+    width: '330px',
+    '&:hover': {
+      background: ({ variant }: BigButtonProps) =>
+        fade(
+          variant === 'primary' ? primary.background : secondary.background,
+          0.75
+        )
+    }
   }
 }));
 
