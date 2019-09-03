@@ -7,7 +7,8 @@ import { ToolkitLogo } from 'icons';
 const useStyles = makeStyles({
   flexContainerOverriede: {
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    margin: '0 -75px'
   }
 });
 

@@ -104,7 +104,10 @@ export default function ScannableTextField(props: ScannableTextFieldProps) {
         <TextField
           className={classes.textField}
           value={localValue}
-          onChange={({ target: { value } }) => setValue(value)}
+          onChange={({ target: { value } }) => {
+            setValue(value);
+            handleChange(value);
+          }}
           variant='outlined'
           InputProps={{
             endAdornment: (
