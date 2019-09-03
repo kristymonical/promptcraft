@@ -8,7 +8,7 @@ const useStyles = makeStyles({
   flexContainerOverriede: {
     alignItems: 'center',
     justifyContent: 'space-between',
-    margin: '0 -75px'
+    margin: '10px -75px 0 -75px'
   }
 });
 
