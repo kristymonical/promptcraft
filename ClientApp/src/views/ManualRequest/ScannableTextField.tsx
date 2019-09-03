@@ -34,12 +34,17 @@ const useStyles = makeStyles(({ secondary }: typeof SVT_THEME) => ({
   button: {
     background: secondary.background,
     color: 'white',
-    justifyContent: 'space-between',
     maxHeight: 40,
-    maxWidth: 100,
+    maxWidth: 110,
     '&:hover': {
       background: fade(secondary.background, 0.75)
     }
+  },
+  buttonInternalFlexContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    flexGrow: 1,
+    justifyContent: 'space-between'
   },
   modal: {
     alignItems: 'center',
@@ -47,7 +52,7 @@ const useStyles = makeStyles(({ secondary }: typeof SVT_THEME) => ({
     justifyContent: 'center'
   },
   input: {
-    // remove the stupid number spinner
+    // remove the number spinner
     '& ::-webkit-inner-spin-button': {
       margin: 0,
       WebkitAppearance: 'none'
@@ -112,8 +117,10 @@ export default function ScannableTextField(props: ScannableTextFieldProps) {
           }}
         />
         <Button variant='contained' className={classes.button}>
-          <Typography>Scan</Typography>
-          <BarcodeIcon />
+          <div className={classes.buttonInternalFlexContainer}>
+            <Typography>Scan</Typography>
+            <BarcodeIcon />
+          </div>
         </Button>
       </div>
       <Modal

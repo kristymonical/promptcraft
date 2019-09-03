@@ -7,7 +7,7 @@ export default function Header() {
       <Row>
         <Col>Toolkit logo</Col>
         <Col>Other logo</Col>
-        <Col>Hamburger Menu</Col>
+        <Col></Col>
       </Row>
     </Container>
   );
