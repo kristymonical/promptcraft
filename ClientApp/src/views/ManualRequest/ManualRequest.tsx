@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import TitleCol from '../../components/TitleCol';
-import ScannableTextField from './ScannableTextField';
 import { Typography, makeStyles, Button } from '@material-ui/core';
-
-import { SVT_THEME } from '../../components/ThemeProvider';
-import Select from './Select';
 import { fade } from '@material-ui/core/styles';
+
+import Select from './Select';
+import ScannableTextField from './ScannableTextField';
+import { TitleCol, SVT_THEME } from 'components';
 
 const useStyles = makeStyles(
   ({ flex, primary, secondary }: typeof SVT_THEME) => ({

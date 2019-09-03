@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, makeStyles, MenuItem, TextField } from '@material-ui/core';
 
-import { SVT_THEME } from '../../components/ThemeProvider';
+import { SVT_THEME } from 'components';
 
 interface SelectProps {
   handleChange: (value: string) => void;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
-
-import { SVT_THEME } from '../../components/ThemeProvider';
 import { fade } from '@material-ui/core/styles';
+
+import { SVT_THEME } from 'components';
 
 interface BigButtonProps {
   variant?: 'primary' | 'secondary';

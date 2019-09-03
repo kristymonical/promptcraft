@@ -1,8 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
 
-import { SVT_THEME } from '../components/ThemeProvider';
-import Circle from '../components/Circle';
+import { SVT_THEME, Circle } from 'components';
 
 interface KeypadIconProps {
   size: number;

@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <Container>
       <Row>
-        <Col>Notifications</Col>
+        <Col></Col>
       </Row>
     </Container>
   );

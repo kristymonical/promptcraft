@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { SVT_THEME } from '../../components/ThemeProvider';
-import { XIcon, BackIcon } from '../../icons';
+import { SVT_THEME } from 'components';
+import { XIcon, BackIcon } from 'icons';
 
 interface KeypadProps {
   initialValue?: string;

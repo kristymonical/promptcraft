@@ -1,6 +1,7 @@
+import Circle from './Circle';
 import Footer from './Footer';
 import Header from './Header';
-import ThemeProvider from './ThemeProvider';
+import ThemeProvider, { SVT_THEME } from './ThemeProvider';
 import TitleCol from './TitleCol';
 
-export { Footer, Header, ThemeProvider, TitleCol };
+export { Circle, Footer, Header, SVT_THEME, ThemeProvider, TitleCol };
