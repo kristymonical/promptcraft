@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { makeStyles } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
@@ -24,13 +24,9 @@ const useStyles = makeStyles({
 export default function Menu() {
   const classes = useStyles({});
   return (
-    <Container>
+    <>
       <Row>
-        <TitleCol
-          title='Title'
-          subtitle='Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry’s standard dummy'
-        />
+        <TitleCol title='Title' subtitle='Subtitle' />
       </Row>
       <Row>
         <Col className={classes.buttonGroup}>
@@ -48,6 +44,6 @@ export default function Menu() {
           </Link>
         </Col>
       </Row>
-    </Container>
+    </>
   );
 }

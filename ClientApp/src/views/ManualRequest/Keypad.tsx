@@ -3,7 +3,7 @@ import { Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import { SVT_THEME } from 'components';
-import { XIcon, BackIcon } from 'icons';
+import { ClearIcon, BackIcon } from 'icons';
 
 interface KeypadProps {
   initialValue?: string;
@@ -47,6 +47,7 @@ const useStyles = makeStyles(
       alignItems: 'center',
       background: primary.background,
       borderRadius: keySize / 2,
+      cursor: 'pointer',
       display: 'flex',
       height: keySize,
       justifyContent: 'center',
@@ -96,7 +97,7 @@ export default function Keypad({
     }
 
     if (key === 'clear') {
-      return <XIcon />;
+      return <ClearIcon />;
     }
 
     if (key === 'backspace') {

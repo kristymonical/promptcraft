@@ -1,14 +1,26 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
+import { makeStyles } from '@material-ui/styles';
+
+import { ToolkitLogo } from 'icons';
+
+const useStyles = makeStyles({
+  flexContainerOverriede: {
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  }
+});
 
 export default function Header() {
+  const classes = useStyles();
   return (
-    <Container>
-      <Row>
-        <Col>Toolkit logo</Col>
-        <Col>Other logo</Col>
-        <Col></Col>
+    <>
+      <Row className={classes.flexContainerOverriede}>
+        <ToolkitLogo />
+        <div>Other logo</div>
+        {/* Hamburger menu icon placeholder */}
+        <div>&nbsp;</div>
       </Row>
-    </Container>
+    </>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { Typography, makeStyles, Button } from '@material-ui/core';
 import { fade } from '@material-ui/core/styles';
 
@@ -46,12 +46,9 @@ export default function ManualRequest() {
   };
 
   return (
-    <Container>
+    <>
       <Row>
-        <TitleCol
-          title='Manual Request'
-          subtitle='Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy'
-        />
+        <TitleCol title='Manual Request' subtitle='This is a subtitle' />
       </Row>
       <Row>
         <Col>
@@ -110,6 +107,6 @@ export default function ManualRequest() {
           </Button>
         </Col>
       </Row>
-    </Container>
+    </>
   );
 }

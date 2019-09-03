@@ -1,6 +1,7 @@
 import BackIcon from './BackIcon';
 import BarcodeIcon from './BarcodeIcon';
 import KeypadIcon from './KeypadIcon';
-import XIcon from './XIcon';
+import ClearIcon from './ClearIcon';
+import ToolkitLogo from './ToolkitLogo';
 
-export { BackIcon, BarcodeIcon, KeypadIcon, XIcon };
+export { BackIcon, BarcodeIcon, ClearIcon, KeypadIcon, ToolkitLogo };
