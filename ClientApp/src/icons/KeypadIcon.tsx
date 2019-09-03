@@ -2,17 +2,16 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core';
 
 import { SVT_THEME } from '../components/ThemeProvider';
+import Circle from '../components/Circle';
 
-const iconSize = 40;
-// const iconPadding = iconSize / 7;
-// const dotSpacing = 2; // maybe do math better to make this dynamic?
-// const dotSize = (iconSize - 2 * iconPadding - 3 * dotSpacing) / 3;
+interface KeypadIconProps {
+  size: number;
+}
 
-// console.log(iconPadding);
-// console.log(dotSize);
-// console.log(dotSpacing);
-
-// console.log(2 * iconPadding + 3 * dotSize + 3 * dotSpacing);
+// TODO: Test if these scale responsively
+// ratios for responsiveness (values derived from original static component: 40px icon size, 6px padding, 8px dot size)
+const paddingRatio = 40 / 6;
+const dotSizeRatio = 40 / 8;
 
 const useStyles = makeStyles(({ primary, secondary }: typeof SVT_THEME) => ({
   keypadIconRoot: {
@@ -22,26 +21,25 @@ const useStyles = makeStyles(({ primary, secondary }: typeof SVT_THEME) => ({
     cursor: 'pointer',
     display: 'flex',
     flexFlow: 'row wrap',
-    height: iconSize,
+    height: (props: KeypadIconProps) => props.size,
     justifyContent: 'space-between',
-    padding: 6,
-    width: iconSize
-  },
-  dot: {
-    background: 'white',
-    borderRadius: 4,
-    height: 8,
-    width: 8
+    padding: (props: KeypadIconProps) => props.size / paddingRatio,
+    width: (props: KeypadIconProps) => props.size
   }
 }));
 
-export default function KeypadIcon() {
-  const classes = useStyles({});
+export default function KeypadIcon(props: KeypadIconProps) {
+  const classes = useStyles(props);
   return (
     <span className={classes.keypadIconRoot}>
+      {/* spread thing is so TS transpiles this correctly since mapping directly off of Array() doesn't seem to work */}
       {[...Array(9)].map((_, idx) => (
-        <span key={idx} className={classes.dot}></span>
+        <Circle key={idx} color='white' size={props.size / dotSizeRatio} />
       ))}
     </span>
   );
 }
+
+KeypadIcon.defaultProps = {
+  size: 40
+};

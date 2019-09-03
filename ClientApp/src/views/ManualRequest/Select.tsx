@@ -26,7 +26,7 @@ const useStyles = makeStyles(({ secondary }: typeof SVT_THEME) => ({
   }
 }));
 
-function Select(props: SelectProps) {
+export default function Select(props: SelectProps) {
   const classes = useStyles(props);
   const { handleChange, items, label, required, value } = props;
 
@@ -61,5 +61,3 @@ Select.defaultProps = {
   required: false,
   maxWidth: 275
 };
-
-export default Select;

@@ -78,7 +78,7 @@ const useStyles = makeStyles(({ secondary }: typeof SVT_THEME) => ({
   }
 }));
 
-function ScannableTextField(props: ScannableTextFieldProps) {
+export default function ScannableTextField(props: ScannableTextFieldProps) {
   const classes = useStyles(props);
   const { label, handleChange, required, value } = props;
   const [localValue, setValue] = useState(`${value || ''}`);
@@ -142,5 +142,3 @@ ScannableTextField.defaultProps = {
   maxWidth: 275,
   required: false
 };
-
-export default ScannableTextField;

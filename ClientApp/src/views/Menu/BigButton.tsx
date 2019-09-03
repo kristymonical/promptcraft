@@ -34,7 +34,7 @@ const useStyles = makeStyles(({ primary, secondary }: typeof SVT_THEME) => ({
   }
 }));
 
-function BigButton(props: BigButtonProps) {
+export default function BigButton(props: BigButtonProps) {
   const classes = useStyles(props);
   return (
     <div className={classes.bigButtonRoot}>
@@ -46,5 +46,3 @@ function BigButton(props: BigButtonProps) {
 BigButton.defaultProps = {
   variant: 'primary'
 };
-
-export default BigButton;
