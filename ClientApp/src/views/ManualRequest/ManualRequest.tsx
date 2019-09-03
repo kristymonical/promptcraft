@@ -18,9 +18,10 @@ const useStyles = makeStyles(({ flex, secondary }: typeof SVT_THEME) => ({
       background: fade(secondary.background, 0.75)
     }
   },
-  flexSpacing: {
+  flexFormContainer: {
+    justifyContent: 'space-between',
     '& > *': {
-      marginRight: 25
+      minWidth: '30% !important'
     }
   }
 }));
@@ -76,7 +77,7 @@ export default function ManualRequest() {
       <Row>
         <Typography variant='h5'>Cart Information</Typography>
       </Row>
-      <Row className={classes.flexSpacing}>
+      <Row className={classes.flexFormContainer}>
         <ScannableTextField
           label='Cart ID'
           handleChange={handleChange('cartId')}
@@ -99,7 +100,7 @@ export default function ManualRequest() {
       <Row>
         <Typography variant='h5'>Destination</Typography>
       </Row>
-      <Row className={classes.flexSpacing}>
+      <Row className={classes.flexFormContainer}>
         <Select
           items={['1011A', '1011B', '1001C']}
           label='Floor Location'
@@ -116,6 +117,7 @@ export default function ManualRequest() {
             value={formValues.suiteMAL}
           />
         )}
+        <span>{/* Placeholder */}</span>
       </Row>
       <Row>
         <Table data={requests} shape={tableShape} />
