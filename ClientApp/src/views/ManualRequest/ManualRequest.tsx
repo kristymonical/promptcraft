@@ -4,20 +4,15 @@ import { Typography, makeStyles, Button } from '@material-ui/core';
 import { fade } from '@material-ui/core/styles';
 
 import Select from './Select';
-import ScannableTextField from './ScannableTextField';
-import { SVT_THEME, Table, TitleCol } from 'components';
+import {
+  ScannableTextField,
+  SVT_THEME,
+  Table,
+  TitleCol,
+  SubmitButton
+} from 'components';
 
 const useStyles = makeStyles(({ flex, secondary }: typeof SVT_THEME) => ({
-  createButton: {
-    background: secondary.background,
-    borderRadius: 6,
-    color: secondary.color,
-    height: 70,
-    width: 250,
-    '&:hover': {
-      background: fade(secondary.background, 0.75)
-    }
-  },
   flexFormContainer: {
     justifyContent: 'space-between',
     '& > *': {
@@ -165,16 +160,12 @@ export default function ManualRequest() {
         </Row>
       )}
       <Row>
-        <Button
-          className={classes.createButton}
-          variant='contained'
+        <SubmitButton
           disabled={submitDisabled}
-          onClick={() => {
-            setFormValues(initialFormValues);
-          }}
-        >
-          <Typography variant='body1'>Create Manual Request</Typography>
-        </Button>
+          onClick={() => setFormValues(initialFormValues)}
+          text='Create Manual Request'
+          variant='secondary'
+        />
       </Row>
     </>
   );

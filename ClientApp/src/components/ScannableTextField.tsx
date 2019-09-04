@@ -11,7 +11,7 @@ import { fade } from '@material-ui/core/styles';
 
 import { SVT_THEME } from 'components';
 import { KeypadIcon, BarcodeIcon } from 'icons';
-import Keypad from './Keypad';
+import Keypad from '../views/ManualRequest/Keypad';
 
 interface ScannableTextFieldProps {
   label: string;
