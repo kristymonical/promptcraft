@@ -5,10 +5,10 @@ import { makeStyles } from '@material-ui/styles';
 import { ToolkitLogo } from 'icons';
 
 const useStyles = makeStyles({
-  flexContainerOverriede: {
+  flexContainerOverride: {
     alignItems: 'center',
     justifyContent: 'space-between',
-    margin: '10px -75px 0 -75px'
+    margin: '0 -15px'
   }
 });
 
@@ -16,7 +16,7 @@ export default function Header() {
   const classes = useStyles();
   return (
     <>
-      <Row className={classes.flexContainerOverriede}>
+      <Row className={classes.flexContainerOverride}>
         <ToolkitLogo />
         <div>Other logo</div>
         {/* Hamburger menu icon placeholder */}
