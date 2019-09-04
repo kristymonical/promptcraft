@@ -32,9 +32,11 @@ const tableShape = [
   { label: 'Destination SuiteMAL', key: 'suiteMAL' }
 ];
 
-const tableInitialData = [
-  { floorLocation: '1011A', mal: '1501', suiteMAL: '1513' }
-];
+const requestInitialValues = {
+  floorLocation: '',
+  mal: '',
+  suiteMAL: ''
+};
 
 const initialFormValues = {
   cartId: '',
@@ -44,11 +46,17 @@ const initialFormValues = {
   suiteMAL: ''
 };
 
+const testFloorLocations = ['1011A', '1011B', '2011A']; // @hookup real data
+const getFloorLocations = () => testFloorLocations;
+
 export default function ManualRequest() {
   const classes = useStyles({});
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitDisabled, setSubmitDisabled] = useState(true);
-  const [requests, setRequests] = useState(tableInitialData);
+  const [requestPreview, setRequestPreview] = useState(requestInitialValues);
+
+  const [floorLocations] = useState(() => getFloorLocations());
+  const [suiteMALs, setSuiteMALs] = useState([] as string[]);
 
   // "reducer" for form value state
   const handleChange = (name: keyof typeof formValues) => (
@@ -57,8 +65,10 @@ export default function ManualRequest() {
     setFormValues({ ...formValues, [name]: newValue });
   };
 
+  // determine if create button should be disabled
   useEffect(() => {
-    // current calculated value based on form values
+    // current calculated value based on if form values all are filled in
+    // NOTE: If there's more complex logic in the future, it may be beneficial to switch to Yup and Formik
     const calculatedDisabledValue = !Object.values(formValues).every(
       value => value && value.length > 0
     );
@@ -68,6 +78,36 @@ export default function ManualRequest() {
       setSubmitDisabled(calculatedDisabledValue);
     }
   }, [formValues, submitDisabled]);
+
+  const { floorLocation, suiteMAL } = formValues;
+
+  // update suiteMALs based on floor location
+  useEffect(() => {
+    // if floorLocation is reset, then reset suiteMAL and suiteMAL list as well
+    if (!floorLocation || floorLocation.length === 0) {
+      setSuiteMALs([]);
+    } else if (floorLocation[0] === '1') {
+      setSuiteMALs(['1513', '1550']); // @hookup real data
+    } else {
+      setSuiteMALs(['2513', '2550']); // @hookup real data
+    }
+
+    setFormValues(current => ({ ...current, suiteMAL: '' }));
+  }, [floorLocation]);
+
+  // update request preview
+  useEffect(() => {
+    if (!floorLocation || !suiteMAL) {
+      setRequestPreview(requestInitialValues);
+      return;
+    }
+
+    setRequestPreview({
+      floorLocation,
+      mal: 'test', // @hookup real data
+      suiteMAL
+    });
+  }, [floorLocation, suiteMAL]);
 
   return (
     <>
@@ -102,7 +142,7 @@ export default function ManualRequest() {
       </Row>
       <Row className={classes.flexFormContainer}>
         <Select
-          items={['1011A', '1011B', '1001C']}
+          items={floorLocations}
           label='Floor Location'
           handleChange={handleChange('floorLocation')}
           required
@@ -110,7 +150,7 @@ export default function ManualRequest() {
         />
         {formValues.floorLocation && (
           <Select
-            items={['1513', '1535']}
+            items={suiteMALs}
             label='SuiteMAL'
             handleChange={handleChange('suiteMAL')}
             required
@@ -119,9 +159,11 @@ export default function ManualRequest() {
         )}
         <span>{/* Placeholder */}</span>
       </Row>
-      <Row>
-        <Table data={requests} shape={tableShape} />
-      </Row>
+      {formValues.floorLocation && formValues.suiteMAL && (
+        <Row>
+          <Table data={requestPreview} shape={tableShape} />
+        </Row>
+      )}
       <Row>
         <Button
           className={classes.createButton}
@@ -129,12 +171,6 @@ export default function ManualRequest() {
           disabled={submitDisabled}
           onClick={() => {
             setFormValues(initialFormValues);
-            const newRequest = {
-              floorLocation: formValues.floorLocation,
-              mal: '1501',
-              suiteMAL: formValues.suiteMAL
-            };
-            setRequests([...requests, newRequest]);
           }}
         >
           <Typography variant='body1'>Create Manual Request</Typography>

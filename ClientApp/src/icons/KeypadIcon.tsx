@@ -7,7 +7,7 @@ interface KeypadIconProps {
   size: number;
 }
 
-// TODO: Test if these scale responsively
+// @testing Test if these scale responsively
 // ratios for responsiveness (values derived from original static component: 40px icon size, 6px padding, 8px dot size)
 const paddingRatio = 40 / 6;
 const dotSizeRatio = 40 / 8;
