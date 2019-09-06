@@ -1,11 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core';
-import { Row } from 'react-bootstrap';
-import { TitleCol, ScannableTextField, SubmitButton, Table } from 'components';
+import { makeStyles, Modal, Typography } from '@material-ui/core';
+import { Row, Col } from 'react-bootstrap';
 
-interface CleanRequestProps {}
+import {
+  TitleCol,
+  ScannableTextField,
+  SubmitButton,
+  Table,
+  SVT_THEME
+} from 'components';
+import Timer from './Timer';
 
-const createStyles = makeStyles({});
+const createStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
+  modal: {
+    alignItems: 'center',
+    color: 'white',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    '& h3': {
+      color: 'white',
+      fontSize: 51,
+      fontWeight: 300
+    }
+  },
+  customBackdrop: {
+    background: primary.dark,
+    boxShadow: '0px 10px 10px #0000006A;',
+    height: '90vh',
+    margin: '0 auto',
+    position: 'absolute',
+    width: '90vw',
+    zIndex: -1
+  }
+}));
 
 const initialTableData = {
   deliveryId: '',
@@ -13,11 +41,12 @@ const initialTableData = {
   orderId: ''
 };
 
-export default function CleanRequest({  }: CleanRequestProps) {
+export default function CleanRequest() {
   const classes = createStyles({});
 
   const [cartId, setCartId] = useState('');
   const [tableData, setTableData] = useState(initialTableData);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     // @hookup real data
@@ -60,11 +89,33 @@ export default function CleanRequest({  }: CleanRequestProps) {
       <Row>
         <SubmitButton
           disabled={!cartId}
-          onClick={() => setCartId('')}
-          text='Create Manual Request'
+          onClick={() => {
+            setModalOpen(true);
+            setCartId('');
+          }}
+          text='Start Cleaning Process'
           variant='secondary'
         />
       </Row>
+      <Modal
+        className={classes.modal}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      >
+        <>
+          <Row style={{ marginBottom: 25 }}>
+            <Col>
+              <Typography variant='h3'>Cleaning Progress</Typography>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Timer minutes={10} />
+            </Col>
+          </Row>
+          <div className={classes.customBackdrop} />
+        </>
+      </Modal>
     </>
   );
 }

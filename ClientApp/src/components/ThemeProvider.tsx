@@ -9,7 +9,8 @@ export const SVT_THEME = {
   },
   primary: {
     background: '#405A74',
-    color: 'white'
+    color: 'white',
+    dark: '#2C3E50'
   },
   secondary: {
     background: '#E67E22',
