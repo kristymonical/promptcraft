@@ -5,7 +5,7 @@ import { Container } from 'react-bootstrap';
 
 import registerServiceWorker from 'registerServiceWorker';
 import { ThemeProvider, Header, Footer } from 'components';
-import { CleanRequest, Menu, ManualRequest } from 'views';
+import { CleanRequest, Menu, ManualRequest, CartHandling } from 'views';
 
 const baseUrl =
   document.getElementsByTagName('base')[0].getAttribute('href') ||
@@ -20,6 +20,7 @@ ReactDOM.render(
         <Header />
         <Switch>
           <Route exact path='/' component={Menu} />
+          <Route exact path='/request' component={CartHandling} />
           <Route exact path='/request/manual' component={ManualRequest} />
           <Route exact path='/request/clean' component={CleanRequest} />
           <Redirect to='/' />

@@ -2,6 +2,7 @@ import Circle from './Circle';
 import Footer from './Footer';
 import Header from './Header';
 import ScannableTextField from './ScannableTextField';
+import Select from './Select';
 import SubmitButton from './SubmitButton';
 import Table from './Table';
 import ThemeProvider, { SVT_THEME } from './ThemeProvider';
@@ -13,6 +14,7 @@ export {
   Header,
   ScannableTextField,
   SubmitButton,
+  Select,
   SVT_THEME,
   Table,
   ThemeProvider,

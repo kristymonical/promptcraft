@@ -149,6 +149,6 @@ export default function ScannableTextField(props: ScannableTextFieldProps) {
 }
 
 ScannableTextField.defaultProps = {
-  maxWidth: 275,
+  maxWidth: 400,
   required: false
 };

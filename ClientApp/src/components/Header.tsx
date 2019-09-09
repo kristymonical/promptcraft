@@ -18,9 +18,8 @@ export default function Header() {
     <>
       <Row className={classes.flexContainerOverride}>
         <ToolkitLogo />
-        <div>Other logo</div>
-        {/* Hamburger menu icon placeholder */}
-        <div>&nbsp;</div>
+        {/* @missing-assets logo goes here */}
+        {/* @next Hamburger menu icon goes here */}
       </Row>
     </>
   );
