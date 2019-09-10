@@ -87,7 +87,8 @@ export default function ScannableTextField(props: ScannableTextFieldProps) {
   const classes = useStyles(props);
   const { label, handleChange, required, value } = props;
   const [localValue, setValue] = useState(`${value || ''}`);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [keypadModalOpen, setKeypadModalOpen] = useState(false);
+  const [scanModalOpen, setScanModalOpen] = useState(false);
 
   useEffect(() => setValue(value), [value]);
   return (
@@ -111,7 +112,10 @@ export default function ScannableTextField(props: ScannableTextFieldProps) {
           variant='outlined'
           InputProps={{
             endAdornment: (
-              <InputAdornment position='end' onClick={() => setModalOpen(true)}>
+              <InputAdornment
+                position='end'
+                onClick={() => setKeypadModalOpen(true)}
+              >
                 <KeypadIcon />
               </InputAdornment>
             ),
@@ -119,25 +123,38 @@ export default function ScannableTextField(props: ScannableTextFieldProps) {
             className: classes.input
           }}
         />
-        <Button variant='contained' className={classes.button}>
+        <Button
+          variant='contained'
+          className={classes.button}
+          onClick={() => setScanModalOpen(true)}
+        >
           <div className={classes.buttonInternalFlexContainer}>
             <Typography>Scan</Typography>
             <BarcodeIcon />
           </div>
         </Button>
       </div>
+
       <Modal
         className={classes.modal}
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        open={scanModalOpen}
+        onClose={() => setScanModalOpen(false)}
+      >
+        <div>Ready for scan...</div>
+      </Modal>
+
+      <Modal
+        className={classes.modal}
+        open={keypadModalOpen}
+        onClose={() => setKeypadModalOpen(false)}
       >
         <div className={classes.keypadContainer}>
           <Keypad
             initialValue={localValue}
-            onCancel={() => setModalOpen(false)}
+            onCancel={() => setKeypadModalOpen(false)}
             onConfirm={v => {
               handleChange(v);
-              setModalOpen(false);
+              setKeypadModalOpen(false);
             }}
             title={`Enter ${label} Manually`}
           />
