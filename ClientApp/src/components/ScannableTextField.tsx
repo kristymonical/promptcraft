@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { fade } from '@material-ui/core/styles';
 
-import { SVT_THEME } from 'components';
+import { SVT_THEME, BarcodeScanner } from 'components';
 import { KeypadIcon, BarcodeIcon } from 'icons';
 import Keypad from '../views/ManualRequest/Keypad';
 
@@ -135,12 +135,16 @@ export default function ScannableTextField(props: ScannableTextFieldProps) {
         </Button>
       </div>
 
-      <Modal
-        className={classes.modal}
-        open={scanModalOpen}
-        onClose={() => setScanModalOpen(false)}
-      >
-        <div>Ready for scan...</div>
+      <Modal className={classes.modal} open={scanModalOpen}>
+        <>
+          <BarcodeScanner
+            onScan={scanned => {
+              handleChange(scanned);
+              setScanModalOpen(false);
+            }}
+          />
+          <div style={{ color: 'white' }}>Ready for scan...</div>
+        </>
       </Modal>
 
       <Modal
