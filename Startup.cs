@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SVT.Platform.Data;
 
 namespace SVT.Platform
 {
@@ -19,8 +22,12 @@ namespace SVT.Platform
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // All FE is handled by React. No need for views or pages.
+            services.AddControllers();
 
-            services.AddControllersWithViews();
+            // DI
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddDbContext<SVTContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PlatformDb")));
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
