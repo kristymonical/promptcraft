@@ -25,60 +25,223 @@ namespace SVT.Platform.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Description");
+                    b.Property<string>("AreaType")
+                        .IsRequired()
+                        .HasMaxLength(50);
 
-                    b.Property<DateTime>("Inserted");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50);
 
-                    b.Property<string>("Name");
-
-                    b.Property<DateTime>("Updated");
+                    b.Property<int>("PoolId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AreaType");
+
+                    b.HasIndex("PoolId");
 
                     b.ToTable("Areas");
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.AreaPool", b =>
+            modelBuilder.Entity("SVT.Platform.Data.Models.AreaDeliveryType", b =>
                 {
                     b.Property<int>("AreaId");
 
-                    b.Property<int>("PoolId");
+                    b.Property<string>("DeliveryType")
+                        .HasMaxLength(50);
 
                     b.Property<int>("Id");
 
-                    b.Property<DateTime>("Inserted");
+                    b.HasKey("AreaId", "DeliveryType");
 
-                    b.Property<DateTime>("Updated");
+                    b.HasIndex("DeliveryType");
 
-                    b.HasKey("AreaId", "PoolId");
-
-                    b.HasIndex("PoolId");
-
-                    b.ToTable("AreaPool");
+                    b.ToTable("AreaDeliveryTypes");
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.AreaToArea", b =>
+            modelBuilder.Entity("SVT.Platform.Data.Models.AreaMap", b =>
                 {
-                    b.Property<int>("FromAreaId");
+                    b.Property<int>("DestinationAreaId");
 
-                    b.Property<int>("ToAreaId");
-
-                    b.Property<int?>("FromAreaId1");
+                    b.Property<int>("SourceAreaId");
 
                     b.Property<int>("Id");
 
-                    b.Property<DateTime>("Inserted");
+                    b.HasKey("DestinationAreaId", "SourceAreaId");
 
-                    b.Property<DateTime>("Updated");
+                    b.HasIndex("SourceAreaId");
 
-                    b.HasKey("FromAreaId", "ToAreaId");
-
-                    b.HasIndex("FromAreaId1");
-
-                    b.ToTable("AreaToArea");
+                    b.ToTable("AreaMaps");
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.DeliveryRequest", b =>
+            modelBuilder.Entity("SVT.Platform.Data.Models.AreaType", b =>
+                {
+                    b.Property<string>("Value")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255);
+
+                    b.HasKey("Value");
+
+                    b.ToTable("AreaTypes");
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.Delivery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("Completed");
+
+                    b.Property<string>("DeliveryStatus")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("DeliveryType")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<int>("DestinationAreaId");
+
+                    b.Property<string>("InsertedBy")
+                        .IsRequired()
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("InsertedOn");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("ModifiedOn");
+
+                    b.Property<int?>("OrderId");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeliveryStatus");
+
+                    b.HasIndex("DeliveryType");
+
+                    b.HasIndex("DestinationAreaId");
+
+                    b.ToTable("Deliveries");
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.DeliveryStatus", b =>
+                {
+                    b.Property<string>("Value")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255);
+
+                    b.HasKey("Value");
+
+                    b.ToTable("DeliveryStatuses");
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.DeliveryType", b =>
+                {
+                    b.Property<string>("Value")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255);
+
+                    b.HasKey("Value");
+
+                    b.ToTable("DeliveryTypes");
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.Itinerary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("DeliveryId");
+
+                    b.Property<string>("InsertedBy")
+                        .IsRequired()
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("InsertedOn");
+
+                    b.Property<string>("ItineraryStatus")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("ItineraryType")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<int>("LocationId");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("ModifiedOn");
+
+                    b.Property<int?>("PreviousItineraryId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeliveryId");
+
+                    b.HasIndex("ItineraryStatus");
+
+                    b.HasIndex("ItineraryType");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("PreviousItineraryId")
+                        .IsUnique()
+                        .HasFilter("[PreviousItineraryId] IS NOT NULL");
+
+                    b.ToTable("Itineraries");
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.ItineraryStatus", b =>
+                {
+                    b.Property<string>("Value")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255);
+
+                    b.HasKey("Value");
+
+                    b.ToTable("ItineraryStatuses");
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.ItineraryType", b =>
+                {
+                    b.Property<string>("Value")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255);
+
+                    b.HasKey("Value");
+
+                    b.ToTable("ItineraryTypes");
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.Location", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -86,42 +249,51 @@ namespace SVT.Platform.Data.Migrations
 
                     b.Property<int>("AreaId");
 
-                    b.Property<bool>("Completed");
+                    b.Property<int?>("CartId");
 
-                    b.Property<DateTime>("Inserted");
+                    b.Property<string>("InsertedBy")
+                        .IsRequired()
+                        .HasMaxLength(256);
 
-                    b.Property<string>("LonzaOrderId");
+                    b.Property<DateTime>("InsertedOn");
 
-                    b.Property<DateTime>("Updated");
+                    b.Property<string>("LocationType")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("ModifiedOn");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<bool>("Reserved");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AreaId");
 
-                    b.ToTable("DeliveryRequests");
+                    b.HasIndex("LocationType");
+
+                    b.ToTable("Locations");
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.Job", b =>
+            modelBuilder.Entity("SVT.Platform.Data.Models.LocationType", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Value")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasMaxLength(50);
 
-                    b.Property<string>("DetailsSerialized");
+                    b.Property<string>("Description")
+                        .HasMaxLength(255);
 
-                    b.Property<DateTime>("Inserted");
+                    b.HasKey("Value");
 
-                    b.Property<string>("Status");
-
-                    b.Property<int>("TripRequestId");
-
-                    b.Property<DateTime>("Updated");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TripRequestId");
-
-                    b.ToTable("Jobs");
+                    b.ToTable("LocationTypes");
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Pool", b =>
@@ -130,179 +302,107 @@ namespace SVT.Platform.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Description");
-
-                    b.Property<DateTime>("Inserted");
-
-                    b.Property<string>("Name");
-
-                    b.Property<DateTime>("Updated");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50);
 
                     b.HasKey("Id");
 
                     b.ToTable("Pools");
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.Position", b =>
+            modelBuilder.Entity("SVT.Platform.Data.Models.Area", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AreaId");
-
-                    b.Property<DateTime>("Cleared");
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTime>("Inserted");
-
-                    b.Property<string>("Name");
-
-                    b.Property<DateTime>("Occupied");
-
-                    b.Property<DateTime>("Reserved");
-
-                    b.Property<int>("TripRequestId");
-
-                    b.Property<string>("Type");
-
-                    b.Property<DateTime>("Updated");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AreaId");
-
-                    b.HasIndex("TripRequestId")
-                        .IsUnique();
-
-                    b.ToTable("Positions");
-                });
-
-            modelBuilder.Entity("SVT.Platform.Data.Models.TripHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Inserted");
-
-                    b.Property<string>("Status");
-
-                    b.Property<int>("TripRequestId");
-
-                    b.Property<DateTime>("Updated");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TripRequestId");
-
-                    b.ToTable("TripHistory");
-                });
-
-            modelBuilder.Entity("SVT.Platform.Data.Models.TripRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CartId");
-
-                    b.Property<int>("DeliveryRequestId");
-
-                    b.Property<DateTime>("Inserted");
-
-                    b.Property<int>("PositionId");
-
-                    b.Property<int?>("PreviousTripRequestId");
-
-                    b.Property<string>("Type");
-
-                    b.Property<DateTime>("Updated");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeliveryRequestId");
-
-                    b.HasIndex("PreviousTripRequestId");
-
-                    b.ToTable("TripRequests");
-                });
-
-            modelBuilder.Entity("SVT.Platform.Data.Models.AreaPool", b =>
-                {
-                    b.HasOne("SVT.Platform.Data.Models.Area", "Area")
-                        .WithMany("AreaPools")
-                        .HasForeignKey("AreaId")
+                    b.HasOne("SVT.Platform.Data.Models.AreaType", "AreaTypeReference")
+                        .WithMany("Areas")
+                        .HasForeignKey("AreaType")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SVT.Platform.Data.Models.Pool", "Pool")
-                        .WithMany("AreaPools")
+                        .WithMany("Areas")
                         .HasForeignKey("PoolId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.AreaToArea", b =>
-                {
-                    b.HasOne("SVT.Platform.Data.Models.Area", "ToArea")
-                        .WithMany("FromAreas")
-                        .HasForeignKey("FromAreaId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SVT.Platform.Data.Models.Area", "FromArea")
-                        .WithMany("ToAreas")
-                        .HasForeignKey("FromAreaId1");
-                });
-
-            modelBuilder.Entity("SVT.Platform.Data.Models.DeliveryRequest", b =>
+            modelBuilder.Entity("SVT.Platform.Data.Models.AreaDeliveryType", b =>
                 {
                     b.HasOne("SVT.Platform.Data.Models.Area", "Area")
-                        .WithMany("DeliveryRequests")
-                        .HasForeignKey("AreaId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("SVT.Platform.Data.Models.Job", b =>
-                {
-                    b.HasOne("SVT.Platform.Data.Models.TripRequest", "TripRequest")
-                        .WithMany()
-                        .HasForeignKey("TripRequestId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("SVT.Platform.Data.Models.Position", b =>
-                {
-                    b.HasOne("SVT.Platform.Data.Models.Area", "Area")
-                        .WithMany("Positions")
+                        .WithMany("AreaDeliveryTypes")
                         .HasForeignKey("AreaId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("SVT.Platform.Data.Models.TripRequest", "TripRequest")
-                        .WithOne("Position")
-                        .HasForeignKey("SVT.Platform.Data.Models.Position", "TripRequestId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("SVT.Platform.Data.Models.TripHistory", b =>
-                {
-                    b.HasOne("SVT.Platform.Data.Models.TripRequest", "TripRequest")
-                        .WithMany("TripHistories")
-                        .HasForeignKey("TripRequestId")
+                    b.HasOne("SVT.Platform.Data.Models.DeliveryType", "DeliveryTypeReference")
+                        .WithMany("AreaDeliveryTypes")
+                        .HasForeignKey("DeliveryType")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.TripRequest", b =>
+            modelBuilder.Entity("SVT.Platform.Data.Models.AreaMap", b =>
                 {
-                    b.HasOne("SVT.Platform.Data.Models.DeliveryRequest", "DeliveryRequest")
-                        .WithMany("TripRequests")
-                        .HasForeignKey("DeliveryRequestId")
+                    b.HasOne("SVT.Platform.Data.Models.Area", "DestinationArea")
+                        .WithMany("SourceAreas")
+                        .HasForeignKey("DestinationAreaId");
+
+                    b.HasOne("SVT.Platform.Data.Models.Area", "SourceArea")
+                        .WithMany("DestinationAreas")
+                        .HasForeignKey("SourceAreaId");
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.Delivery", b =>
+                {
+                    b.HasOne("SVT.Platform.Data.Models.DeliveryStatus", "DeliveryStatusReference")
+                        .WithMany("Deliveries")
+                        .HasForeignKey("DeliveryStatus")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("SVT.Platform.Data.Models.TripRequest", "PreviousTripRequest")
-                        .WithMany()
-                        .HasForeignKey("PreviousTripRequestId");
+                    b.HasOne("SVT.Platform.Data.Models.DeliveryType", "DeliveryTypeReference")
+                        .WithMany("Deliveries")
+                        .HasForeignKey("DeliveryType")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SVT.Platform.Data.Models.Area", "DestinationArea")
+                        .WithMany("Deliveries")
+                        .HasForeignKey("DestinationAreaId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.Itinerary", b =>
+                {
+                    b.HasOne("SVT.Platform.Data.Models.Delivery", "Delivery")
+                        .WithMany("Itineraries")
+                        .HasForeignKey("DeliveryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SVT.Platform.Data.Models.ItineraryStatus", "ItineraryStatusReference")
+                        .WithMany("Itineraries")
+                        .HasForeignKey("ItineraryStatus")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SVT.Platform.Data.Models.ItineraryType", "ItineraryTypeReference")
+                        .WithMany("Itineraries")
+                        .HasForeignKey("ItineraryType")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SVT.Platform.Data.Models.Location", "Location")
+                        .WithMany("Itineraries")
+                        .HasForeignKey("LocationId");
+
+                    b.HasOne("SVT.Platform.Data.Models.Itinerary", "PreviousItinerary")
+                        .WithOne("NextItinerary")
+                        .HasForeignKey("SVT.Platform.Data.Models.Itinerary", "PreviousItineraryId");
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.Location", b =>
+                {
+                    b.HasOne("SVT.Platform.Data.Models.Area", "Area")
+                        .WithMany("Locations")
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SVT.Platform.Data.Models.LocationType", "LocationTypeReference")
+                        .WithMany("Locations")
+                        .HasForeignKey("LocationType")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
