@@ -4,16 +4,31 @@ import { makeStyles } from '@material-ui/core';
 const useStyles = makeStyles({
   barcodeLine: {
     fill: 'none',
-    stroke: 'white',
+    stroke: ({ color }: { color?: string }) => color,
     strokeWidth: 2
   }
 });
 
-export default function BarcodeIcon() {
-  const classes = useStyles({});
+interface BarcodeIconProps {
+  color?: string;
+  height?: number;
+  width?: number;
+}
 
+export default function BarcodeIcon({
+  color,
+  width,
+  height
+}: BarcodeIconProps) {
+  const classes = useStyles({ color });
   return (
-    <svg width='24px' height='20px' xmlns='http://www.w3.org/2000/svg'>
+    <svg
+      width={`${width}px`}
+      height={`${height}px`}
+      preserveAspectRatio='xMidYMid meet'
+      viewBox='0 0 24 20'
+      xmlns='http://www.w3.org/2000/svg'
+    >
       <polyline className={classes.barcodeLine} points='4,0 0,0 0,20 4,20' />
       <polyline className={classes.barcodeLine} points='4,6 4,14' />
       <polyline className={classes.barcodeLine} points='8,4 8,16' />
@@ -27,3 +42,9 @@ export default function BarcodeIcon() {
     </svg>
   );
 }
+
+BarcodeIcon.defaultProps = {
+  color: 'white',
+  height: 20,
+  width: 24
+};

@@ -6,7 +6,6 @@ import {
   ScannableTextField,
   Select,
   SVT_THEME,
-  Table,
   TitleCol,
   SubmitButton
 } from 'components';
@@ -20,37 +19,22 @@ const useStyles = makeStyles(({ flex, secondary }: typeof SVT_THEME) => ({
   }
 }));
 
-const tableShape = [
-  { label: 'Floor Location', key: 'floorLocation' },
-  { label: 'MAL', key: 'mal' },
-  { label: 'Destination SuiteMAL', key: 'suiteMAL' }
-];
-
-const requestInitialValues = {
-  floorLocation: '',
-  mal: '',
-  suiteMAL: ''
-};
-
 const initialFormValues = {
   cartId: '',
   cartLocation: '',
-  floorLocation: '',
-  orderNumber: '',
-  suiteMAL: ''
+  area: '',
+  orderNumber: ''
 };
 
-const testFloorLocations = ['1011A', '1011B', '2011A']; // @hookup real data
-const getFloorLocations = () => testFloorLocations;
+const testareas = ['1011A', '1011B', '2011A']; // @hookup real data
+const getareas = () => testareas;
 
 export default function ManualRequest() {
   const classes = useStyles({});
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitDisabled, setSubmitDisabled] = useState(true);
-  const [requestPreview, setRequestPreview] = useState(requestInitialValues);
 
-  const [floorLocations] = useState(() => getFloorLocations());
-  const [suiteMALs, setSuiteMALs] = useState([] as string[]);
+  const [areas] = useState(() => getareas());
 
   // "reducer" for form value state
   const handleChange = (name: keyof typeof formValues) => (
@@ -61,10 +45,10 @@ export default function ManualRequest() {
 
   // determine if create button should be disabled
   useEffect(() => {
-    // current calculated value based on if form values all are filled in
+    // Disabled is false if all fields (except order number) are filled in
     // NOTE: If there's more complex logic in the future, it may be beneficial to switch to Yup and Formik
-    const calculatedDisabledValue = !Object.values(formValues).every(
-      value => value && value.length > 0
+    const calculatedDisabledValue = !Object.entries(formValues).every(
+      ([key, value]) => key === 'orderNumber' || value.length > 0
     );
 
     // if calculated value is different than current one, update it
@@ -73,40 +57,10 @@ export default function ManualRequest() {
     }
   }, [formValues, submitDisabled]);
 
-  const { floorLocation, suiteMAL } = formValues;
-
-  // update suiteMALs based on floor location
-  useEffect(() => {
-    // if floorLocation is reset, then reset suiteMAL and suiteMAL list as well
-    if (!floorLocation || floorLocation.length === 0) {
-      setSuiteMALs([]);
-    } else if (floorLocation[0] === '1') {
-      setSuiteMALs(['1513', '1550']); // @hookup real data
-    } else {
-      setSuiteMALs(['2513', '2550']); // @hookup real data
-    }
-
-    setFormValues(current => ({ ...current, suiteMAL: '' }));
-  }, [floorLocation]);
-
-  // update request preview
-  useEffect(() => {
-    if (!floorLocation || !suiteMAL) {
-      setRequestPreview(requestInitialValues);
-      return;
-    }
-
-    setRequestPreview({
-      floorLocation,
-      mal: 'test', // @hookup real data
-      suiteMAL
-    });
-  }, [floorLocation, suiteMAL]);
-
   return (
     <>
       <Row>
-        <TitleCol title='Manual Request' subtitle='This is a subtitle' />
+        <TitleCol title='Delivery Request' subtitle='This is a subtitle' />
       </Row>
       <Row>
         <Typography variant='h5'>Cart Information</Typography>
@@ -127,7 +81,6 @@ export default function ManualRequest() {
         <ScannableTextField
           label='Order Number'
           handleChange={handleChange('orderNumber')}
-          required
           value={formValues.orderNumber}
         />
       </Row>
@@ -136,33 +89,20 @@ export default function ManualRequest() {
       </Row>
       <Row className={classes.flexFormContainer}>
         <Select
-          items={floorLocations}
-          label='Floor Location'
-          handleChange={handleChange('floorLocation')}
+          items={areas}
+          label='Area'
+          handleChange={handleChange('area')}
           required
-          value={formValues.floorLocation}
+          value={formValues.area}
         />
-        {formValues.floorLocation && (
-          <Select
-            items={suiteMALs}
-            label='SuiteMAL'
-            handleChange={handleChange('suiteMAL')}
-            required
-            value={formValues.suiteMAL}
-          />
-        )}
+        <span>{/* Placeholder */}</span>
         <span>{/* Placeholder */}</span>
       </Row>
-      {formValues.floorLocation && formValues.suiteMAL && (
-        <Row>
-          <Table data={requestPreview} shape={tableShape} />
-        </Row>
-      )}
       <Row>
         <SubmitButton
           disabled={submitDisabled}
           onClick={() => setFormValues(initialFormValues)}
-          text='Create Manual Request'
+          text='Create Delivery Request'
           variant='secondary'
         />
       </Row>

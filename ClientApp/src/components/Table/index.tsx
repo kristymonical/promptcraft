@@ -5,6 +5,7 @@ import { SVT_THEME } from 'components';
 
 interface TableProps {
   data: any[] | any;
+  maxWidth?: string;
   shape: { label: string; key: string }[];
 }
 
@@ -12,7 +13,9 @@ const useStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
   tableRoot: {
     // CSS hack to do rounded borders that look collapsed
     borderCollapse: 'initial',
-    borderSpacing: 0
+    borderSpacing: 0,
+    marginTop: '1rem', // @styles add props to easily define margins
+    maxWidth: ({ maxWidth }: Partial<TableProps>) => maxWidth || 'initial'
   },
   tableHeaderItem: {
     background: primary.background,
@@ -28,9 +31,8 @@ const useStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
   }
 }));
 
-export default function Table(props: TableProps) {
-  const { data, shape } = props;
-  const classes = useStyles({});
+export default function Table({ data, shape, maxWidth }: TableProps) {
+  const classes = useStyles({ maxWidth });
 
   return (
     <RbsTable className={classes.tableRoot}>
