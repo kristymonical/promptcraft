@@ -9,12 +9,9 @@ import { TitleCol, ScannableTextField, SubmitButton, Table } from 'components';
 const cartsTableShape = [
   { label: 'Order ID', key: 'orderId' },
   { label: 'Cart ID', key: 'cartId' },
-  { label: 'Staging Location ID', key: 'locationId' }
-];
-
-const stagingRequestShape = [
-  { label: 'Floor Location', key: 'floorLocation' },
-  { label: 'Destination SuiteMAL', key: 'suiteMAL' }
+  { label: 'Staging Location ID', key: 'locationId' },
+  { label: 'Delivery Request Type', key: 'requestType' },
+  { label: 'Destination Area', key: 'destinationArea' }
 ];
 
 interface CartTableDataItem {
@@ -24,9 +21,27 @@ interface CartTableDataItem {
 }
 
 const getCartsTableTestData = async () => [
-  { orderId: '1A', cartId: '1300', locationId: '9AB' },
-  { orderId: '101', cartId: '1309', locationId: '9AC' },
-  { orderId: '101', cartId: '1310', locationId: '8AB' }
+  {
+    orderId: '1A',
+    cartId: '1300',
+    locationId: '9AB',
+    requestType: '1',
+    destinationArea: '1010A'
+  },
+  {
+    orderId: '101',
+    cartId: '1309',
+    locationId: '9AC',
+    requestType: '1',
+    destinationArea: '1012B'
+  },
+  {
+    orderId: '101',
+    cartId: '1310',
+    locationId: '8AB',
+    requestType: '2',
+    destinationArea: '1012C'
+  }
 ];
 
 export default function StagingManagement() {
@@ -49,7 +64,15 @@ export default function StagingManagement() {
         <TitleCol title='Staging Management' />
       </Row>
       <Row>
-        <Table shape={cartsTableShape} data={cartsTableData} maxWidth='75%' />
+        <Table
+          shape={cartsTableShape}
+          data={cartsTableData}
+          filters={
+            cartsTableData && cartsTableData[0]
+              ? Object.keys(cartsTableData[0])
+              : []
+          }
+        />
       </Row>
       <Row>
         <ScannableTextField
@@ -57,13 +80,6 @@ export default function StagingManagement() {
           label='Final Destination'
           value={finalDestination}
           required
-        />
-      </Row>
-      <Row>
-        <Table
-          shape={stagingRequestShape}
-          data={{ floorLocation: '1011A', suiteMAL: '1513' }}
-          maxWidth='50%'
         />
       </Row>
       <Row>

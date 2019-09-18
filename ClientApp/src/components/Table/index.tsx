@@ -3,8 +3,11 @@ import { Table as RbsTable } from 'react-bootstrap';
 import { makeStyles } from '@material-ui/core';
 import { SVT_THEME } from 'components';
 
-interface TableProps {
+import FilterPopover from './FilterPopover';
+
+export interface TableProps {
   data: any[] | any;
+  filters?: string[];
   maxWidth?: string;
   shape: { label: string; key: string }[];
 }
@@ -31,7 +34,7 @@ const useStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
   }
 }));
 
-export default function Table({ data, shape, maxWidth }: TableProps) {
+export default function Table({ data, filters, shape, maxWidth }: TableProps) {
   const classes = useStyles({ maxWidth });
 
   return (
@@ -41,6 +44,17 @@ export default function Table({ data, shape, maxWidth }: TableProps) {
           {shape.map(({ label, key }, idx) => (
             <th className={classes.tableHeaderItem} key={`${key}-${idx}`}>
               {label}
+              {filters && filters.includes(key) && (
+                <FilterPopover
+                  filters={[
+                    { checked: false, value: '1' },
+                    { checked: false, value: '2' },
+                    { checked: false, value: '3' },
+                    { checked: false, value: '4' }
+                  ]}
+                  onToggleFilter={() => {}}
+                />
+              )}
             </th>
           ))}
         </tr>
