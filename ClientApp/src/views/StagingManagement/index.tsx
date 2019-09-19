@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-// import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { Row } from 'react-bootstrap';
 
 import { TitleCol, ScannableTextField, SubmitButton, Table } from 'components';
 
-// const createStyles = makeStyles({});
+const createStyles = makeStyles({});
 
 const cartsTableShape = [
-  { label: 'Order ID', key: 'orderId' },
+  { label: 'Order ID', key: 'orderId', filter: true },
   { label: 'Cart ID', key: 'cartId' },
   { label: 'Staging Location ID', key: 'locationId' },
-  { label: 'Delivery Request Type', key: 'requestType' },
+  { label: 'Delivery Request Type', key: 'requestType', filter: true },
   { label: 'Destination Area', key: 'destinationArea' }
 ];
 
-interface CartTableDataItem {
+interface StagingTableDataItem {
   orderId: string;
   cartId: string;
   locationId: string;
 }
 
-const getCartsTableTestData = async () => [
+const getStagingTableTestData = async () => [
   {
     orderId: '1A',
     cartId: '1300',
@@ -45,16 +45,16 @@ const getCartsTableTestData = async () => [
 ];
 
 export default function StagingManagement() {
-  //   const classes = createStyles({});
+  const classes = createStyles({});
   const [finalDestination, setFinalDestination] = useState('');
-  const [cartsTableData, setCartsTableData] = useState(
-    [] as CartTableDataItem[]
-  );
+  const [stagingTableData, setStagingTableData] = useState<
+    StagingTableDataItem[]
+  >([]);
 
   // get data on mount
   useEffect(() => {
-    getCartsTableTestData() // @hookup real data
-      .then(cartsData => setCartsTableData(cartsData))
+    getStagingTableTestData() // @hookup real data
+      .then(cartsData => setStagingTableData(cartsData))
       .catch(err => console.error(err));
   }, []);
 
@@ -64,15 +64,7 @@ export default function StagingManagement() {
         <TitleCol title='Staging Management' />
       </Row>
       <Row>
-        <Table
-          shape={cartsTableShape}
-          data={cartsTableData}
-          filters={
-            cartsTableData && cartsTableData[0]
-              ? Object.keys(cartsTableData[0])
-              : []
-          }
-        />
+        <Table shape={cartsTableShape} data={stagingTableData} />
       </Row>
       <Row>
         <ScannableTextField

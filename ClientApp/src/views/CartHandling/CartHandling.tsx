@@ -21,12 +21,14 @@ const createStyles = makeStyles({
   }
 });
 
-const initialTableData = {
-  activeTransport: true,
-  deliveryId: '',
-  destination: '',
-  orderId: ''
-};
+const initialTableData = [
+  {
+    activeTransport: true,
+    deliveryId: '',
+    destination: '',
+    orderId: ''
+  }
+];
 
 export default function CartHandling() {
   const classes = createStyles({});

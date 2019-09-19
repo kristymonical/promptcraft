@@ -6,13 +6,19 @@ import {
   Checkbox
 } from '@material-ui/core';
 import { ArrowDropDown } from '@material-ui/icons';
+import { Container } from 'react-bootstrap';
 
 interface FilterPopoverProps {
   filters: { value: string; checked: boolean }[];
   onToggleFilter: (filter: string) => void;
 }
 
-const createStyles = makeStyles({});
+const createStyles = makeStyles({
+  popoverContainer: {
+    display: 'flex',
+    flexDirection: 'column'
+  }
+});
 
 export default function FilterPopover({
   filters,
@@ -39,18 +45,20 @@ export default function FilterPopover({
         onClose={() => setOpen(false)}
         open={open}
       >
-        {filters.map(({ value, checked }, idx) => (
-          <FormControlLabel
-            key={`filter-${idx}`}
-            label={value}
-            control={
-              <Checkbox
-                value={checked}
-                onChange={() => onToggleFilter(value)}
-              />
-            }
-          />
-        ))}
+        <Container className={classes.popoverContainer}>
+          {filters.map(({ value, checked }, idx) => (
+            <FormControlLabel
+              key={`filter-${idx}`}
+              label={value}
+              control={
+                <Checkbox
+                  value={checked}
+                  onChange={() => onToggleFilter(value)}
+                />
+              }
+            />
+          ))}
+        </Container>
       </Popover>
     </>
   );

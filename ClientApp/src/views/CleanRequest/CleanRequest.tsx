@@ -35,11 +35,13 @@ const createStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
   }
 }));
 
-const initialTableData = {
-  deliveryId: '',
-  destination: '',
-  orderId: ''
-};
+const initialTableData = [
+  {
+    deliveryId: '',
+    destination: '',
+    orderId: ''
+  }
+];
 
 export default function CleanRequest() {
   const classes = createStyles({});
@@ -50,15 +52,17 @@ export default function CleanRequest() {
 
   useEffect(() => {
     // @hookup real data
-    setTableData({
-      deliveryId: `#${Math.random()
-        .toString()
-        .slice(-10)}`,
-      destination: '1513',
-      orderId: `#${Math.random()
-        .toString()
-        .slice(-10)}`
-    });
+    setTableData([
+      {
+        deliveryId: `#${Math.random()
+          .toString()
+          .slice(-10)}`,
+        destination: '1513',
+        orderId: `#${Math.random()
+          .toString()
+          .slice(-10)}`
+      }
+    ]);
   }, [cartId]);
 
   return (
