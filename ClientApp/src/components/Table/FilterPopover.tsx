@@ -9,7 +9,9 @@ import { ArrowDropDown } from '@material-ui/icons';
 import { Container } from 'react-bootstrap';
 
 interface FilterPopoverProps {
-  filters: { value: string; checked: boolean }[];
+  filters: {
+    [value: string]: boolean;
+  };
   onToggleFilter: (filter: string) => void;
 }
 
@@ -28,7 +30,6 @@ export default function FilterPopover({
 
   const [open, setOpen] = useState(false);
   const arrowRef = useRef(null);
-
   return (
     <>
       <ArrowDropDown onClick={() => setOpen(open => !open)} ref={arrowRef} />
@@ -46,13 +47,13 @@ export default function FilterPopover({
         open={open}
       >
         <Container className={classes.popoverContainer}>
-          {filters.map(({ value, checked }, idx) => (
+          {Object.keys(filters).map((value: string, idx) => (
             <FormControlLabel
               key={`filter-${idx}`}
               label={value}
               control={
                 <Checkbox
-                  value={checked}
+                  checked={filters[value]}
                   onChange={() => onToggleFilter(value)}
                 />
               }

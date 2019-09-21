@@ -12,18 +12,36 @@ interface ColumnShape {
   label: string;
 }
 
-interface Filter {
-  key: string;
-  values: {
-    value: string;
-    checked: boolean;
-  }[];
+interface Filters {
+  [key: string]: {
+    [value: string]: boolean;
+  };
 }
 
 export interface TableProps {
   data: any[];
   maxWidth?: string;
   shape: ColumnShape[];
+}
+
+function getActiveFilters(filters: Filters) {
+  const activeFilters: Filters = {};
+
+  Object.keys(filters).forEach(column =>
+    Object.keys(filters[column]).forEach(value => {
+      // filter not toggled, skip it
+      if (!filters[column][value]) return;
+
+      // filter is toggled, add it to active
+      if (!activeFilters[column]) {
+        activeFilters[column] = { [value]: true };
+      } else {
+        activeFilters[column][value] = true;
+      }
+    })
+  );
+
+  return activeFilters;
 }
 
 const useStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
@@ -55,25 +73,67 @@ const useStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
 export default function Table({ data, shape, maxWidth }: TableProps) {
   const classes = useStyles({ maxWidth });
 
-  const [filters, setFilters] = useState<Filter[]>([]);
+  const [filters, setFilters] = useState<Filters>({}); // filters for display purposes
+  const [filteredData, setFilteredData] = useState<typeof data>(data); // filtered data
 
   // update/reset filters when data or shape changes
   useEffect(() => {
+    // no data means no filters
     if (data.length === 0) {
-      setFilters([]);
+      setFilters({});
     } else {
-      const newFilters = shape
-        .filter(col => col.filter)
-        .map(col => col.key)
-        .map(key => ({
-          key,
-          values: _.uniq(data.map(datum => `${datum[key]}`)) // get unique values coersed into strings to make types play nice
-            .map(value => ({ value, checked: false })) // map into filter format
-        }));
+      const newFilters: Filters = {};
+      shape
+        .filter(col => col.filter) // filter out non-filtered columns
+        .map(col => col.key) // map filtered columns to array of strings of column keys
+        .forEach(filterableColumnKey => {
+          _.uniq(data.map(datum => `${datum[filterableColumnKey]}`)).forEach(
+            uniqueDataValue => {
+              if (!newFilters[filterableColumnKey]) {
+                newFilters[filterableColumnKey] = {};
+              }
+              newFilters[filterableColumnKey][uniqueDataValue] = false;
+            }
+          );
+        });
 
       setFilters(newFilters);
     }
   }, [data, shape]);
+
+  // filter the data when it or the selected filters change
+  useEffect(() => {
+    // if any filter is toggled to true, we have active filters
+    const hasFilters = Object.keys(filters).some(column =>
+      Object.keys(filters[column]).some(
+        filterValue => filters[column][filterValue]
+      )
+    );
+
+    // if no filters are active, our filtered data is just our original data set
+    if (!hasFilters) {
+      setFilteredData(data);
+    } else {
+      // otherwise grab the active filters
+      const activeFilters = getActiveFilters(filters);
+
+      // filter data based on active filters
+      const filteredData = data.filter(datum =>
+        Object.keys(activeFilters).every(column =>
+          Object.keys(activeFilters[column]).includes(datum[column])
+        )
+      );
+
+      setFilteredData(filteredData);
+    }
+  }, [data, filters]);
+
+  const onToggleFilter = (key: string) => (filterValue: string) =>
+    setFilters(curFilters => {
+      const newFilters = { ...curFilters };
+      newFilters[key][filterValue] = !newFilters[key][filterValue];
+      return newFilters;
+    });
 
   return (
     <RbsTable className={classes.tableRoot}>
@@ -83,19 +143,17 @@ export default function Table({ data, shape, maxWidth }: TableProps) {
             <th className={classes.tableHeaderItem} key={`${key}-${idx}`}>
               {(() => {
                 const LabelContent = () => <Typography>{label}</Typography>;
+
+                // if optional filter property is falsey only show the label
                 if (!filter) return <LabelContent />;
 
-                const colFilter = filters.find(
-                  (filter: Filter) => filter.key === key
-                );
-                if (!colFilter) return <LabelContent />;
-
+                // filters exist for this column, show them
                 return (
                   <div className={classes.tableHeaderItemFlex}>
                     <LabelContent />
                     <FilterPopover
-                      filters={colFilter.values}
-                      onToggleFilter={() => {}}
+                      filters={filters[key] || {}}
+                      onToggleFilter={onToggleFilter(key)}
                     />
                   </div>
                 );
@@ -105,7 +163,7 @@ export default function Table({ data, shape, maxWidth }: TableProps) {
         </tr>
       </thead>
       <tbody>
-        {data.map((datum, rowIdx) => (
+        {filteredData.map((datum, rowIdx) => (
           <tr key={`${rowIdx}`}>
             {shape.map(({ key }, idx) => (
               <td
