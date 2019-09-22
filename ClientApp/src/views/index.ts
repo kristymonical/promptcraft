@@ -1,5 +1,5 @@
-import CartHandling from './CartHandling/CartHandling';
-import CleanRequest from './CleanRequest/CleanRequest';
+import CartHandling from './CartHandling';
+import CleanRequest from './CleanRequest';
 import DeliveryRequest from './DeliveryRequest';
 import Menu from './Menu';
 import StagingManagement from './StagingManagement';
