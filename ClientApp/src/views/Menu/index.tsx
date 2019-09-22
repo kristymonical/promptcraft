@@ -26,7 +26,7 @@ export default function Menu() {
   return (
     <>
       <Row>
-        <TitleCol title='Title' subtitle='Subtitle' />
+        <TitleCol title='Title' />
       </Row>
       <Row>
         <Col className={classes.buttonGroup}>

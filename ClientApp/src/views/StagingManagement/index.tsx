@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { Row } from 'react-bootstrap';
 
 import { TitleCol, ScannableTextField, SubmitButton, Table } from 'components';
-
-const createStyles = makeStyles({});
 
 const cartsTableShape = [
   { label: 'Order ID', key: 'orderId', filter: true },
@@ -45,7 +43,6 @@ const getStagingTableTestData = async () => [
 ];
 
 export default function StagingManagement() {
-  const classes = createStyles({});
   const [finalDestination, setFinalDestination] = useState('');
   const [stagingTableData, setStagingTableData] = useState<
     StagingTableDataItem[]
@@ -55,16 +52,37 @@ export default function StagingManagement() {
   useEffect(() => {
     getStagingTableTestData() // @hookup real data
       .then(cartsData => setStagingTableData(cartsData))
-      .catch(err => console.error(err));
+      .catch(err => console.error(err)); // @error handling
   }, []);
 
   return (
     <>
       <Row>
-        <TitleCol title='Staging Management' />
+        <TitleCol title='Staging Management'>
+          <Typography>
+            Use this screen to add or modify the Destination Area for staged
+            carts and create new Delivery Requests for loaded and unloaded
+            carts.
+          </Typography>
+          <Typography>
+            <b>Suite MAL delivery requests:</b> Filter list of staged carts by
+            Delivery Request Type and/or Order ID and select new Suite MAL
+            destination to create new Delivery Request.
+          </Typography>
+          <Typography>
+            <b>Return Cart Delivery Requests:</b> Filter list of staged carts by
+            Delivery Request Type and select staged Delivery Requests to modify
+            and select FPA or CARWASH destination to create new Delivery Request
+            for a cart return.
+          </Typography>
+        </TitleCol>
       </Row>
       <Row>
-        <Table shape={cartsTableShape} data={stagingTableData} />
+        <Table
+          shape={cartsTableShape}
+          data={stagingTableData}
+          onSelectRow={selectedRows => console.table(selectedRows)}
+        />
       </Row>
       <Row>
         <ScannableTextField

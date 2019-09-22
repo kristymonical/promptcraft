@@ -7,21 +7,24 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     margin: '0 auto',
-    textAlign: 'center'
+    textAlign: 'center',
+    '& > *': {
+      marginBottom: 10
+    }
   }
 });
 
 interface TitleColProps {
+  children?: React.ReactNode;
   title: string;
-  subtitle?: string;
 }
 
-export default function TitleCol({ title, subtitle }: TitleColProps) {
+export default function TitleCol({ children, title }: TitleColProps) {
   const classes = useStyles({});
   return (
     <Col className={classes.titleRoot}>
       <Typography variant='h3'>{title}</Typography>
-      {subtitle && <Typography variant='subtitle1'>{subtitle}</Typography>}
+      {children}
     </Col>
   );
 }

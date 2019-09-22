@@ -60,7 +60,7 @@ export default function ManualRequest() {
   return (
     <>
       <Row>
-        <TitleCol title='Delivery Request' subtitle='This is a subtitle' />
+        <TitleCol title='Delivery Request' />
       </Row>
       <Row>
         <Typography variant='h5'>Cart Information</Typography>

@@ -18,9 +18,10 @@ interface Filters {
   };
 }
 
-export interface TableProps {
-  data: any[];
+export interface TableProps<TData = any> {
+  data: TData[];
   maxWidth?: string;
+  onSelectRow?: (selectedRows: TData[]) => void;
   shape: ColumnShape[];
 }
 
@@ -50,7 +51,11 @@ const useStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
     borderCollapse: 'initial',
     borderSpacing: 0,
     marginTop: '1rem', // @styles add props to easily define margins
-    maxWidth: ({ maxWidth }: Partial<TableProps>) => maxWidth || 'initial'
+    maxWidth: ({ maxWidth }: Partial<TableProps>) => maxWidth || 'initial',
+    '& tbody tr': {
+      cursor: ({ onSelectRow }: Partial<TableProps>) =>
+        typeof onSelectRow === 'function' ? 'pointer' : 'inherit'
+    }
   },
   tableHeaderItem: {
     background: primary.background,
@@ -67,14 +72,25 @@ const useStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
     border: '1px solid #D5D5D5 !important', // @styles figure out how to remove !important
     borderRadius: 5,
     color: 'black'
+  },
+  selectedRow: {
+    '& td': {
+      background: `${primary.background}50`
+    }
   }
 }));
 
-export default function Table({ data, shape, maxWidth }: TableProps) {
-  const classes = useStyles({ maxWidth });
+export default function Table({
+  data,
+  maxWidth,
+  onSelectRow,
+  shape
+}: TableProps) {
+  const classes = useStyles({ maxWidth, onSelectRow });
 
   const [filters, setFilters] = useState<Filters>({}); // filters for display purposes
   const [filteredData, setFilteredData] = useState<typeof data>(data); // filtered data
+  const [selectedRows, setSelectedRows] = useState<number[]>([]); // selected rows
 
   // update/reset filters when data or shape changes
   useEffect(() => {
@@ -135,6 +151,27 @@ export default function Table({ data, shape, maxWidth }: TableProps) {
       return newFilters;
     });
 
+  const onTableRowClick = (rowIdx: number) => {
+    return () => {
+      setSelectedRows(curSelectedRows => {
+        const selectedArrIdx = curSelectedRows.indexOf(rowIdx);
+        let newArr: number[] = [];
+
+        if (selectedArrIdx === -1) {
+          // if row index is not in array, add it
+          newArr = [...curSelectedRows, rowIdx];
+        } else {
+          // otherwise, remove it
+          newArr = curSelectedRows.slice();
+          newArr.splice(selectedArrIdx, 1);
+        }
+        typeof onSelectRow === 'function' &&
+          onSelectRow(_.pick<number[]>(newArr, filteredData));
+        return newArr;
+      });
+    };
+  };
+
   return (
     <RbsTable className={classes.tableRoot}>
       <thead>
@@ -164,7 +201,11 @@ export default function Table({ data, shape, maxWidth }: TableProps) {
       </thead>
       <tbody>
         {filteredData.map((datum, rowIdx) => (
-          <tr key={`${rowIdx}`}>
+          <tr
+            key={`${rowIdx}`}
+            onClick={onTableRowClick(rowIdx)}
+            className={selectedRows.includes(rowIdx) ? classes.selectedRow : ''}
+          >
             {shape.map(({ key }, idx) => (
               <td
                 className={classes.tableItem}
