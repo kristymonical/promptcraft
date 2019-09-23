@@ -7,6 +7,7 @@ import { SVT_THEME } from 'components';
 
 interface ButtonProps {
   children: React.ReactNode;
+  className?: string;
   disabled?: boolean;
   fontSize?: number;
   maxHeight?: number;
@@ -28,6 +29,10 @@ const createStyles = makeStyles<typeof SVT_THEME, StyleProps>(theme => ({
       fontSize || theme.initial.fontSize * scale,
     maxHeight: ({ maxHeight, scale }) => maxHeight || 40 * scale,
     maxWidth: ({ maxWidth, scale }) => maxWidth || 110 * scale,
+    alignItems: 'center',
+    display: 'flex',
+    flexGrow: 1,
+    justifyContent: 'space-between',
     '&:hover': {
       background: ({ variant }) => fade(theme[variant].background, 0.75)
     }

@@ -25,8 +25,8 @@ ReactDOM.render(
         <Header />
         <Switch>
           <Route exact path='/' component={Menu} />
-          <Route exact path='/staging' component={StagingManagement} />
-          <Route exact path='/request' component={CartHandling} />
+          <Route exact path='/request/staging' component={StagingManagement} />
+          <Route exact path='/request/cart' component={CartHandling} />
           <Route exact path='/request/delivery' component={DeliveryRequest} />
           <Route exact path='/request/clean' component={CleanRequest} />
           <Redirect to='/' />

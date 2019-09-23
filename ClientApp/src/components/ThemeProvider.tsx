@@ -39,6 +39,13 @@ const baseTheme = createMuiTheme({
     h3: {
       fontSize: '42px'
     }
+  },
+  props: {
+    MuiTextField: {
+      style: {
+        background: 'white'
+      }
+    }
   }
 });
 

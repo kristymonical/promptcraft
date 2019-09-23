@@ -1,46 +1,43 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import { Row, Col } from 'react-bootstrap';
 
 import {
   Table,
   TitleCol,
   ScannableTextField,
-  Select,
-  SubmitButton
+  SubmitButton,
+  AutoComplete
 } from 'components';
 
-const createStyles = makeStyles({
-  cartHandlingRoot: {
-    '& > *': {
-      marginBottom: 30
-    }
-  },
-  buttonRow: {
-    justifyContent: 'space-around'
-  }
-});
+const createStyles = makeStyles({});
 
-const initialTableData = [
-  {
-    activeTransport: true,
-    deliveryId: '',
-    destination: '',
-    orderId: ''
-  }
+const tableShape = [
+  { label: 'Order ID', key: 'orderId' },
+  { label: 'Destination SuiteMAL', key: 'destination' },
+  { label: 'Current Location', key: 'currentLocation' }
 ];
 
 export default function CartHandling() {
   const classes = createStyles({});
 
-  const [tableData] = useState(initialTableData);
+  const [tableData, setTableData] = useState([]);
   const [cartId, setCartId] = useState('');
   const [floorLocation, setFloorLocation] = useState('');
 
   return (
-    <div className={classes.cartHandlingRoot}>
+    <>
       <Row>
-        <TitleCol title='Cart Handling' />
+        <TitleCol title='Cart Handling'>
+          <Typography>
+            Use this screen to confirm the new location of a cart that you have
+            manually moved.
+          </Typography>
+          <Typography>
+            Scan Cart ID and floor location you have moved the cart to and press
+            the CONFIRM MOVE command button.
+          </Typography>
+        </TitleCol>
       </Row>
       <Row>
         <Col>
@@ -52,32 +49,35 @@ export default function CartHandling() {
           />
         </Col>
         <Col>
-          <Select
-            items={['Floor 1 Section 2']}
-            label='Location'
-            handleChange={value => setFloorLocation(value)}
+          <AutoComplete
+            label='Cart Location'
+            onSelect={value => console.log(value)}
+            options={[
+              { value: 'test1' },
+              { value: 'aaaaa1' },
+              { value: 'aaaaa2' },
+              { value: 'aaaaa3' }
+            ]}
             required
-            value={floorLocation}
+            value={''}
           />
         </Col>
         <Col></Col>
       </Row>
+      {tableData.length > 0 && (
+        <Row>
+          <Table data={tableData} shape={tableShape} />
+        </Row>
+      )}
       <Row>
-        <Table
-          data={tableData}
-          shape={[
-            { label: 'Delivery Instruction ID', key: 'deliveryId' },
-            { label: 'Lonza Order ID', key: 'orderId' },
-            { label: 'Destination SuiteMAL', key: 'destination' },
-            { label: 'Active Transport', key: 'activeTransport' }
-          ]}
-        />
+        <Col>
+          <SubmitButton
+            disabled={!cartId || !floorLocation}
+            text='Confirm Move'
+            variant='secondary'
+          />
+        </Col>
       </Row>
-      <Row className={classes.buttonRow}>
-        <SubmitButton text='Manually Move Cart' variant='secondary' />
-        <SubmitButton text='Cancel Transport' variant='secondary' />
-        <SubmitButton text='Return Cart' variant='secondary' />
-      </Row>
-    </div>
+    </>
   );
 }
