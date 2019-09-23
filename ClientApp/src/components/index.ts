@@ -1,4 +1,5 @@
 import BarcodeScanner from './BarcodeScanner';
+import Button from './Button';
 import Circle from './Circle';
 import Footer from './Footer';
 import Header from './Header';
@@ -11,6 +12,7 @@ import TitleCol from './TitleCol';
 
 export {
   BarcodeScanner,
+  Button,
   Circle,
   Footer,
   Header,

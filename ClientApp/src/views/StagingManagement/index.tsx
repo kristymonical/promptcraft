@@ -82,6 +82,7 @@ export default function StagingManagement() {
           shape={cartsTableShape}
           data={stagingTableData}
           onSelectRow={selectedRows => console.table(selectedRows)}
+          selectable
         />
       </Row>
       <Row>

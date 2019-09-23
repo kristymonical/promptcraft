@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-  TextField,
-  makeStyles,
-  Typography,
-  Button,
-  Modal
-} from '@material-ui/core';
+import { TextField, makeStyles, Typography, Modal } from '@material-ui/core';
 import { fade } from '@material-ui/core/styles';
 
-import { SVT_THEME, BarcodeScanner } from 'components';
+import { SVT_THEME, BarcodeScanner, Button } from 'components';
 import { BarcodeIcon } from 'icons';
 import { Row } from 'react-bootstrap';
 
@@ -101,11 +95,7 @@ export default function ScannableTextField(props: ScannableTextFieldProps) {
           }}
           variant='outlined'
         />
-        <Button
-          variant='contained'
-          className={classes.button}
-          onClick={() => setScanModalOpen(true)}
-        >
+        <Button onClick={() => setScanModalOpen(true)}>
           <div className={classes.buttonInternalFlexContainer}>
             <Typography>Scan</Typography>
             <BarcodeIcon />

@@ -22,6 +22,7 @@ export interface TableProps<TData = any> {
   data: TData[];
   maxWidth?: string;
   onSelectRow?: (selectedRows: TData[]) => void;
+  selectable?: boolean;
   shape: ColumnShape[];
 }
 
@@ -53,8 +54,8 @@ const useStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
     marginTop: '1rem', // @styles add props to easily define margins
     maxWidth: ({ maxWidth }: Partial<TableProps>) => maxWidth || 'initial',
     '& tbody tr': {
-      cursor: ({ onSelectRow }: Partial<TableProps>) =>
-        typeof onSelectRow === 'function' ? 'pointer' : 'inherit'
+      cursor: ({ selectable }: Partial<TableProps>) =>
+        selectable ? 'pointer' : 'inherit'
     }
   },
   tableHeaderItem: {
@@ -84,9 +85,10 @@ export default function Table({
   data,
   maxWidth,
   onSelectRow,
+  selectable,
   shape
 }: TableProps) {
-  const classes = useStyles({ maxWidth, onSelectRow });
+  const classes = useStyles({ maxWidth, selectable });
 
   const [filters, setFilters] = useState<Filters>({}); // filters for display purposes
   const [filteredData, setFilteredData] = useState<typeof data>(data); // filtered data
@@ -152,6 +154,8 @@ export default function Table({
     });
 
   const onTableRowClick = (rowIdx: number) => {
+    if (!selectable) return () => {};
+
     return () => {
       setSelectedRows(curSelectedRows => {
         const selectedArrIdx = curSelectedRows.indexOf(rowIdx);

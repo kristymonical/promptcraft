@@ -3,6 +3,7 @@ import { makeStyles, Typography } from '@material-ui/core';
 
 interface TimerProps {
   minutes: number;
+  onTimerEnd?: () => void;
 }
 
 const createStyles = makeStyles({
@@ -33,19 +34,20 @@ const createStyles = makeStyles({
   }
 });
 
-export default function Timer({ minutes }: TimerProps) {
+export default function Timer({ minutes, onTimerEnd }: TimerProps) {
   const classes = createStyles({});
   const [timeRemaining, setTimeRemaining] = useState(minutes * 60); // number of seconds left
   const [, setIntervalId] = useState();
 
   useEffect(() => {
     if (timeRemaining === 0) {
+      if (typeof onTimerEnd !== 'undefined') onTimerEnd();
       setIntervalId((id: NodeJS.Timeout) => {
         clearInterval(id);
-        return id;
+        return undefined;
       });
     }
-  }, [timeRemaining]);
+  }, [onTimerEnd, timeRemaining]);
 
   useEffect(() => {
     const iv = setInterval(() => setTimeRemaining(time => time - 1), 1000);

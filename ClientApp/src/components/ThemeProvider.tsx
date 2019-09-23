@@ -4,7 +4,11 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
 
 export const SVT_THEME = {
+  initial: {
+    fontSize: 14
+  },
   flex: {
+    horizontalSpacing: 25,
     verticalSpacing: 10
   },
   primary: {
