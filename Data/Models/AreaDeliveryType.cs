@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SVT.Platform.Data.Models
 {
     [Table("AreaDeliveryTypes")]
-    public class AreaDeliveryType : BaseModel
+    public class AreaDeliveryType
     {
         [Required]
         public int AreaId { get; set; }

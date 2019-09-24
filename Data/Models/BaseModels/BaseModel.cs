@@ -4,7 +4,6 @@ namespace SVT.Platform.Data.Models
 {
     public abstract class BaseModel<T>
     {
-        [Key]
         [Required]
         public T Id { get; set; }
     }

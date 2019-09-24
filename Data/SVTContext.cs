@@ -8,7 +8,6 @@ namespace SVT.Platform.Data
         public DbSet<Area> Areas { get; set; }
         public DbSet<AreaType> AreaTypes { get; set; }
         public DbSet<Delivery> Deliveries { get; set; }
-        public DbSet<DeliveryStatus> DeliveryStatuses { get; set; }
         public DbSet<DeliveryType> DeliveryTypes { get; set; }
         public DbSet<DevLog> DevLogs { get; set; }
         public DbSet<Itinerary> Itineraries { get; set; }
@@ -31,12 +30,29 @@ namespace SVT.Platform.Data
                     .HasOne(areaMap => areaMap.DestinationArea)
                     .WithMany(area => area.SourceAreas)
                     .HasForeignKey(areaMap => areaMap.DestinationAreaId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                    .OnDelete(DeleteBehavior.Restrict); // @database fix this stupid thing
                 areaMapBuilder
                     .HasOne(areaMap => areaMap.SourceArea)
                     .WithMany(area => area.DestinationAreas)
                     .HasForeignKey(areaMap => areaMap.SourceAreaId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                    .OnDelete(DeleteBehavior.Restrict); // @database fix this stupid thing
+            });
+
+            // AreaDeliveryTypes many-to-many
+            modelBuilder.Entity<AreaDeliveryType>(areaDeliveryTypeBuilder =>
+            {
+                areaDeliveryTypeBuilder
+                    .HasKey(areaDeliveryType => new { areaDeliveryType.AreaId, areaDeliveryType.DeliveryType });
+                areaDeliveryTypeBuilder
+                    .HasOne(areaDeliveryType => areaDeliveryType.Area)
+                    .WithMany(area => area.AreaDeliveryTypes)
+                    .HasForeignKey(areaDeliveryType => areaDeliveryType.AreaId)
+                    .OnDelete(DeleteBehavior.Restrict); // @database fix this stupid thing
+                areaDeliveryTypeBuilder
+                    .HasOne(areaDeliveryType => areaDeliveryType.DeliveryTypeReference)
+                    .WithMany(deliveryType => deliveryType.AreaDeliveryTypes)
+                    .HasForeignKey(areaDeliveryType => areaDeliveryType.DeliveryType)
+                    .OnDelete(DeleteBehavior.Restrict); // @database fix this stupid thing
             });
 
             // Area FKs
@@ -75,11 +91,12 @@ namespace SVT.Platform.Data
                 itineraryBuilder
                     .HasOne(itinerary => itinerary.Location)
                     .WithMany(location => location.Itineraries)
-                    .HasForeignKey(itinerary => itinerary.LocationId);
+                    .HasForeignKey(itinerary => itinerary.LocationId)
+                    .OnDelete(DeleteBehavior.Restrict); // @database fix this stupid thing
                 itineraryBuilder
                     .HasOne(itinerary => itinerary.Job)
                     .WithMany(job => job.Itineraries)
-                    .HasForeignKey(itinerary => itinerary.LocationId);
+                    .HasForeignKey(itinerary => itinerary.JobId);
             });
 
             // Location FKs
@@ -112,7 +129,7 @@ namespace SVT.Platform.Data
             // Computed Fields
             modelBuilder.Entity<UserLog>()
                 .Property(log => log.vUserId)
-                .HasComputedColumnSql("CONVERT([nvarchar](256),json_value([Serialized],N'$.UserId')");
+                .HasComputedColumnSql("CONVERT([nvarchar](256),json_value([Serialized],N'$.UserId'))");
 
             modelBuilder.Entity<AreaHierarchy>()
                 .Property(hierarchy => hierarchy.NodeLevel)
