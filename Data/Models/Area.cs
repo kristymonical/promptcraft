@@ -3,16 +3,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SVT.Platform.Data.Models
 {
-    public class Area : BaseModel<int>
+    public class Area : BaseModel
     {
         [StringLength(50)]
         [Required]
         public string Name { get; set; }
+
+        [Required]
         public int PoolId { get; set; }
+
         [StringLength(50)]
         [Required]
         public string AreaType { get; set; }
 
+        // NAVIGATION MEMBERS
         public AreaType AreaTypeReference { get; set; }
         public Pool Pool { get; set; }
         public ICollection<AreaMap> SourceAreas { get; set; }

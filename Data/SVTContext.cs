@@ -10,12 +10,13 @@ namespace SVT.Platform.Data
         public DbSet<Delivery> Deliveries { get; set; }
         public DbSet<DeliveryStatus> DeliveryStatuses { get; set; }
         public DbSet<DeliveryType> DeliveryTypes { get; set; }
+        public DbSet<DevLog> DevLogs { get; set; }
         public DbSet<Itinerary> Itineraries { get; set; }
-        public DbSet<ItineraryStatus> ItineraryStatuses { get; set; }
-        public DbSet<ItineraryType> ItineraryTypes { get; set; }
+        public DbSet<Job> Jobs { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<LocationType> LocationTypes { get; set; }
         public DbSet<Pool> Pools { get; set; }
+        public DbSet<UserLog> UserLogs { get; set; }
 
         public SVTContext(DbContextOptions options) : base(options) { }
 
@@ -38,21 +39,6 @@ namespace SVT.Platform.Data
                     .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
-            // Area / DeliveryType many-to-many
-            modelBuilder.Entity<AreaDeliveryType>(areaDeliveryTypeBuilder =>
-            {
-                areaDeliveryTypeBuilder
-                    .HasKey(areaDeliveryType => new { areaDeliveryType.AreaId, areaDeliveryType.DeliveryType });
-                areaDeliveryTypeBuilder
-                    .HasOne(areaDeliveryType => areaDeliveryType.DeliveryTypeReference)
-                    .WithMany(deliveryType => deliveryType.AreaDeliveryTypes)
-                    .HasForeignKey(areaDeliveryType => areaDeliveryType.DeliveryType);
-                areaDeliveryTypeBuilder
-                    .HasOne(areaDeliveryType => areaDeliveryType.Area)
-                    .WithMany(area => area.AreaDeliveryTypes)
-                    .HasForeignKey(areaDeliveryType => areaDeliveryType.AreaId);
-            });
-
             // Area FKs
             modelBuilder.Entity<Area>(areaBuilder =>
             {
@@ -70,10 +56,6 @@ namespace SVT.Platform.Data
             modelBuilder.Entity<Delivery>(deliveryBuilder =>
             {
                 deliveryBuilder
-                    .HasOne(delivery => delivery.DeliveryStatusReference)
-                    .WithMany(deliveryStatus => deliveryStatus.Deliveries)
-                    .HasForeignKey(delivery => delivery.DeliveryStatus);
-                deliveryBuilder
                     .HasOne(delivery => delivery.DeliveryTypeReference)
                     .WithMany(deliveryType => deliveryType.Deliveries)
                     .HasForeignKey(delivery => delivery.DeliveryType);
@@ -87,27 +69,13 @@ namespace SVT.Platform.Data
             modelBuilder.Entity<Itinerary>(itineraryBuilder =>
             {
                 itineraryBuilder
-                    .HasOne(itinerary => itinerary.Delivery)
-                    .WithMany(delivery => delivery.Itineraries)
-                    .HasForeignKey(itinerary => itinerary.DeliveryId);
-                itineraryBuilder
-                    .HasOne(itinerary => itinerary.ItineraryStatusReference)
-                    .WithMany(itineraryStatus => itineraryStatus.Itineraries)
-                    .HasForeignKey(itinerary => itinerary.ItineraryStatus);
-                itineraryBuilder
-                    .HasOne(itinerary => itinerary.ItineraryTypeReference)
-                    .WithMany(itineraryType => itineraryType.Itineraries)
-                    .HasForeignKey(itinerary => itinerary.ItineraryType);
-                itineraryBuilder
                     .HasOne(itinerary => itinerary.Location)
                     .WithMany(location => location.Itineraries)
-                    .HasForeignKey(itinerary => itinerary.LocationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                    .HasForeignKey(itinerary => itinerary.LocationId);
                 itineraryBuilder
-                    .HasOne(itinerary => itinerary.PreviousItinerary)
-                    .WithOne(previousItinerary => previousItinerary.NextItinerary)
-                    .HasForeignKey<Itinerary>(itinerary => itinerary.PreviousItineraryId)
-                    .IsRequired(false);
+                    .HasOne(itinerary => itinerary.Job)
+                    .WithMany(job => job.Itineraries)
+                    .HasForeignKey(itinerary => itinerary.LocationId);
             });
 
             // Location FKs
@@ -121,6 +89,20 @@ namespace SVT.Platform.Data
                     .HasOne(location => location.Area)
                     .WithMany(area => area.Locations)
                     .HasForeignKey(location => location.AreaId);
+                locationBuilder
+                    .HasOne(location => location.Delivery)
+                    .WithMany(delivery => delivery.Locations)
+                    .HasForeignKey(location => location.DeliveryId)
+                    .IsRequired(false);
+            });
+
+            // Job FKs
+            modelBuilder.Entity<Job>(jobBuilder =>
+            {
+                jobBuilder
+                    .HasOne(job => job.Delivery)
+                    .WithMany(delivery => delivery.Jobs)
+                    .HasForeignKey(job => job.DeliveryId);
             });
         }
     }

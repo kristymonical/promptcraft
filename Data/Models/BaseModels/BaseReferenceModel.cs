@@ -7,6 +7,7 @@ namespace SVT.Platform.Data.Models
         [Key]
         [StringLength(50)]
         public T Value { get; set; }
+
         [StringLength(255)]
         public string Description { get; set; }
     }
