@@ -24,5 +24,6 @@ namespace SVT.Platform.Data.Models
         public ICollection<AreaDeliveryType> AreaDeliveryTypes { get; set; }
         public ICollection<Delivery> Deliveries { get; set; }
         public ICollection<Location> Locations { get; set; }
+        public AreaHierarchy AreaHierarchyReference { get; set; }
     }
 }

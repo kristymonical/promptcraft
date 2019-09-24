@@ -50,6 +50,10 @@ namespace SVT.Platform.Data
                     .HasOne(area => area.Pool)
                     .WithMany(pool => pool.Areas)
                     .HasForeignKey(area => area.PoolId);
+                areaBuilder.
+                    HasOne(area => area.AreaHierarchyReference)
+                    .WithOne(hierarchy => hierarchy.Area)
+                    .HasForeignKey<AreaHierarchy>(hierarchy => hierarchy.AreaId);
             });
 
             // Delivery FKs
@@ -104,6 +108,15 @@ namespace SVT.Platform.Data
                     .WithMany(delivery => delivery.Jobs)
                     .HasForeignKey(job => job.DeliveryId);
             });
+
+            // Computed Fields
+            modelBuilder.Entity<UserLog>()
+                .Property(log => log.vUserId)
+                .HasComputedColumnSql("CONVERT([nvarchar](256),json_value([Serialized],N'$.UserId')");
+
+            modelBuilder.Entity<AreaHierarchy>()
+                .Property(hierarchy => hierarchy.NodeLevel)
+                .HasComputedColumnSql("[Node].[GetLevel]()");
         }
     }
 }

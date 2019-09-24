@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace SVT.Platform.Data.Models
 {
     public class UserLog : BaseLogModel
     {
-        public string vUserLog { get; set; }
+        [StringLength(256)]
+        public string vUserId { get; set; }
     }
 }
