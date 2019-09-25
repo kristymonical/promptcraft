@@ -5,6 +5,9 @@ namespace SVT.Platform.Data.Models
 {
     public class Location : BaseAuditModel
     {
+        [Key]
+        public int LocationId { get; set; }
+
         [StringLength(50)]
         [Required]
         public string Name { get; set; }

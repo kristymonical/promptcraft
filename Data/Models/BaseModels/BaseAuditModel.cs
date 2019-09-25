@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SVT.Platform.Data.Models
 {
-    public abstract class BaseAuditModel<T> : BaseModel<T>
+    public abstract class BaseAuditModel
     {
         [Required]
         public DateTime InsertedOn { get; set; }
@@ -19,6 +19,4 @@ namespace SVT.Platform.Data.Models
         [Required]
         public string ModifiedBy { get; set; }
     }
-
-    public abstract class BaseAuditModel : BaseAuditModel<int> { }
 }

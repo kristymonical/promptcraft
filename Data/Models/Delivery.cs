@@ -6,6 +6,9 @@ namespace SVT.Platform.Data.Models
 {
     public class Delivery : BaseAuditModel
     {
+        [Key]
+        public int DeliveryId { get; set; }
+
         [StringLength(50)]
         [Required]
         public string CartId { get; set; }

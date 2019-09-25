@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SVT.Platform.Data.Models
 {
-    public abstract class BaseLogModel<T> : BaseModel<T>
+    public abstract class BaseLogModel
     {
         [Required]
         public DateTime InsertedOn { get; set; }
@@ -15,7 +15,4 @@ namespace SVT.Platform.Data.Models
         [Required]
         public string Serialized { get; set; }
     }
-
-    // overloaded class to default Id to int
-    public abstract class BaseLogModel : BaseLogModel<int> { }
 }

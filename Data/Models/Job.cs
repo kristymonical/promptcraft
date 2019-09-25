@@ -5,6 +5,9 @@ namespace SVT.Platform.Data.Models
 {
     public class Job : BaseAuditModel
     {
+        [Key]
+        public int JobId { get; set; }
+
         public int? AethonJobId { get; set; }
 
         [Required]

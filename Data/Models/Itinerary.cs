@@ -4,6 +4,9 @@ namespace SVT.Platform.Data.Models
 {
     public class Itinerary : BaseAuditModel
     {
+        [Key]
+        public int ItineraryId { get; set; }
+
         public int? AethonRunId { get; set; }
 
         [Required]

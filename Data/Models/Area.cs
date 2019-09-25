@@ -3,8 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SVT.Platform.Data.Models
 {
-    public class Area : BaseModel
+    public class Area
     {
+        [Key]
+        public int AreaId { get; set; }
+
         [StringLength(50)]
         [Required]
         public string Name { get; set; }

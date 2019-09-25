@@ -11,7 +11,7 @@ using SVT.Platform.Data;
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    [Migration("20190924210931_SCP-22")]
+    [Migration("20190925143323_SCP-22")]
     partial class SCP22
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace SVT.Platform.Data.Migrations
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Area", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("AreaId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -38,7 +38,7 @@ namespace SVT.Platform.Data.Migrations
 
                     b.Property<int>("PoolId");
 
-                    b.HasKey("Id");
+                    b.HasKey("AreaId");
 
                     b.HasIndex("AreaType");
 
@@ -108,7 +108,7 @@ namespace SVT.Platform.Data.Migrations
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Delivery", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("DeliveryId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -145,7 +145,7 @@ namespace SVT.Platform.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(256);
 
-                    b.HasKey("Id");
+                    b.HasKey("DeliveryId");
 
                     b.HasIndex("DeliveryType");
 
@@ -170,7 +170,7 @@ namespace SVT.Platform.Data.Migrations
 
             modelBuilder.Entity("SVT.Platform.Data.Models.DevLog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("DevLogId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -183,14 +183,14 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<string>("Serialized")
                         .IsRequired();
 
-                    b.HasKey("Id");
+                    b.HasKey("DevLogId");
 
                     b.ToTable("DevLogs");
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Itinerary", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ItineraryId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -216,7 +216,7 @@ namespace SVT.Platform.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.HasKey("Id");
+                    b.HasKey("ItineraryId");
 
                     b.HasIndex("JobId");
 
@@ -227,7 +227,7 @@ namespace SVT.Platform.Data.Migrations
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Job", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("JobId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -251,7 +251,7 @@ namespace SVT.Platform.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.HasKey("Id");
+                    b.HasKey("JobId");
 
                     b.HasIndex("DeliveryId");
 
@@ -260,7 +260,7 @@ namespace SVT.Platform.Data.Migrations
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Location", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("LocationId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -290,7 +290,7 @@ namespace SVT.Platform.Data.Migrations
 
                     b.Property<bool>("Reserved");
 
-                    b.HasKey("Id");
+                    b.HasKey("LocationId");
 
                     b.HasIndex("AreaId");
 
@@ -317,7 +317,7 @@ namespace SVT.Platform.Data.Migrations
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Pool", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("PoolId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -325,14 +325,14 @@ namespace SVT.Platform.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.HasKey("Id");
+                    b.HasKey("PoolId");
 
                     b.ToTable("Pools");
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.UserLog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("UserLogId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -350,7 +350,7 @@ namespace SVT.Platform.Data.Migrations
                         .HasComputedColumnSql("CONVERT([nvarchar](256),json_value([Serialized],N'$.UserId'))")
                         .HasMaxLength(256);
 
-                    b.HasKey("Id");
+                    b.HasKey("UserLogId");
 
                     b.ToTable("UserLogs");
                 });

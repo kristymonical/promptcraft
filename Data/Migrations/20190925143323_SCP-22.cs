@@ -37,7 +37,7 @@ namespace SVT.Platform.Data.Migrations
                 name: "DevLogs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    DevLogId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
@@ -45,7 +45,7 @@ namespace SVT.Platform.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DevLogs", x => x.Id);
+                    table.PrimaryKey("PK_DevLogs", x => x.DevLogId);
                 });
 
             migrationBuilder.CreateTable(
@@ -64,20 +64,20 @@ namespace SVT.Platform.Data.Migrations
                 name: "Pools",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    PoolId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Pools", x => x.Id);
+                    table.PrimaryKey("PK_Pools", x => x.PoolId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserLogs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    UserLogId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
@@ -86,14 +86,14 @@ namespace SVT.Platform.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserLogs", x => x.Id);
+                    table.PrimaryKey("PK_UserLogs", x => x.UserLogId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Areas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    AreaId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 50, nullable: false),
                     PoolId = table.Column<int>(nullable: false),
@@ -101,7 +101,7 @@ namespace SVT.Platform.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Areas", x => x.Id);
+                    table.PrimaryKey("PK_Areas", x => x.AreaId);
                     table.ForeignKey(
                         name: "FK_Areas_AreaTypes_AreaType",
                         column: x => x.AreaType,
@@ -112,7 +112,7 @@ namespace SVT.Platform.Data.Migrations
                         name: "FK_Areas_Pools_PoolId",
                         column: x => x.PoolId,
                         principalTable: "Pools",
-                        principalColumn: "Id",
+                        principalColumn: "PoolId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -130,7 +130,7 @@ namespace SVT.Platform.Data.Migrations
                         name: "FK_AreaDeliveryTypes_Areas_AreaId",
                         column: x => x.AreaId,
                         principalTable: "Areas",
-                        principalColumn: "Id",
+                        principalColumn: "AreaId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AreaDeliveryTypes_DeliveryTypes_DeliveryType",
@@ -155,7 +155,7 @@ namespace SVT.Platform.Data.Migrations
                         name: "FK_AreaHierarchy_Areas_AreaId",
                         column: x => x.AreaId,
                         principalTable: "Areas",
-                        principalColumn: "Id",
+                        principalColumn: "AreaId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -173,13 +173,13 @@ namespace SVT.Platform.Data.Migrations
                         name: "FK_AreaMaps_Areas_DestinationAreaId",
                         column: x => x.DestinationAreaId,
                         principalTable: "Areas",
-                        principalColumn: "Id",
+                        principalColumn: "AreaId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AreaMaps_Areas_SourceAreaId",
                         column: x => x.SourceAreaId,
                         principalTable: "Areas",
-                        principalColumn: "Id",
+                        principalColumn: "AreaId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -187,7 +187,7 @@ namespace SVT.Platform.Data.Migrations
                 name: "Deliveries",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    DeliveryId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
@@ -203,7 +203,7 @@ namespace SVT.Platform.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Deliveries", x => x.Id);
+                    table.PrimaryKey("PK_Deliveries", x => x.DeliveryId);
                     table.ForeignKey(
                         name: "FK_Deliveries_DeliveryTypes_DeliveryType",
                         column: x => x.DeliveryType,
@@ -214,7 +214,7 @@ namespace SVT.Platform.Data.Migrations
                         name: "FK_Deliveries_Areas_DestinationAreaId",
                         column: x => x.DestinationAreaId,
                         principalTable: "Areas",
-                        principalColumn: "Id",
+                        principalColumn: "AreaId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -222,7 +222,7 @@ namespace SVT.Platform.Data.Migrations
                 name: "Jobs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    JobId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
@@ -234,12 +234,12 @@ namespace SVT.Platform.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Jobs", x => x.Id);
+                    table.PrimaryKey("PK_Jobs", x => x.JobId);
                     table.ForeignKey(
                         name: "FK_Jobs_Deliveries_DeliveryId",
                         column: x => x.DeliveryId,
                         principalTable: "Deliveries",
-                        principalColumn: "Id",
+                        principalColumn: "DeliveryId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -247,7 +247,7 @@ namespace SVT.Platform.Data.Migrations
                 name: "Locations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    LocationId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
@@ -261,18 +261,18 @@ namespace SVT.Platform.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Locations", x => x.Id);
+                    table.PrimaryKey("PK_Locations", x => x.LocationId);
                     table.ForeignKey(
                         name: "FK_Locations_Areas_AreaId",
                         column: x => x.AreaId,
                         principalTable: "Areas",
-                        principalColumn: "Id",
+                        principalColumn: "AreaId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Locations_Deliveries_DeliveryId",
                         column: x => x.DeliveryId,
                         principalTable: "Deliveries",
-                        principalColumn: "Id",
+                        principalColumn: "DeliveryId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Locations_LocationTypes_LocationType",
@@ -286,7 +286,7 @@ namespace SVT.Platform.Data.Migrations
                 name: "Itineraries",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    ItineraryId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
@@ -299,18 +299,18 @@ namespace SVT.Platform.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Itineraries", x => x.Id);
+                    table.PrimaryKey("PK_Itineraries", x => x.ItineraryId);
                     table.ForeignKey(
                         name: "FK_Itineraries_Jobs_JobId",
                         column: x => x.JobId,
                         principalTable: "Jobs",
-                        principalColumn: "Id",
+                        principalColumn: "JobId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Itineraries_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
-                        principalColumn: "Id",
+                        principalColumn: "LocationId",
                         onDelete: ReferentialAction.Restrict);
                 });
 

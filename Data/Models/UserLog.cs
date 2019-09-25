@@ -4,6 +4,9 @@ namespace SVT.Platform.Data.Models
 {
     public class UserLog : BaseLogModel
     {
+        [Key]
+        public int UserLogId { get; set; }
+
         [StringLength(256)]
         public string vUserId { get; set; }
     }
