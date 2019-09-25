@@ -71,8 +71,7 @@ namespace SVT.Platform.Data.Migrations
 
                     b.HasKey("Node");
 
-                    b.HasIndex("AreaId")
-                        .IsUnique();
+                    b.HasIndex("AreaId");
 
                     b.ToTable("AreaHierarchy");
                 });
@@ -110,7 +109,7 @@ namespace SVT.Platform.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("Cancelled");
+                    b.Property<DateTime?>("Canceled");
 
                     b.Property<string>("CartId")
                         .IsRequired()
@@ -382,8 +381,8 @@ namespace SVT.Platform.Data.Migrations
             modelBuilder.Entity("SVT.Platform.Data.Models.AreaHierarchy", b =>
                 {
                     b.HasOne("SVT.Platform.Data.Models.Area", "Area")
-                        .WithOne("AreaHierarchyReference")
-                        .HasForeignKey("SVT.Platform.Data.Models.AreaHierarchy", "AreaId")
+                        .WithMany("AreaHierarchies")
+                        .HasForeignKey("AreaId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

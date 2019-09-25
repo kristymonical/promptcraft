@@ -196,7 +196,7 @@ namespace SVT.Platform.Data.Migrations
                     CartId = table.Column<string>(maxLength: 50, nullable: false),
                     OrderId = table.Column<string>(maxLength: 50, nullable: true),
                     Completed = table.Column<DateTime>(nullable: true),
-                    Cancelled = table.Column<DateTime>(nullable: true),
+                    Canceled = table.Column<DateTime>(nullable: true),
                     UserId = table.Column<string>(maxLength: 256, nullable: false),
                     DeliveryType = table.Column<string>(maxLength: 50, nullable: false),
                     DestinationAreaId = table.Column<int>(nullable: false)
@@ -322,8 +322,7 @@ namespace SVT.Platform.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_AreaHierarchy_AreaId",
                 table: "AreaHierarchy",
-                column: "AreaId",
-                unique: true);
+                column: "AreaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AreaMaps_SourceAreaId",

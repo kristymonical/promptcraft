@@ -66,10 +66,15 @@ namespace SVT.Platform.Data
                     .HasOne(area => area.Pool)
                     .WithMany(pool => pool.Areas)
                     .HasForeignKey(area => area.PoolId);
-                areaBuilder.
-                    HasOne(area => area.AreaHierarchyReference)
-                    .WithOne(hierarchy => hierarchy.Area)
-                    .HasForeignKey<AreaHierarchy>(hierarchy => hierarchy.AreaId);
+            });
+
+            // AreaHierarchy FKs
+            modelBuilder.Entity<AreaHierarchy>(areaHierarchyBuilder =>
+            {
+                areaHierarchyBuilder
+                    .HasOne(areaHierarchy => areaHierarchy.Area)
+                    .WithMany(area => area.AreaHierarchies)
+                    .HasForeignKey(areaHierarchy => areaHierarchy.AreaId);
             });
 
             // Delivery FKs

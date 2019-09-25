@@ -18,7 +18,7 @@ namespace SVT.Platform.Data.Models
 
         public DateTime? Completed { get; set; }
 
-        public DateTime? Cancelled { get; set; }
+        public DateTime? Canceled { get; set; }
 
         [StringLength(256)]
         [Required]
