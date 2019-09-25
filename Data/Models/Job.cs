@@ -17,7 +17,7 @@ namespace SVT.Platform.Data.Models
         public int DeliveryId { get; set; }
 
         // NAVIGATION MEMBERS
-        public Delivery Delivery { get; set; }
-        public ICollection<Itinerary> Itineraries { get; set; }
+        public virtual Delivery Delivery { get; set; }
+        public virtual ICollection<Itinerary> Itineraries { get; set; }
     }
 }

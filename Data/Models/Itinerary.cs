@@ -18,7 +18,7 @@ namespace SVT.Platform.Data.Models
         public int LocationId { get; set; }
 
         // NAVIGATION MEMBERS
-        public Job Job { get; set; }
-        public Location Location { get; set; }
+        public virtual Job Job { get; set; }
+        public virtual Location Location { get; set; }
     }
 }

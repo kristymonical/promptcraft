@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.SqlServer.Types;
 
@@ -38,7 +37,7 @@ namespace SVT.Platform.Data.Migrations
                 columns: table => new
                 {
                     DevLogId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
                     Serialized = table.Column<string>(nullable: false)
@@ -65,7 +64,7 @@ namespace SVT.Platform.Data.Migrations
                 columns: table => new
                 {
                     PoolId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -78,7 +77,7 @@ namespace SVT.Platform.Data.Migrations
                 columns: table => new
                 {
                     UserLogId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
                     Serialized = table.Column<string>(nullable: false),
@@ -94,7 +93,7 @@ namespace SVT.Platform.Data.Migrations
                 columns: table => new
                 {
                     AreaId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(maxLength: 50, nullable: false),
                     PoolId = table.Column<int>(nullable: false),
                     AreaType = table.Column<string>(maxLength: 50, nullable: false)
@@ -188,7 +187,7 @@ namespace SVT.Platform.Data.Migrations
                 columns: table => new
                 {
                     DeliveryId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
                     ModifiedOn = table.Column<DateTime>(nullable: false),
@@ -223,7 +222,7 @@ namespace SVT.Platform.Data.Migrations
                 columns: table => new
                 {
                     JobId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
                     ModifiedOn = table.Column<DateTime>(nullable: false),
@@ -248,7 +247,7 @@ namespace SVT.Platform.Data.Migrations
                 columns: table => new
                 {
                     LocationId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
                     ModifiedOn = table.Column<DateTime>(nullable: false),
@@ -287,7 +286,7 @@ namespace SVT.Platform.Data.Migrations
                 columns: table => new
                 {
                     ItineraryId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     InsertedOn = table.Column<DateTime>(nullable: false),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
                     ModifiedOn = table.Column<DateTime>(nullable: false),
@@ -378,128 +377,6 @@ namespace SVT.Platform.Data.Migrations
                 name: "IX_Locations_LocationType",
                 table: "Locations",
                 column: "LocationType");
-
-            migrationBuilder.Sql(@"
-                CREATE OR ALTER PROCEDURE [dbo].[usp_cart_move]
-                    @AreaId             INT             = NULL
-                    , @CartId           NVARCHAR(50)	= NULL
-                    , @DeliveryId		INT				= -1
-                    , @DeliveryType		NVARCHAR(50)    = NULL
-                    , @DestinationId    INT				= -1
-                    , @OrderId			NVARCHAR(50)	= NULL
-                    , @Reserved			BIT				= 0
-                    , @SourceId         INT				= -1
-                    , @User             NVARCHAR(256)	= NULL
-                    , @NewDeliveryId    INT				= -1 OUTPUT
-                AS
-                BEGIN
-                    SET XACT_ABORT, NOCOUNT ON;
-
-                    DECLARE
-                        @OutputTable TABLE(NewDeliveryId INT);
-                    
-                    DECLARE
-                        @Completed		DATETIME2 = NULL
-                        , @Delivery		INT
-                        , @TranCount	INT;
-
-                    BEGIN TRY
-                        SELECT @TranCount = @@TRANCOUNT;
-
-                        IF @TranCount = 0 BEGIN TRANSACTION;
-
-                        IF (@DestinationId = -1 AND @SourceId = -1)
-                            THROW 55555, N'A Valid @Destination and/or @SourceId Required', 1;
-
-                        IF @User IS NULL
-                            SET @User = SYSTEM_USER;
-
-                        IF (@DestinationId <> -1 AND @Reserved = 0)
-                            SET @Completed = GETDATE();
-
-                        SET @Delivery = @DeliveryId;
-
-                        IF @Delivery = -1
-                        BEGIN
-                            IF (@AreaId IS NULL OR @CartId IS NULL OR @DeliveryType IS NULL OR @User IS NULL)
-                                THROW 55555, N'A Valid CartId Required When Creating a New Delivery', 1;
-
-                            INSERT INTO dbo.Deliveries
-                                (CartId, OrderId, Completed, UserId, DeliveryType, DestinationAreaId)
-                            OUTPUT
-                                INSERTED.DeliveryId
-                            INTO
-                                @OutputTable
-                            VALUES
-                                (@CartId, @OrderId, @Completed, @User, @DeliveryType, @AreaId);
-
-                            IF @@ROWCOUNT <> 1
-                                THROW 55555, N'Failed to Create Delivery', 1;
-
-                            SELECT @Delivery = NewDeliveryId FROM @OutputTable;
-
-                            SET @NewDeliveryId = @Delivery;
-                        END
-                        ELSE
-                        BEGIN
-                            IF @Completed IS NOT NULL
-                            BEGIN
-                                UPDATE dbo.Deliveries
-                                SET
-                                    Completed = @Completed
-                                    , ModifiedBy = @User
-                                    , ModifiedOn = GETDATE()
-                                WHERE
-                                    DeliveryId = @Delivery;
-
-                                IF @@ROWCOUNT <> 1
-                                    THROW 55555, N'Failed to Update Delivery Completion', 1;
-                            END
-                        END
-
-                        IF @SourceId <> -1
-                        BEGIN
-                            UPDATE dbo.Locations
-                            SET
-                                DeliveryId = NULL
-                                , ModifiedBy = @User
-                                , ModifiedOn = GETDATE()
-                                , Reserved = 0
-                            WHERE
-                                LocationId = @SourceId
-                                AND (DeliveryId = @Delivery OR DeliveryId IS NULL);
-
-                            IF @@ROWCOUNT <> 1
-                                THROW 55555, N'Failed to Update Source Cart Location', 1;
-                        END
-                        
-                        IF @DestinationId <> -1
-                        BEGIN
-
-                            UPDATE dbo.Locations
-                            SET
-                                DeliveryId = @Delivery
-                                , ModifiedBy = @User
-                                , ModifiedOn = GETDATE()
-                                , Reserved = @Reserved
-                            WHERE
-                                LocationId = @DestinationId
-                                AND (DeliveryId IS NULL OR DeliveryId = @Delivery);
-
-                            IF @@ROWCOUNT <> 1
-                                THROW 55555, N'Failed to Update Destination Cart Location', 1;
-                        END
-
-                        IF @TranCount = 0 COMMIT TRANSACTION;
-                    END TRY
-                    BEGIN CATCH
-                        IF XACT_STATE() <> 0 AND @TranCount = 0 
-                            ROLLBACK TRANSACTION;
-                        THROW;
-                    END CATCH
-                END
-                GO
-            ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

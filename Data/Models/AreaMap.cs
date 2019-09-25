@@ -9,7 +9,7 @@ namespace SVT.Platform.Data.Models
         public int DestinationAreaId { get; set; }
 
         // NAVIGATION MEMBERS
-        public Area SourceArea { get; set; }
-        public Area DestinationArea { get; set; }
+        public virtual Area SourceArea { get; set; }
+        public virtual Area DestinationArea { get; set; }
     }
 }

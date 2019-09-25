@@ -20,13 +20,13 @@ namespace SVT.Platform.Data.Models
         public string AreaType { get; set; }
 
         // NAVIGATION MEMBERS
-        public AreaType AreaTypeReference { get; set; }
-        public Pool Pool { get; set; }
-        public ICollection<AreaMap> SourceAreas { get; set; }
-        public ICollection<AreaMap> DestinationAreas { get; set; }
-        public ICollection<AreaDeliveryType> AreaDeliveryTypes { get; set; }
-        public ICollection<Delivery> Deliveries { get; set; }
-        public ICollection<Location> Locations { get; set; }
-        public ICollection<AreaHierarchy> AreaHierarchies { get; set; }
+        public virtual AreaType AreaTypeReference { get; set; }
+        public virtual Pool Pool { get; set; }
+        public virtual ICollection<AreaMap> SourceAreas { get; set; }
+        public virtual ICollection<AreaMap> DestinationAreas { get; set; }
+        public virtual ICollection<AreaDeliveryType> AreaDeliveryTypes { get; set; }
+        public virtual ICollection<Delivery> Deliveries { get; set; }
+        public virtual ICollection<Location> Locations { get; set; }
+        public virtual ICollection<AreaHierarchy> AreaHierarchies { get; set; }
     }
 }

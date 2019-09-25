@@ -14,7 +14,7 @@ namespace SVT.Platform.Data.Models
         public string DeliveryType { get; set; }
 
         // NAVIGATION MEMBERS
-        public Area Area { get; set; }
-        public DeliveryType DeliveryTypeReference { get; set; }
+        public virtual Area Area { get; set; }
+        public virtual DeliveryType DeliveryTypeReference { get; set; }
     }
 }

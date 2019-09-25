@@ -5,6 +5,6 @@ namespace SVT.Platform.Data.Models
     public class LocationType : BaseReferenceModel
     {
         // NAVIGATION MEMBERS
-        public ICollection<Location> Locations { get; set; }
+        public virtual ICollection<Location> Locations { get; set; }
     }
 }

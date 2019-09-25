@@ -23,9 +23,9 @@ namespace SVT.Platform.Data.Models
         public int AreaId { get; set; }
 
         /* NAVIGATION MEMBERS */
-        public LocationType LocationTypeReference { get; set; }
-        public Area Area { get; set; }
-        public Delivery Delivery { get; set; }
-        public ICollection<Itinerary> Itineraries { get; set; }
+        public virtual LocationType LocationTypeReference { get; set; }
+        public virtual Area Area { get; set; }
+        public virtual Delivery Delivery { get; set; }
+        public virtual ICollection<Itinerary> Itineraries { get; set; }
     }
 }

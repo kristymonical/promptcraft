@@ -32,9 +32,9 @@ namespace SVT.Platform.Data.Models
         public int DestinationAreaId { get; set; }
 
         // NAVIGATION MEMBERS
-        public DeliveryType DeliveryTypeReference { get; set; }
-        public Area DestinationArea { get; set; }
-        public ICollection<Location> Locations { get; set; }
-        public ICollection<Job> Jobs { get; set; }
+        public virtual DeliveryType DeliveryTypeReference { get; set; }
+        public virtual Area DestinationArea { get; set; }
+        public virtual ICollection<Location> Locations { get; set; }
+        public virtual ICollection<Job> Jobs { get; set; }
     }
 }

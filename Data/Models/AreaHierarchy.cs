@@ -5,6 +5,6 @@ namespace SVT.Platform.Data.Models
         public int AreaId { get; set; }
 
         // NAVIGATION MEMBERS
-        public Area Area { get; set; }
+        public virtual Area Area { get; set; }
     }
 }

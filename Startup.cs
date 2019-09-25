@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Proxies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,7 +28,9 @@ namespace SVT.Platform
 
             // DI
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddDbContext<SVTContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PlatformDb")));
+            services.AddDbContext<SVTContext>(options => options
+                .UseLazyLoadingProxies()
+                .UseSqlServer(Configuration.GetConnectionString("PlatformDb")));
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
