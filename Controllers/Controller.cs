@@ -31,9 +31,9 @@ namespace SVT.Platform.Controllers
             {
                 OrderId = loc.Delivery.OrderId,
                 CartId = loc.Delivery.CartId,
-                StagingLocationId = loc.LocationId,
+                StagingLocationId = loc.Name,
                 DeliveryRequestType = loc.Delivery.DeliveryType,
-                DestinationArea = loc.Delivery.DestinationAreaId
+                DestinationArea = loc.Delivery.DestinationArea.Name
             });
         }
 

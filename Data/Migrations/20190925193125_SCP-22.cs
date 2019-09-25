@@ -377,6 +377,146 @@ namespace SVT.Platform.Data.Migrations
                 name: "IX_Locations_LocationType",
                 table: "Locations",
                 column: "LocationType");
+
+            migrationBuilder.Sql(@"
+                CREATE OR ALTER PROCEDURE [dbo].[usp_cart_move]
+                    @AreaId             INT             = NULL
+                    , @CartId           NVARCHAR(50)	= NULL
+                    , @DeliveryId		INT				= -1
+                    , @DeliveryType		NVARCHAR(50)    = NULL
+                    , @DestinationId    INT				= -1
+                    , @OrderId			NVARCHAR(50)	= NULL
+                    , @Reserved			BIT				= 0
+                    , @SourceId         INT				= -1
+                    , @User             NVARCHAR(256)
+                    , @NewDeliveryId    INT				= -1    OUTPUT
+                AS
+                BEGIN
+                    SET XACT_ABORT, NOCOUNT ON;
+
+                    DECLARE
+                        @OutputTable TABLE(NewDeliveryId INT);
+                    
+                    DECLARE
+                        @Completed		DATETIME2 = NULL
+                        , @Delivery		INT
+                        , @TranCount	INT;
+
+                    BEGIN TRY
+                        SELECT @TranCount = @@TRANCOUNT;
+
+                        IF @TranCount = 0 BEGIN TRANSACTION;
+
+                        IF (@DestinationId = -1 AND @SourceId = -1)
+                            THROW 55555, N'A Valid @Destination and/or @SourceId Required', 1;
+
+                        IF (@DestinationId <> -1 AND @Reserved = 0)
+                            SELECT
+                                @Completed = CASE
+                                    WHEN l.AreaId = d.DestinationAreaId THEN GETDATE()
+                                    ELSE NULL
+                                END
+                            FROM
+                                dbo.Locations l
+                                JOIN dbo.Deliveries d ON l.LocationId = @DestinationId AND d.DeliveryId = l.DeliveryId;
+
+                        SET @Delivery = @DeliveryId;
+
+                        IF @Delivery = -1
+                        BEGIN
+                            IF (@AreaId IS NULL OR @CartId IS NULL OR @DeliveryType IS NULL)
+                                THROW 55555, N'Following Fields Required For New Delivery: @AreadId, @CartId, @DeliveryType, @User', 1;
+
+                            INSERT INTO dbo.Deliveries
+                                (CartId, OrderId, Completed, UserId, DeliveryType, DestinationAreaId)
+                            OUTPUT
+                                INSERTED.DeliveryId
+                            INTO
+                                @OutputTable
+                            VALUES
+                                (@CartId, @OrderId, @Completed, @User, @DeliveryType, @AreaId);
+
+                            IF @@ROWCOUNT <> 1
+                                THROW 55555, N'Failed to Create Delivery', 1;
+
+                            SELECT @Delivery = NewDeliveryId FROM @OutputTable;
+
+                            SET @NewDeliveryId = @Delivery;
+                        END
+                        ELSE
+                        BEGIN
+                            IF @Completed IS NOT NULL
+                            BEGIN
+                                UPDATE dbo.Deliveries
+                                SET
+                                    Completed = @Completed
+                                    , ModifiedBy = @User
+                                    , ModifiedOn = GETDATE()
+                                WHERE
+                                    DeliveryId = @Delivery;
+
+                                IF @@ROWCOUNT <> 1
+                                    THROW 55555, N'Failed to Update Delivery Completion', 1;
+                            END
+                        END
+
+                        IF @SourceId <> -1
+                        BEGIN
+                            ;WITH locDel AS (
+                                SELECT
+                                    l.LocationId
+                                    , d.Completed [previousDeliveryComplete]
+                                FROM
+                                    dbo.Locations l
+                                    JOIN dbo.Deliveries d ON l.LocationId = @SourceId AND d.DeliveryId = l.DeliveryId					
+                            )
+                            UPDATE srcLoc
+                            SET
+                                DeliveryId = CASE
+                                    WHEN DeliveryId = @DeliveryId THEN NULL
+                                    ELSE @Delivery
+                                END
+                                , ModifiedBy = @User
+                                , ModifiedOn = GETDATE()
+                                , Reserved = 0
+                            FROM
+                                dbo.Locations srcLoc
+                                JOIN locDel ON srcLoc.LocationId = locDel.LocationId
+                            WHERE
+                                srcLoc.LocationId = @SourceId
+                                AND (srcLoc.DeliveryId = @Delivery OR srcLoc.DeliveryId IS NULL OR locDel.previousDeliveryComplete IS NOT NULL);
+
+                            IF @@ROWCOUNT <> 1
+                                THROW 55555, N'Failed to Update Source Cart Location', 1;
+                        END
+                        
+                        IF @DestinationId <> -1
+                        BEGIN
+
+                            UPDATE dbo.Locations
+                            SET
+                                DeliveryId = @Delivery
+                                , ModifiedBy = @User
+                                , ModifiedOn = GETDATE()
+                                , Reserved = @Reserved
+                            WHERE
+                                LocationId = @DestinationId
+                                AND (DeliveryId IS NULL OR DeliveryId = @Delivery);
+
+                            IF @@ROWCOUNT <> 1
+                                THROW 55555, N'Failed to Update Destination Cart Location', 1;
+                        END
+
+                        IF @TranCount = 0 COMMIT TRANSACTION;
+                    END TRY
+                    BEGIN CATCH
+                        IF XACT_STATE() <> 0 AND @TranCount = 0 
+                            ROLLBACK TRANSACTION;
+                        THROW;
+                    END CATCH
+                END
+                GO
+            ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

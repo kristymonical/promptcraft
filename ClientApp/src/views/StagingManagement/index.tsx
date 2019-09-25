@@ -2,56 +2,53 @@ import React, { useState, useEffect } from 'react';
 import { Typography } from '@material-ui/core';
 import { Row } from 'react-bootstrap';
 
+import * as Staging from 'services/Staging';
 import { TitleCol, ScannableTextField, SubmitButton, Table } from 'components';
 
 const cartsTableShape = [
   { label: 'Order ID', key: 'orderId', filter: true },
   { label: 'Cart ID', key: 'cartId' },
-  { label: 'Staging Location ID', key: 'locationId' },
-  { label: 'Delivery Request Type', key: 'requestType', filter: true },
+  { label: 'Staging Location ID', key: 'stagingLocationId' },
+  { label: 'Delivery Request Type', key: 'deliveryRequestType', filter: true },
   { label: 'Destination Area', key: 'destinationArea' }
 ];
 
-interface StagingTableDataItem {
-  orderId: string;
-  cartId: string;
-  locationId: string;
-}
-
-const getStagingTableTestData = async () => [
+const testData = [
   {
     orderId: '1A',
     cartId: '1300',
-    locationId: '9AB',
-    requestType: '1',
+    stagingLocationId: '9AB',
+    deliveryRequestType: 'stage',
     destinationArea: '1010A'
   },
   {
     orderId: '101',
     cartId: '1309',
-    locationId: '9AC',
-    requestType: '1',
+    stagingLocationId: '9AC',
+    deliveryRequestType: 'deliver',
     destinationArea: '1012B'
   },
   {
     orderId: '101',
     cartId: '1310',
-    locationId: '8AB',
-    requestType: '2',
+    stagingLocationId: '8AB',
+    deliveryRequestType: 'deliver',
     destinationArea: '1012C'
   }
 ];
 
+const getStagingTableTestData = async () => await Staging.getStagedCarts();
+
 export default function StagingManagement() {
   const [finalDestination, setFinalDestination] = useState('');
   const [stagingTableData, setStagingTableData] = useState<
-    StagingTableDataItem[]
+    Staging.GetStagedCartsResult[]
   >([]);
 
   // get data on mount
   useEffect(() => {
-    getStagingTableTestData() // @hookup real data
-      .then(cartsData => setStagingTableData(cartsData))
+    getStagingTableTestData()
+      .then(cartsData => setStagingTableData(cartsData.concat(testData)))
       .catch(err => console.error(err)); // @error handling
   }, []);
 
@@ -96,7 +93,10 @@ export default function StagingManagement() {
       <Row>
         <SubmitButton
           disabled={finalDestination.length === 0}
-          onClick={() => setFinalDestination('')}
+          onClick={() => {
+            setFinalDestination('');
+            setStagingTableData(stagingTableData);
+          }}
           text='Create Staging Request'
           variant='secondary'
         />
