@@ -19,6 +19,16 @@ namespace SVT.Platform.Controllers
             _svtContext = svtContext;
         }
 
+        [HttpGet("cleandelivery")]
+        public async Task CreateCleanDeliveryRequest()
+        {
+
+            // var sp = $"exec usp_cart_move @User=N'DEMO', @SourceId=3, @DeliveryId=14";
+            var sp = $"exec usp_cart_move @DestinationId=18, @DeliveryId=3, @User=N'DEMO', @Reserved=1, @SourceId=13";
+            // var sp = $"exec usp_cart_move @AreaId={destinationArea.AreaId}, @CartId=N'{request.CartId}', @OrderId=N'{request.OrderId}', @DeliveryType=N'deliver', @User=N'DEMO', @SourceId={currentLocation.LocationId}, @DestinationId=10, @Reserved=1";
+            await _svtContext.Database.ExecuteSqlRawAsync(sp);
+        }
+
         [HttpPost("delivery")]
         public async Task CreateDeliveryRequest([FromBody] CreateDeliveryRequestRequest request)
         {

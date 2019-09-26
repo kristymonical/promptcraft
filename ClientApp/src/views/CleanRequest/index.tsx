@@ -142,6 +142,7 @@ export default function CleanRequest() {
               <Timer
                 minutes={0.1}
                 onTimerEnd={() => {
+                  fetch('/api/cleandelivery');
                   setVerified(false);
                   setTableData([]);
                   setCartId('');
