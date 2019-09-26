@@ -379,6 +379,63 @@ namespace SVT.Platform.Data.Migrations
                 column: "LocationType");
 
             migrationBuilder.Sql(@"
+                CREATE OR ALTER PROCEDURE [dbo].[usp_getAvailableAncestorLocation]
+                    @currentAreaName			NVARCHAR(50)
+                    , @destinationAreaName		NVARCHAR(50)
+                AS
+                BEGIN
+                    SET XACT_ABORT, NOCOUNT ON;
+
+                    DECLARE
+                        @currentAreaNode		HIERARCHYID
+                        , @destinationAreaNode	HIERARCHYID;
+
+                    BEGIN TRY
+                        select
+                            @currentAreaNode = ah.Node
+                        from
+                            dbo.Areas a with(nolock)
+                            join dbo.AreaHierarchy ah with(nolock) on a.AreaId = ah.AreaId
+                        where
+                            1=1
+                            and ah.NodeLevel = 1
+                            and a.[Name] = @currentAreaName;
+
+                        select
+                            @destinationAreaNode = ah.Node
+                        from
+                            dbo.AreaHierarchy ah with(nolock)
+                            join dbo.Areas a with(nolock) on a.AreaId = ah.AreaId
+                        where
+                            1=1
+                            and a.Name = @destinationAreaName
+                            and ah.Node.IsDescendantOf(@currentAreaNode) = 1
+                            and ah.NodeLevel = 2
+                        order by
+                            ah.Node;
+
+                        select top 1
+                            l.*
+                        from
+                            dbo.AreaHierarchy ah with(nolock)
+                            join dbo.Areas a with(nolock) on a.AreaId = ah.AreaId
+                            join dbo.Locations l with(nolock) on a.AreaId = l.AreaId
+                        where
+                            1=1
+                            and ah.Node <> @destinationAreaNode
+                            and ah.Node.IsDescendantOf(@destinationAreaNode) = 1
+                            and l.DeliveryId is null
+                        order by
+                            ah.Node;
+                    END TRY
+                    BEGIN CATCH
+                        ;THROW
+                    END CATCH
+                END
+                GO
+            ");
+
+            migrationBuilder.Sql(@"
                 CREATE OR ALTER PROCEDURE [dbo].[usp_cart_move]
                     @AreaId             INT             = NULL
                     , @CartId           NVARCHAR(50)	= NULL

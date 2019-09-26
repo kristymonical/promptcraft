@@ -9,6 +9,7 @@ import {
   TitleCol,
   SubmitButton
 } from 'components';
+import { GetAreasResult, getAreas } from 'services/Delivery';
 
 const useStyles = makeStyles(({ flex, secondary }: typeof SVT_THEME) => ({
   flexFormContainer: {
@@ -26,15 +27,12 @@ const initialFormValues = {
   orderNumber: ''
 };
 
-const testareas = ['1011A', '1011B', '2011A']; // @hookup real data
-const getareas = () => testareas;
-
 export default function ManualRequest() {
   const classes = useStyles({});
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
-  const [areas] = useState(() => getareas());
+  const [areas, setAreas] = useState<GetAreasResult[]>([]);
 
   // "reducer" for form value state
   const handleChange = (name: keyof typeof formValues) => (
@@ -42,6 +40,13 @@ export default function ManualRequest() {
   ) => {
     setFormValues({ ...formValues, [name]: newValue });
   };
+
+  // get data on mount
+  useEffect(() => {
+    getAreas()
+      .then(returnedAreas => setAreas(returnedAreas))
+      .catch(err => console.error(err)); // @error handling
+  }, []);
 
   // determine if create button should be disabled
   useEffect(() => {
@@ -89,7 +94,7 @@ export default function ManualRequest() {
       </Row>
       <Row className={classes.flexFormContainer}>
         <Select
-          items={areas}
+          items={areas.map(area => area.areaName)}
           label='Area'
           handleChange={handleChange('area')}
           required

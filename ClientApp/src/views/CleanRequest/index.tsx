@@ -11,6 +11,10 @@ import {
   Button
 } from 'components';
 import Timer from './Timer';
+import {
+  GetOrderAndDestinationResponse,
+  getOrderAndDestination
+} from 'services/Cart';
 
 const createStyles = makeStyles(
   ({ flex: { horizontalSpacing }, primary }: typeof SVT_THEME) => ({
@@ -50,7 +54,7 @@ const createStyles = makeStyles(
 
 const tableShape = [
   { label: 'Order ID', key: 'orderId' },
-  { label: 'Destination SuiteMAL', key: 'destination' }
+  { label: 'Destination SuiteMAL', key: 'destinationAreaName' }
 ];
 
 export default function CleanRequest() {
@@ -58,11 +62,17 @@ export default function CleanRequest() {
 
   const [cartId, setCartId] = useState('');
   const [mal, setMal] = useState('');
-  const [tableData, setTableData] = useState<
-    { orderId: string; destination: string }[]
-  >([]);
+  const [tableData, setTableData] = useState<GetOrderAndDestinationResponse[]>(
+    []
+  );
   const [verified, setVerified] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const verify = async (cartId: string, malLocationName: string) => {
+    const ret = await getOrderAndDestination(cartId, malLocationName);
+    setTableData([ret]);
+    setVerified(true);
+  };
 
   return (
     <>
@@ -95,18 +105,7 @@ export default function CleanRequest() {
         <Button
           disabled={cartId.length === 0 || mal.length === 0}
           scale={1.25}
-          onClick={() => {
-            // @hookup real data
-            setVerified(true);
-            setTableData([
-              {
-                destination: '1513',
-                orderId: `#${Math.random()
-                  .toString()
-                  .slice(-10)}`
-              }
-            ]);
-          }}
+          onClick={() => verify(cartId, mal)}
         >
           Verify MAL
         </Button>

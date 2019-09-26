@@ -8,4 +8,36 @@ namespace SVT.Platform.Controllers
         public string DeliveryRequestType { get; set; }
         public string DestinationArea { get; set; }
     }
+
+    public class CreateDeliveryRequestRequest
+    {
+        public string OrderId { get; set; }
+        public string CartId { get; set; }
+        public string Location { get; set; }
+        public string DestinationArea { get; set; }
+    }
+
+    public class GetAreasResponse
+    {
+        public int AreaId { get; set; }
+        public string AreaName { get; set; }
+    }
+
+    public class MoveCartRequest
+    {
+        public string MalLocationName { get; set; }
+        public string CartId { get; set; }
+    }
+
+    public class GetOrderAndDestinationRequest
+    {
+        public string MalLocationName { get; set; }
+        public string CartId { get; set; }
+    }
+
+    public class GetOrderAndDestinationResponse
+    {
+        public string OrderId { get; set; }
+        public string DestinationAreaName { get; set; }
+    }
 }
