@@ -20,17 +20,17 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpPost("delivery")]
-        public async Task<Delivery> CreateDeliveryRequest([FromBody] CreateDeliveryRequestRequest request)
+        public async Task CreateDeliveryRequest([FromBody] CreateDeliveryRequestRequest request)
         {
             var destinationArea = await Commands.GetAreaByNameAsync(_svtContext, request.DestinationArea);
             var currentLocation = await Commands.GetLocationByNameAsync(_svtContext, request.Location);
 
             // var sp = $"exec usp_cart_move @User=N'DEMO', @SourceId=3, @DeliveryId=14";
-            var sp = $"exec usp_cart_move @DestinationId=10, @DeliveryId=14, @User=N'DEMO'";
-            // var sp = $"exec usp_cart_move @AreaId={destinationArea.AreaId}, @CartId=N'{request.CartId}', @OrderId=N'{request.OrderId}', @DeliveryType=N'deliver', @User=N'DEMO', @SourceId={currentLocation.LocationId}, @DestinationId=10, @Reserved=1";
+            // var sp = $"exec usp_cart_move @DestinationId=10, @DeliveryId=14, @User=N'DEMO'";
+            var sp = $"exec usp_cart_move @AreaId={destinationArea.AreaId}, @CartId=N'{request.CartId}', @OrderId=N'{request.OrderId}', @DeliveryType=N'deliver', @User=N'DEMO', @SourceId={currentLocation.LocationId}, @DestinationId=10, @Reserved=1";
             await _svtContext.Database.ExecuteSqlRawAsync(sp);
 
-            return await _svtContext.Deliveries.OrderByDescending(d => d.DeliveryId).FirstAsync();
+            // return await _svtContext.Deliveries.OrderByDescending(d => d.DeliveryId).FirstAsync();
 
             // var destinationLocation = await Commands.GetAvailableAncestorLocation(_svtContext, destinationArea.Name, currentLocation.Area.Name);
             // return $"{destinationLocation.Name}";
@@ -80,34 +80,7 @@ namespace SVT.Platform.Controllers
         [HttpPost("move")]
         public async Task MoveCartAsync([FromBody] MoveCartRequest request)
         {
-            var newCartLocation = await _svtContext.Locations.Where(loc => loc.Name == request.MalLocationName).FirstAsync();
-
-            var currentCartLocation = await _svtContext.Locations
-                .Where(loc => loc.Delivery.CartId == request.CartId)
-                .Where(loc => loc.Delivery.Completed == null)
-                .FirstAsync();
-
-            var activeDeliveryId = (await _svtContext.Deliveries
-                .Where(d => d.CartId == request.CartId)
-                .Where(d => d.Completed == null)
-                .FirstOrDefaultAsync())
-                .DeliveryId;
-
-            _svtContext.Deliveries.Add(new Delivery()
-            {
-                CartId = request.CartId,
-                DeliveryType = "",
-                Completed = DateTime.UtcNow
-            });
-
-
-            currentCartLocation.Reserved = false;
-            currentCartLocation.DeliveryId = null;
-
-            newCartLocation.Reserved = true;
-            // newCartLocation.DeliveryId = deliveryId;
-
-            await _svtContext.SaveChangesAsync();
+            await Commands.MoveCart(_svtContext, request.CartId, request.MalLocationName);
         }
 
         [HttpGet("cleaninfo")]
@@ -118,6 +91,8 @@ namespace SVT.Platform.Controllers
                 .Where(d => d.CartId == request.CartId)
                 .Where(d => d.Completed == null)
                 .FirstAsync();
+
+            await Commands.MoveCart(_svtContext, request.CartId, request.MalLocationName);
 
             return new GetOrderAndDestinationResponse()
             {

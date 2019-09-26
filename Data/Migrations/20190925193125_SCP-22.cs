@@ -574,6 +574,186 @@ namespace SVT.Platform.Data.Migrations
                 END
                 GO
             ");
+
+            migrationBuilder.Sql(@"
+                ALTER TABLE [dbo].[Deliveries] ADD  CONSTRAINT [DF_Deliveries_InsertedBy]  DEFAULT (suser_sname()) FOR [InsertedBy]
+                GO
+                ALTER TABLE [dbo].[Deliveries] ADD  CONSTRAINT [DF_Deliveries_InsertedOn]  DEFAULT (getdate()) FOR [InsertedOn]
+                GO
+                ALTER TABLE [dbo].[Deliveries] ADD  CONSTRAINT [DF_Deliveries_ModifiedBy]  DEFAULT (suser_sname()) FOR [ModifiedBy]
+                GO
+                ALTER TABLE [dbo].[Deliveries] ADD  CONSTRAINT [DF_Deliveries_ModifiedOn]  DEFAULT (getdate()) FOR [ModifiedOn]
+                GO
+
+                INSERT [dbo].[AreaTypes] ([Value], [Description]) VALUES (N'cw', NULL)
+                GO
+                INSERT [dbo].[AreaTypes] ([Value], [Description]) VALUES (N'fpa', NULL)
+                GO
+                INSERT [dbo].[AreaTypes] ([Value], [Description]) VALUES (N'mal', NULL)
+                GO
+                INSERT [dbo].[AreaTypes] ([Value], [Description]) VALUES (N'smal', NULL)
+                GO
+                INSERT [dbo].[AreaTypes] ([Value], [Description]) VALUES (N'stg', NULL)
+                GO
+                SET IDENTITY_INSERT [dbo].[Pools] ON 
+                GO
+                INSERT [dbo].[Pools] ([PoolId], [Name]) VALUES (1, N'Pool 1')
+                GO
+                INSERT [dbo].[Pools] ([PoolId], [Name]) VALUES (2, N'Pool 2')
+                GO
+                INSERT [dbo].[Pools] ([PoolId], [Name]) VALUES (3, N'Pool 3')
+                GO
+                SET IDENTITY_INSERT [dbo].[Pools] OFF
+                GO
+                SET IDENTITY_INSERT [dbo].[Areas] ON 
+                GO
+                INSERT [dbo].[Areas] ([AreaId], [Name], [AreaType], [PoolId]) VALUES (1, N'101B-FPA', N'fpa', 1)
+                GO
+                INSERT [dbo].[Areas] ([AreaId], [Name], [AreaType], [PoolId]) VALUES (2, N'101C-CarWash', N'cw', 1)
+                GO
+                INSERT [dbo].[Areas] ([AreaId], [Name], [AreaType], [PoolId]) VALUES (3, N'1430-Staging', N'stg', 1)
+                GO
+                INSERT [dbo].[Areas] ([AreaId], [Name], [AreaType], [PoolId]) VALUES (4, N'1501-MAL-A', N'mal', 1)
+                GO
+                INSERT [dbo].[Areas] ([AreaId], [Name], [AreaType], [PoolId]) VALUES (5, N'2501-MAL-A', N'mal', 1)
+                GO
+                INSERT [dbo].[Areas] ([AreaId], [Name], [AreaType], [PoolId]) VALUES (6, N'1501-MAL-B', N'mal', 2)
+                GO
+                INSERT [dbo].[Areas] ([AreaId], [Name], [AreaType], [PoolId]) VALUES (7, N'2501-MAL-B', N'mal', 3)
+                GO
+                INSERT [dbo].[Areas] ([AreaId], [Name], [AreaType], [PoolId]) VALUES (8, N'15xx-Suite MALs', N'smal', 2)
+                GO
+                INSERT [dbo].[Areas] ([AreaId], [Name], [AreaType], [PoolId]) VALUES (9, N'25xx-Suite MALs', N'smal', 3)
+                GO
+                SET IDENTITY_INSERT [dbo].[Areas] OFF
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/1/', 1)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/1/1/', 8)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/1/1/1/', 4)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/1/1/2/', 3)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/1/2/', 9)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/1/2/1/', 5)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/1/2/2/', 3)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/1/3/', 3)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/2/', 2)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/2/1/', 8)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/2/1/1/', 4)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/2/1/2/', 3)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/2/2/', 9)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/2/2/1/', 5)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/2/2/2/', 3)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/2/3/', 3)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/3/', 8)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/3/1/', 1)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/3/1/1/', 6)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/3/2/', 2)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/3/2/1/', 6)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/4/', 9)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/4/1/', 1)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/4/1/1/', 7)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/4/2/', 2)
+                GO
+                INSERT [dbo].[AreaHierarchy] ([Node], [AreaId]) VALUES (N'/4/2/1/', 7)
+                GO
+                INSERT [dbo].[AreaMaps] ([SourceAreaId], [DestinationAreaId]) VALUES (1, 3)
+                GO
+                INSERT [dbo].[AreaMaps] ([SourceAreaId], [DestinationAreaId]) VALUES (1, 4)
+                GO
+                INSERT [dbo].[AreaMaps] ([SourceAreaId], [DestinationAreaId]) VALUES (1, 5)
+                GO
+                INSERT [dbo].[AreaMaps] ([SourceAreaId], [DestinationAreaId]) VALUES (3, 4)
+                GO
+                INSERT [dbo].[AreaMaps] ([SourceAreaId], [DestinationAreaId]) VALUES (3, 5)
+                GO
+                INSERT [dbo].[AreaMaps] ([SourceAreaId], [DestinationAreaId]) VALUES (4, 8)
+                GO
+                INSERT [dbo].[AreaMaps] ([SourceAreaId], [DestinationAreaId]) VALUES (5, 9)
+                GO
+                INSERT [dbo].[DeliveryTypes] ([Value], [Description]) VALUES (N'deliver', NULL)
+                GO
+                INSERT [dbo].[DeliveryTypes] ([Value], [Description]) VALUES (N'manual', NULL)
+                GO
+                INSERT [dbo].[DeliveryTypes] ([Value], [Description]) VALUES (N'return', NULL)
+                GO
+                INSERT [dbo].[DeliveryTypes] ([Value], [Description]) VALUES (N'stage', NULL)
+                GO
+                INSERT [dbo].[LocationTypes] ([Value], [Description]) VALUES (N'cw', NULL)
+                GO
+                INSERT [dbo].[LocationTypes] ([Value], [Description]) VALUES (N'fpa', NULL)
+                GO
+                INSERT [dbo].[LocationTypes] ([Value], [Description]) VALUES (N'mal', NULL)
+                GO
+                INSERT [dbo].[LocationTypes] ([Value], [Description]) VALUES (N'smal', NULL)
+                GO
+                INSERT [dbo].[LocationTypes] ([Value], [Description]) VALUES (N'stg', NULL)
+                GO
+                INSERT [dbo].[LocationTypes] ([Value], [Description]) VALUES (N'wait', NULL)
+                GO
+                SET IDENTITY_INSERT [dbo].[Locations] ON 
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (3, N'101B-FPA-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'fpa', 1)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (4, N'101B-FPA-002', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-24T17:57:51.9666667' AS DateTime2), N'fpa', 1)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (5, N'101C-CW-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'cw', 2)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (6, N'101C-CW-002', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'cw', 2)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (7, N'1430-STG-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'stg', 3)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (8, N'1430-STG-002', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'stg', 3)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (9, N'1501-MAL-A-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'mal', 4)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (10, N'1501-MAL-A-WAIT-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'wait', 4)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (11, N'2501-MAL-A-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'mal', 5)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (12, N'2501-MAL-A-WAIT-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'wait', 5)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (13, N'1501-MAL-B-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'mal', 6)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (14, N'1501-MAL-B-WAIT-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'wait', 6)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (15, N'2501-MAL-B-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'mal', 7)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (16, N'2501-MAL-B-WAIT-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'wait', 7)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (17, N'1528-MAL-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'smal', 8)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (18, N'1528-MAL-WAIT-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'wait', 8)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (19, N'2519-MAL-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'smal', 9)
+                GO
+                INSERT [dbo].[Locations] ([LocationId], [Name], [DeliveryId], [Reserved], [InsertedBy], [InsertedOn], [ModifiedBy], [ModifiedOn], [LocationType], [AreaId]) VALUES (20, N'2519-MAL-WAIT-001', NULL, 0, N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'sa', CAST(N'2019-09-13T17:11:47.8666667' AS DateTime2), N'wait', 9)
+                GO
+                SET IDENTITY_INSERT [dbo].[Locations] OFF
+                GO
+            ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

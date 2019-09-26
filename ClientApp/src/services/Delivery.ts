@@ -3,7 +3,24 @@ export async function createDeliveryRequest({
   cartLocation,
   destinationArea,
   orderNumber
-}: CreateDeliveryRequest) {}
+}: CreateDeliveryRequest) {
+  try {
+    await fetch('/api/delivery', {
+      method: 'POST',
+      body: JSON.stringify({
+        orderId: orderNumber,
+        cartId,
+        location: cartLocation,
+        destinationArea
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  } catch (err) {
+    console.error('[createDeliveryRequest]:', err);
+  }
+}
 
 export async function getAreas() {
   try {

@@ -9,7 +9,11 @@ import {
   TitleCol,
   SubmitButton
 } from 'components';
-import { GetAreasResult, getAreas } from 'services/Delivery';
+import {
+  GetAreasResult,
+  getAreas,
+  createDeliveryRequest
+} from 'services/Delivery';
 
 const useStyles = makeStyles(({ flex, secondary }: typeof SVT_THEME) => ({
   flexFormContainer: {
@@ -62,6 +66,16 @@ export default function ManualRequest() {
     }
   }, [formValues, submitDisabled]);
 
+  const onSubmit = () => {
+    createDeliveryRequest({
+      cartId: formValues.cartId,
+      cartLocation: formValues.cartLocation,
+      destinationArea: formValues.area,
+      orderNumber: formValues.orderNumber
+    });
+    setFormValues(initialFormValues);
+  };
+
   return (
     <>
       <Row>
@@ -106,7 +120,7 @@ export default function ManualRequest() {
       <Row>
         <SubmitButton
           disabled={submitDisabled}
-          onClick={() => setFormValues(initialFormValues)}
+          onClick={onSubmit}
           text='Create Delivery Request'
           variant='secondary'
         />

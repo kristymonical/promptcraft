@@ -9,6 +9,7 @@ import {
   SubmitButton,
   AutoComplete
 } from 'components';
+import { moveCart } from 'services/Cart';
 
 const createStyles = makeStyles({});
 
@@ -49,7 +50,13 @@ export default function CartHandling() {
           />
         </Col>
         <Col>
-          <AutoComplete
+          <ScannableTextField
+            handleChange={newCartId => setFloorLocation(newCartId)}
+            label='Cart Location'
+            required
+            value={floorLocation}
+          />
+          {/* <AutoComplete
             label='Cart Location'
             onSelect={value => console.log(value)}
             options={[
@@ -60,7 +67,7 @@ export default function CartHandling() {
             ]}
             required
             value={''}
-          />
+          /> */}
         </Col>
         <Col></Col>
       </Row>
@@ -72,9 +79,14 @@ export default function CartHandling() {
       <Row>
         <Col>
           <SubmitButton
-            disabled={!cartId || !floorLocation}
+            disabled={false}
             text='Confirm Move'
             variant='secondary'
+            onClick={() => {
+              moveCart(cartId, floorLocation);
+              setCartId('');
+              setFloorLocation('');
+            }}
           />
         </Col>
       </Row>

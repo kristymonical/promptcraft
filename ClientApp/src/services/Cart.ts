@@ -1,5 +1,3 @@
-export async function moveCart(cartId: string, location: string) {}
-
 export async function getOrderAndDestination(
   cartId: string,
   currentLocationName: string
@@ -12,6 +10,23 @@ export async function getOrderAndDestination(
   } catch (err) {
     console.error('[getStagedCarts]:', err);
     return { destinationAreaName: '', orderId: '' };
+  }
+}
+
+export async function moveCart(cartId: string, malLocationName: string) {
+  try {
+    await fetch('/api/move', {
+      method: 'POST',
+      body: JSON.stringify({
+        malLocationName,
+        cartId
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  } catch (err) {
+    console.error('[moveCart]:', err);
   }
 }
 
