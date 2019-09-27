@@ -20,14 +20,12 @@ namespace SVT.Platform.Controllers
             _svtContext = svtContext;
         }
 
-        [HttpGet("cleandelivery")]
-        public async Task CreateCleanDeliveryRequest()
+        [HttpGet("hierarchytest")]
+        public async Task CreateCleanDeliveryRequest([FromQuery] string startLocationName)
         {
-
-            // var sp = $"exec usp_cart_move @User=N'DEMO', @SourceId=3, @DeliveryId=14";
-            var sp = $"exec usp_cart_move @DestinationId=18, @DeliveryId=3, @User=N'DEMO', @SourceId=13";
-            // var sp = $"exec usp_cart_move @AreaId={destinationArea.AreaId}, @CartId=N'{request.CartId}', @OrderId=N'{request.OrderId}', @DeliveryType=N'deliver', @User=N'DEMO', @SourceId={currentLocation.LocationId}, @DestinationId=10, @Reserved=1";
-            await _svtContext.Database.ExecuteSqlRawAsync(sp);
+            var area = await _svtContext.Areas
+                .Where(a => a.AreaHierarchies.Any(ah => ah.Node.Equals(0x58)))
+                .FirstAsync();
         }
 
         [HttpPost("delivery")]
