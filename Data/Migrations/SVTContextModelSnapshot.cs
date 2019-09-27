@@ -161,6 +161,9 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
+                    b.Property<int?>("PreviousPrioritizedDeliveryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(256)")
@@ -171,6 +174,10 @@ namespace SVT.Platform.Data.Migrations
                     b.HasIndex("DeliveryType");
 
                     b.HasIndex("DestinationAreaId");
+
+                    b.HasIndex("PreviousPrioritizedDeliveryId")
+                        .IsUnique()
+                        .HasFilter("[PreviousPrioritizedDeliveryId] IS NOT NULL");
 
                     b.ToTable("Deliveries");
                 });
@@ -483,6 +490,10 @@ namespace SVT.Platform.Data.Migrations
                         .HasForeignKey("DestinationAreaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("SVT.Platform.Data.Models.Delivery", "PreviousPrioritizedDelivery")
+                        .WithOne("NextPrioritizedDelivery")
+                        .HasForeignKey("SVT.Platform.Data.Models.Delivery", "PreviousPrioritizedDeliveryId");
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Itinerary", b =>

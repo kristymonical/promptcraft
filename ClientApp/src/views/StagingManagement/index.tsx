@@ -49,7 +49,7 @@ export default function StagingManagement() {
   useEffect(() => {
     getStagingTableTestData()
       .then(cartsData => setStagingTableData(cartsData.concat(testData)))
-      .catch(err => console.error(err)); // @error handling
+      .catch(err => console.error(err)); // @error-handling FE
   }, []);
 
   return (

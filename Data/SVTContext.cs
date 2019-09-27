@@ -88,6 +88,10 @@ namespace SVT.Platform.Data
                     .HasOne(delivery => delivery.DestinationArea)
                     .WithMany(area => area.Deliveries)
                     .HasForeignKey(delivery => delivery.DestinationAreaId);
+                deliveryBuilder
+                    .HasOne(delivery => delivery.PreviousPrioritizedDelivery)
+                    .WithOne(delivery => delivery.NextPrioritizedDelivery)
+                    .HasForeignKey<Delivery>(delivery => delivery.PreviousPrioritizedDeliveryId);
             });
 
             // Itinerary FKs

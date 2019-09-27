@@ -49,7 +49,7 @@ export default function ManualRequest() {
   useEffect(() => {
     getAreas()
       .then(returnedAreas => setAreas(returnedAreas))
-      .catch(err => console.error(err)); // @error handling
+      .catch(err => console.error(err)); // @error-handling FE
   }, []);
 
   // determine if create button should be disabled

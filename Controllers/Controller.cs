@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
 
@@ -30,30 +31,45 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpPost("delivery")]
-        public async Task CreateDeliveryRequest([FromBody] CreateDeliveryRequestRequest request)
+        public async Task<int> CreateDeliveryRequest([FromBody] CreateDeliveryRequestRequest request)
         {
+            using var transaction = await _svtContext.Database.BeginTransactionAsync();
+            // @todo grab real user from IdentityClaims
+            // @todo hierarchy
+            // @todo priority
+            // @validation 400 if cartId is not in cartLocation
+            // @validation 400 if cartId or cartLocation are not in the correct format
+            // @validation 409 if no locations are available in the destination or staging
+            // @delivery-request create command to get queue
+            // @delivery-request create command to walk queue to get lowest priority
             var destinationArea = await Commands.GetAreaByNameAsync(_svtContext, request.DestinationArea);
             var currentLocation = await Commands.GetLocationByNameAsync(_svtContext, request.Location);
 
-            // var sp = $"exec usp_cart_move @User=N'DEMO', @SourceId=3, @DeliveryId=14";
-            // var sp = $"exec usp_cart_move @DestinationId=10, @DeliveryId=14, @User=N'DEMO'";
-            var sp = $"exec usp_cart_move @AreaId={destinationArea.AreaId}, @CartId=N'{request.CartId}', @OrderId=N'{request.OrderId}', @DeliveryType=N'deliver', @User=N'DEMO', @SourceId={currentLocation.LocationId}, @DestinationId=10, @Reserved=1";
-            await _svtContext.Database.ExecuteSqlRawAsync(sp);
+            var lowestPriorityDelivery = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext);
 
-            // return await _svtContext.Deliveries.OrderByDescending(d => d.DeliveryId).FirstAsync();
+            var deliveryRequest = new DeliveryCommands.CreateNewDeliveryRequest
+            {
+                CartId = request.CartId,
+                OrderId = request.OrderId,
+                DestinationArea = destinationArea,
+                UserId = "ME", // @hardcoded user id
+                PreviousPrioritizedDeliveryId = null,
+                DeliveryType = request.DeliveryType
+            };
 
-            // var destinationLocation = await Commands.GetAvailableAncestorLocation(_svtContext, destinationArea.Name, currentLocation.Area.Name);
-            // return $"{destinationLocation.Name}";
-            /*
-                determine delivery type:
-                - destination area is staging -> "staging"
-                - start location is suitemal -> "return"
-                - else -> "delivery"
-            */
-            // var reserved = 1; // reserved is always true for delivery request screen
-            // hard code user
+            if (lowestPriorityDelivery != null)
+            {
+                deliveryRequest.PreviousPrioritizedDeliveryId = lowestPriorityDelivery.DeliveryId;
+            }
 
-            // await _svtContext.Database.ExecuteSqlRawAsync($"");
+            var delivery = await DeliveryCommands.CreateNewDelivery(_svtContext, deliveryRequest);
+            await _svtContext.SaveChangesAsync();
+
+            currentLocation.DeliveryId = delivery.DeliveryId;
+            await _svtContext.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+            return delivery.DeliveryId;
         }
 
         [HttpGet("staging")]

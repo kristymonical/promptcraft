@@ -31,10 +31,14 @@ namespace SVT.Platform.Data.Models
         [Required]
         public int DestinationAreaId { get; set; }
 
+        public int? PreviousPrioritizedDeliveryId { get; set; }
+
         // NAVIGATION MEMBERS
         public virtual DeliveryType DeliveryTypeReference { get; set; }
         public virtual Area DestinationArea { get; set; }
         public virtual ICollection<Location> Locations { get; set; }
         public virtual ICollection<Job> Jobs { get; set; }
+        public virtual Delivery PreviousPrioritizedDelivery { get; set; }
+        public virtual Delivery NextPrioritizedDelivery { get; set; }
     }
 }

@@ -15,6 +15,7 @@ namespace SVT.Platform.Controllers
         public string CartId { get; set; }
         public string Location { get; set; }
         public string DestinationArea { get; set; }
+        public string DeliveryType { get; set; }
     }
 
     public class GetAreasResponse

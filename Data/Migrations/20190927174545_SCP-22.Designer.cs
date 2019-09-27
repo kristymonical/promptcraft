@@ -11,7 +11,7 @@ using SVT.Platform.Data;
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    [Migration("20190925193125_SCP-22")]
+    [Migration("20190927174545_SCP-22")]
     partial class SCP22
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,6 +163,9 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
+                    b.Property<int?>("PreviousPrioritizedDeliveryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(256)")
@@ -173,6 +176,10 @@ namespace SVT.Platform.Data.Migrations
                     b.HasIndex("DeliveryType");
 
                     b.HasIndex("DestinationAreaId");
+
+                    b.HasIndex("PreviousPrioritizedDeliveryId")
+                        .IsUnique()
+                        .HasFilter("[PreviousPrioritizedDeliveryId] IS NOT NULL");
 
                     b.ToTable("Deliveries");
                 });
@@ -485,6 +492,10 @@ namespace SVT.Platform.Data.Migrations
                         .HasForeignKey("DestinationAreaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("SVT.Platform.Data.Models.Delivery", "PreviousPrioritizedDelivery")
+                        .WithOne("NextPrioritizedDelivery")
+                        .HasForeignKey("SVT.Platform.Data.Models.Delivery", "PreviousPrioritizedDeliveryId");
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Itinerary", b =>
