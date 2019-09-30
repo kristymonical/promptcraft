@@ -41,4 +41,16 @@ namespace SVT.Platform.Controllers
         public string OrderId { get; set; }
         public string DestinationAreaName { get; set; }
     }
+
+    public class GetDeliveryQueueByPoolResponse
+    {
+        public int DeliveryId { get; set; }
+        public string UserId { get; set; }
+        public string CartId { get; set; }
+        public string OrderId { get; set; }
+        public string CurrentLocation { get; set; }
+        public string ReservedLocation { get; set; }
+        public string DestinationArea { get; set; }
+        public string DeliveryType { get; set; }
+    }
 }
