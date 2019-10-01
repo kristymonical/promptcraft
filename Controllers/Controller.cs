@@ -51,9 +51,10 @@ namespace SVT.Platform.Controllers
                 CartId = request.CartId,
                 OrderId = request.OrderId,
                 DestinationArea = destinationArea,
-                UserId = "ME", // @hardcoded user id
+                UserId = "lonza/test", // @hardcoded user id
                 PreviousPrioritizedDeliveryId = null,
-                DeliveryType = request.DeliveryType
+                DeliveryType = request.DeliveryType,
+                Queued = true
             };
 
             if (lowestPriorityDelivery != null)
@@ -68,6 +69,7 @@ namespace SVT.Platform.Controllers
             await _svtContext.SaveChangesAsync();
 
             await transaction.CommitAsync();
+
             return delivery.DeliveryId;
         }
 
@@ -127,7 +129,7 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpGet("delivery-queue")]
-        public async Task<IEnumerable<GetDeliveryQueueByPoolResponse>> GetDeliveryQueueByPool([FromQuery]int poolId)
+        public async Task<IEnumerable<DeliveryResponse>> GetDeliveryQueueByPool([FromQuery]int poolId)
         {
             Console.WriteLine($"\n\nPool id: {poolId}\n\n");
             
@@ -145,7 +147,7 @@ namespace SVT.Platform.Controllers
                 current = current.NextPrioritizedDelivery;
             }
 
-            return queue.Select(d => new GetDeliveryQueueByPoolResponse {
+            return queue.Select(d => new DeliveryResponse {
                     DeliveryId = d.DeliveryId,
                     UserId = d.UserId,
                     CartId = d.CartId,
@@ -157,7 +159,7 @@ namespace SVT.Platform.Controllers
                 });
         }
 
-        [HttpPut("delivery/{deliveryId}/change-priority")]
+        [HttpPut("delivery/{deliveryId}/queue/priority")]
         public async Task<IActionResult> ChangeDeliveryPriority(
             [FromRoute]int deliveryId,
             [FromQuery]int newParentDeliveryId,
@@ -202,7 +204,7 @@ namespace SVT.Platform.Controllers
             return NoContent();
         }
 
-        [HttpPut("delivery/{deliveryId}/change-priority/top")]
+        [HttpPut("delivery/{deliveryId}/queue/priority/top")]
         public async Task<IActionResult> ChangeDeliveryPriorityTop([FromRoute]int deliveryId, [FromQuery]int poolId)
         {
             using var transaction = await _svtContext.Database.BeginTransactionAsync();
@@ -237,7 +239,7 @@ namespace SVT.Platform.Controllers
             return NoContent();
         }
 
-        [HttpPut("delivery/{deliveryId}/change-priority/bottom")]
+        [HttpPut("delivery/{deliveryId}/queue/priority/bottom")]
         public async Task<IActionResult> ChangeDeliveryPriorityBottom([FromRoute]int deliveryId, [FromQuery]int poolId)
         {
             using var transaction = await _svtContext.Database.BeginTransactionAsync();
@@ -267,6 +269,45 @@ namespace SVT.Platform.Controllers
 
             await transaction.CommitAsync();
 
+            return NoContent();
+        }
+
+        [HttpPut("delivery/queue/pop")]
+        public async Task<IActionResult> PopDeliveryFromQueue([FromQuery]int poolId)
+        {
+            var top = await DeliveryCommands.PopDeliveryQueue(_svtContext, poolId);
+
+            await _svtContext.SaveChangesAsync();
+
+            return Ok(new DeliveryResponse
+            {
+                DeliveryId = top.DeliveryId,
+                UserId = top.UserId,
+                CartId = top.CartId,
+                OrderId = top.OrderId,
+                CurrentLocation = top.Locations.ToList().Find(loc => !loc.Reserved).Name,
+                ReservedLocation = top.Locations.ToList().Find(loc => loc.Reserved)?.Name,
+                DestinationArea = top.DestinationArea.Name,
+                DeliveryType = top.DeliveryType
+            });
+        }
+
+        [HttpPut("delivery/{deliveryId}/queue/append")]
+        public async Task<IActionResult> AppendDeliveryToQueue([FromRoute]int deliveryId, [FromQuery]int poolId)
+        {
+            var delivery = await DeliveryCommands.GetDeliveryById(_svtContext, deliveryId);
+
+            var lastInQueue = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, poolId);
+
+            delivery.Queued = true;
+            
+            if (lastInQueue != null)
+            {
+                delivery.PreviousPrioritizedDeliveryId = lastInQueue.DeliveryId;
+            }
+
+            await _svtContext.SaveChangesAsync();
+            
             return NoContent();
         }
     }

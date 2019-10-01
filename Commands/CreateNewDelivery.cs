@@ -16,10 +16,11 @@ namespace SVT.Platform.Commands
                 DestinationAreaId = request.DestinationArea.AreaId,
                 InsertedBy = request.UserId,
                 InsertedOn = DateTime.UtcNow,
-                ModifiedBy = "",
-                ModifiedOn = DateTime.UnixEpoch, // @hardcoded audit fields
+                ModifiedBy = request.UserId,
+                ModifiedOn = DateTime.UtcNow, // @hardcoded audit fields
                 OrderId = request.OrderId,
                 PreviousPrioritizedDeliveryId = request.PreviousPrioritizedDeliveryId,
+                Queued = request.Queued,
                 UserId = request.UserId
             };
 
@@ -36,6 +37,7 @@ namespace SVT.Platform.Commands
             public string DeliveryType { get; set; }
             public Area DestinationArea { get; set; }
             public int? PreviousPrioritizedDeliveryId { get; set; }
+            public bool Queued { get; set; }
         }
     }
 }

@@ -11,7 +11,7 @@ using SVT.Platform.Data;
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    [Migration("20191001161240_SCP-22")]
+    [Migration("20191001203859_SCP-22")]
     partial class SCP22
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -165,6 +165,9 @@ namespace SVT.Platform.Data.Migrations
 
                     b.Property<int?>("PreviousPrioritizedDeliveryId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Queued")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserId")
                         .IsRequired()

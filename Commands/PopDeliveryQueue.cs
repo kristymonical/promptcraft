@@ -9,7 +9,9 @@ namespace SVT.Platform.Commands
     {
         public static async Task<Delivery> PopDeliveryQueue(SVTContext context, int poolId)
         {
-            var top = await DeliveryCommands.GetDeliveryQueue(context, poolId).FirstAsync();
+            var top = await DeliveryCommands.GetHighestPriorityDelivery(context, poolId);
+
+            top.Queued = false;
 
             top.NextPrioritizedDelivery.PreviousPrioritizedDeliveryId = null;
 

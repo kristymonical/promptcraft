@@ -199,7 +199,8 @@ namespace SVT.Platform.Data.Migrations
                     UserId = table.Column<string>(maxLength: 256, nullable: false),
                     DeliveryType = table.Column<string>(maxLength: 50, nullable: false),
                     DestinationAreaId = table.Column<int>(nullable: false),
-                    PreviousPrioritizedDeliveryId = table.Column<int>(nullable: true)
+                    PreviousPrioritizedDeliveryId = table.Column<int>(nullable: true),
+                    Queued = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

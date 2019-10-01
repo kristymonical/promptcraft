@@ -33,6 +33,8 @@ namespace SVT.Platform.Data.Models
 
         public int? PreviousPrioritizedDeliveryId { get; set; }
 
+        public bool Queued { get; set; }
+
         // NAVIGATION MEMBERS
         public virtual DeliveryType DeliveryTypeReference { get; set; }
         public virtual Area DestinationArea { get; set; }

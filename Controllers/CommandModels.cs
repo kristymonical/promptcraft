@@ -42,7 +42,7 @@ namespace SVT.Platform.Controllers
         public string DestinationAreaName { get; set; }
     }
 
-    public class GetDeliveryQueueByPoolResponse
+    public class DeliveryResponse
     {
         public int DeliveryId { get; set; }
         public string UserId { get; set; }

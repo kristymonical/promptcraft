@@ -164,6 +164,9 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<int?>("PreviousPrioritizedDeliveryId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Queued")
+                        .HasColumnType("bit");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(256)")

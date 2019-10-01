@@ -10,12 +10,12 @@ namespace SVT.Platform.Commands
     {
         public static async Task<Delivery> GetLowestPriorityDelivery(SVTContext context, int poolId)
         {
-            var deliveriesInQueue = await DeliveryCommands.GetDeliveryQueue(context, poolId).CountAsync();
+            // var deliveriesInQueue = await DeliveryCommands.GetDeliveryQueue(context, poolId).CountAsync();
 
-            if (deliveriesInQueue == 0)
-            {
-                return null;
-            }
+            // if (deliveriesInQueue == 0)
+            // {
+            //     return null;
+            // }
 
             var topDelivery = await DeliveryCommands.GetHighestPriorityDelivery(context, poolId);
 
