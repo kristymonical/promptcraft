@@ -234,9 +234,11 @@ namespace SVT.Platform.Data.Migrations
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
                     ModifiedOn = table.Column<DateTime>(nullable: false),
                     ModifiedBy = table.Column<string>(maxLength: 256, nullable: false),
-                    AethonJobId = table.Column<int>(nullable: true),
+                    AethonJobId = table.Column<int>(nullable: false),
                     State = table.Column<string>(maxLength: 50, nullable: false),
-                    DeliveryId = table.Column<int>(nullable: false)
+                    DeliveryId = table.Column<int>(nullable: false),
+                    Completed = table.Column<DateTime>(nullable: false),
+                    Canceled = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -320,6 +322,39 @@ namespace SVT.Platform.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ScheduledDelivery",
+                columns: table => new
+                {
+                    ScheduledDeliveryId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InsertedOn = table.Column<DateTime>(nullable: false),
+                    InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
+                    ModifiedOn = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: false),
+                    TTL = table.Column<DateTime>(nullable: false),
+                    Completed = table.Column<DateTime>(nullable: false),
+                    Canceled = table.Column<DateTime>(nullable: false),
+                    DeliveryId = table.Column<int>(nullable: false),
+                    DestinationLocationId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ScheduledDelivery", x => x.ScheduledDeliveryId);
+                    table.ForeignKey(
+                        name: "FK_ScheduledDelivery_Deliveries_DeliveryId",
+                        column: x => x.DeliveryId,
+                        principalTable: "Deliveries",
+                        principalColumn: "DeliveryId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ScheduledDelivery_Locations_DestinationLocationId",
+                        column: x => x.DestinationLocationId,
+                        principalTable: "Locations",
+                        principalColumn: "LocationId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AreaDeliveryTypes_DeliveryType",
                 table: "AreaDeliveryTypes",
@@ -391,6 +426,16 @@ namespace SVT.Platform.Data.Migrations
                 name: "IX_Locations_LocationType",
                 table: "Locations",
                 column: "LocationType");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduledDelivery_DeliveryId",
+                table: "ScheduledDelivery",
+                column: "DeliveryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduledDelivery_DestinationLocationId",
+                table: "ScheduledDelivery",
+                column: "DestinationLocationId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -409,6 +454,9 @@ namespace SVT.Platform.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Itineraries");
+
+            migrationBuilder.DropTable(
+                name: "ScheduledDelivery");
 
             migrationBuilder.DropTable(
                 name: "UserLogs");

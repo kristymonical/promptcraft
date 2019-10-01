@@ -4,26 +4,24 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SVT.Platform.Data.Models
 {
-    public class Job : BaseAuditModel
+    public class ScheduledDelivery : BaseAuditModel
     {
         [Key]
-        public int JobId { get; set; }
+        public int ScheduledDeliveryId { get; set; }
 
-        public int AethonJobId { get; set; }
-
-        [Required]
-        [StringLength(50)]
-        public string State { get; set; }
-
-        public int DeliveryId { get; set; }
+        public DateTime TTL { get; set; }
 
         public DateTime Completed { get; set; }
 
         public DateTime Canceled { get; set; }
 
+        public int DeliveryId { get; set; }
+
+        public int DestinationLocationId { get; set; }
+
         // NAVIGATION MEMBERS
         public virtual Delivery Delivery { get; set; }
         
-        public virtual ICollection<Itinerary> Itineraries { get; set; }
+        public virtual Location DestinationLocation { get; set; }
     }
 }

@@ -135,6 +135,21 @@ namespace SVT.Platform.Data
                     .HasForeignKey(job => job.DeliveryId);
             });
 
+            // ScheduledDelivery FKs
+            modelBuilder.Entity<ScheduledDelivery>(scheduledDeliveryBuilder =>
+            {
+                scheduledDeliveryBuilder
+                    .HasOne(scheduledDelivery => scheduledDelivery.Delivery)
+                    .WithMany(delivery => delivery.ScheduledDeliveries)
+                    .HasForeignKey(scheduledDelivery => scheduledDelivery.DeliveryId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                scheduledDeliveryBuilder
+                    .HasOne(scheduledDelivery => scheduledDelivery.DestinationLocation)
+                    .WithMany(location => location.ScheduledDeliveries)
+                    .HasForeignKey(scheduledDelivery => scheduledDelivery.DestinationLocationId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
             // Computed Fields
             modelBuilder.Entity<UserLog>()
                 .Property(log => log.vUserId)

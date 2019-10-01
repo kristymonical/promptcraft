@@ -11,7 +11,7 @@ using SVT.Platform.Data;
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    [Migration("20190927174545_SCP-22")]
+    [Migration("20191001161240_SCP-22")]
     partial class SCP22
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -276,8 +276,14 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AethonJobId")
+                    b.Property<int>("AethonJobId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("Canceled")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Completed")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("DeliveryId")
                         .HasColumnType("int");
@@ -393,6 +399,53 @@ namespace SVT.Platform.Data.Migrations
                     b.HasKey("PoolId");
 
                     b.ToTable("Pools");
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.ScheduledDelivery", b =>
+                {
+                    b.Property<int>("ScheduledDeliveryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Canceled")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Completed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DeliveryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DestinationLocationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InsertedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("InsertedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("TTL")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ScheduledDeliveryId");
+
+                    b.HasIndex("DeliveryId");
+
+                    b.HasIndex("DestinationLocationId");
+
+                    b.ToTable("ScheduledDelivery");
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.UserLog", b =>
@@ -538,6 +591,21 @@ namespace SVT.Platform.Data.Migrations
                         .WithMany("Locations")
                         .HasForeignKey("LocationType")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.ScheduledDelivery", b =>
+                {
+                    b.HasOne("SVT.Platform.Data.Models.Delivery", "Delivery")
+                        .WithMany("ScheduledDeliveries")
+                        .HasForeignKey("DeliveryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SVT.Platform.Data.Models.Location", "DestinationLocation")
+                        .WithMany("ScheduledDeliveries")
+                        .HasForeignKey("DestinationLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
