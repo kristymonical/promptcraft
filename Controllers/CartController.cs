@@ -19,17 +19,23 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpGet("staging")]
-        public async Task<IEnumerable<GetStagedCartsResponse>> GetStagedCarts()
+        public async Task<IEnumerable<GetStagedCartsResponse>> GetStagedCarts([FromQuery] string deliveryType)
         {
-            var list = await LocationCommands.GetStagedCartLocations(_svtContext).ToListAsync();
-            return list.Select(loc => new GetStagedCartsResponse()
+            var stagedCartLocationsQueryable = LocationCommands.GetStagedCartLocations(_svtContext);
+
+            if (deliveryType != null)
             {
-                OrderId = loc.Delivery.OrderId,
-                CartId = loc.Delivery.CartId,
-                StagingLocationId = loc.Name,
-                DeliveryRequestType = loc.Delivery.DeliveryType,
-                DestinationArea = loc.Delivery.DestinationArea.Name
-            });
+                stagedCartLocationsQueryable = stagedCartLocationsQueryable.Where(loc => loc.Delivery.DeliveryType == deliveryType);
+            }
+            return (await stagedCartLocationsQueryable.ToListAsync())
+                .Select(loc => new GetStagedCartsResponse()
+                {
+                    OrderId = loc.Delivery.OrderId,
+                    CartId = loc.Delivery.CartId,
+                    StagingLocationId = loc.Name,
+                    DeliveryRequestType = loc.Delivery.DeliveryType,
+                    DestinationArea = loc.Delivery.DestinationArea.Name
+                });
         }
 
         [HttpPost("move")]

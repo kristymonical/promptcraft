@@ -9,9 +9,10 @@ namespace SVT.Platform.Commands
         public static IQueryable<Location> GetStagedCartLocations(SVTContext context)
         {
             return context.Locations
-                .Where(loc => loc.DeliveryId != null)
                 .Where(loc => loc.Area.AreaType == "stg")
-                .Where(loc => loc.Delivery.DeliveryType != "return");
+                .Where(loc => loc.DeliveryId != null)
+                .Where(loc => loc.Delivery.DeliveryType != "deliver")
+                .Where(loc => loc.Delivery.Completed != null && loc.Delivery.Canceled == null);
         }
     }
 }

@@ -15,46 +15,46 @@ namespace SVT.Platform.Controllers
             _svtContext = svtContext;
         }
 
-        [HttpPost("delivery")]
-        public async Task<int> CreateDeliveryRequest([FromBody] CreateDeliveryRequestRequest request)
+        // @validation 400 if cartId or cartLocation are not in the correct format
+        [HttpPost("delivery/queue")]
+        public async Task<IActionResult> CreateDeliveryRequest([FromBody] CreateDeliveryRequestRequest request)
         {
             using var transaction = await _svtContext.Database.BeginTransactionAsync();
-            // @todo grab real user from IdentityClaims
-            // @todo hierarchy
-            // @todo priority
-            // @validation 400 if cartId is not in cartLocation
-            // @validation 400 if cartId or cartLocation are not in the correct format
-            // @validation 409 if no locations are available in the destination or staging
-            // @delivery-request create command to get queue
-            // @delivery-request create command to walk queue to get lowest priority
+
             var destinationArea = await AreaCommands.GetAreaByName(_svtContext, request.DestinationArea);
             var currentLocation = await LocationCommands.GetLocationByName(_svtContext, request.Location);
+            var isValidCartLocation = await DeliveryCommands.ValidateCartLocation(_svtContext, currentLocation, request.CartId);
 
-            var lowestPriorityDelivery = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, currentLocation.Area.PoolId);
+            if (!isValidCartLocation)
+            {
+                return Conflict();
+            }
 
-            var deliveryRequest = new DeliveryCommands.CreateNewDeliveryRequest
+            var delivery = await DeliveryCommands.CreateNewDelivery(_svtContext, new DeliveryCommands.CreateNewDeliveryRequest
             {
                 CartId = request.CartId,
                 OrderId = request.OrderId,
                 DestinationArea = destinationArea,
-                UserId = "ME", // @hardcoded user id
-                PreviousPrioritizedDeliveryId = null,
+                UserId = HttpContext.User.Identity.Name,
                 DeliveryType = request.DeliveryType
-            };
+            });
+            
+            delivery.Queued = true;
+            
+            var lowestPriorityDelivery = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, currentLocation.Area.PoolId);
 
             if (lowestPriorityDelivery != null)
             {
-                deliveryRequest.PreviousPrioritizedDeliveryId = lowestPriorityDelivery.DeliveryId;
+                delivery.PreviousPrioritizedDeliveryId = lowestPriorityDelivery.DeliveryId;
             }
 
-            var delivery = await DeliveryCommands.CreateNewDelivery(_svtContext, deliveryRequest);
             await _svtContext.SaveChangesAsync();
 
             currentLocation.DeliveryId = delivery.DeliveryId;
             await _svtContext.SaveChangesAsync();
 
             await transaction.CommitAsync();
-            return delivery.DeliveryId;
+            return Ok(new { DeliveryId = delivery.DeliveryId });
         }
 
         public class CreateDeliveryRequestRequest
