@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SVT.Platform.Commands;
@@ -32,6 +33,8 @@ namespace SVT.Platform.Controllers
 
             var lowestPriorityDelivery = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, currentLocation.Area.PoolId);
 
+            Console.WriteLine(lowestPriorityDelivery?.CartId);
+
             var deliveryRequest = new DeliveryCommands.CreateNewDeliveryRequest
             {
                 CartId = request.CartId,
@@ -39,7 +42,8 @@ namespace SVT.Platform.Controllers
                 DestinationArea = destinationArea,
                 UserId = "ME", // @hardcoded user id
                 PreviousPrioritizedDeliveryId = null,
-                DeliveryType = request.DeliveryType
+                DeliveryType = request.DeliveryType,
+                Queued = true
             };
 
             if (lowestPriorityDelivery != null)

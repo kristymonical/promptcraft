@@ -25,9 +25,7 @@ namespace SVT.Platform.Controllers
         {
             Console.WriteLine($"\n\nPool id: {poolId}\n\n");
 
-            var firstQueuedDelivery = await DeliveryCommands.GetDeliveryQueue(_svtContext, poolId)
-                .Where(d => d.PreviousPrioritizedDeliveryId == null)
-                .FirstAsync();
+            var firstQueuedDelivery = await DeliveryCommands.GetHighestPriorityDelivery(_svtContext, poolId);
 
             var current = firstQueuedDelivery;
 

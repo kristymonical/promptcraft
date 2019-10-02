@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { Row, Col } from 'react-bootstrap';
 
 import {
   Table,
   TitleCol,
   ScannableTextField,
-  SubmitButton,
-  AutoComplete
+  SubmitButton
+  //   AutoComplete
 } from 'components';
 import { moveCart } from 'services/Cart';
-
-const createStyles = makeStyles({});
 
 const tableShape = [
   { label: 'Order ID', key: 'orderId' },
@@ -20,9 +18,7 @@ const tableShape = [
 ];
 
 export default function CartHandling() {
-  const classes = createStyles({});
-
-  const [tableData, setTableData] = useState([]);
+  const [tableData] = useState([]);
   const [cartId, setCartId] = useState('');
   const [floorLocation, setFloorLocation] = useState('');
 
