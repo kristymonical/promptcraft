@@ -7,132 +7,24 @@ using Microsoft.EntityFrameworkCore;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
-using System.Text.Json;
 
 namespace SVT.Platform.Controllers
 {
     [Route("api")]
-    public class LonzaController : ControllerBase
+    public class DeliveryQueueController : ControllerBase
     {
         private SVTContext _svtContext;
 
-        public LonzaController(SVTContext svtContext)
+        public DeliveryQueueController(SVTContext svtContext)
         {
             _svtContext = svtContext;
         }
 
-        [HttpGet("hierarchytest")]
-        public async Task CreateCleanDeliveryRequest([FromQuery] string startLocationName)
-        {
-            var area = await _svtContext.Areas
-                .Where(a => a.AreaHierarchies.Any(ah => ah.Node.Equals(0x58)))
-                .FirstAsync();
-        }
-
-        [HttpPost("delivery")]
-        public async Task<int> CreateDeliveryRequest([FromBody] CreateDeliveryRequestRequest request)
-        {
-            using var transaction = await _svtContext.Database.BeginTransactionAsync();
-            // @todo grab real user from IdentityClaims
-            // @todo hierarchy
-            // @todo priority
-            // @validation 400 if cartId is not in cartLocation
-            // @validation 400 if cartId or cartLocation are not in the correct format
-            // @validation 409 if no locations are available in the destination or staging
-            // @delivery-request create command to get queue
-            // @delivery-request create command to walk queue to get lowest priority
-            var destinationArea = await Commands.GetAreaByNameAsync(_svtContext, request.DestinationArea);
-            var currentLocation = await Commands.GetLocationByNameAsync(_svtContext, request.Location);
-
-            var lowestPriorityDelivery = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, currentLocation.Area.PoolId);
-
-            var deliveryRequest = new DeliveryCommands.CreateNewDeliveryRequest
-            {
-                CartId = request.CartId,
-                OrderId = request.OrderId,
-                DestinationArea = destinationArea,
-                UserId = "lonza/test", // @hardcoded user id
-                PreviousPrioritizedDeliveryId = null,
-                DeliveryType = request.DeliveryType,
-                Queued = true
-            };
-
-            if (lowestPriorityDelivery != null)
-            {
-                deliveryRequest.PreviousPrioritizedDeliveryId = lowestPriorityDelivery.DeliveryId;
-            }
-
-            var delivery = await DeliveryCommands.CreateNewDelivery(_svtContext, deliveryRequest);
-            await _svtContext.SaveChangesAsync();
-
-            currentLocation.DeliveryId = delivery.DeliveryId;
-            await _svtContext.SaveChangesAsync();
-
-            await transaction.CommitAsync();
-
-            return delivery.DeliveryId;
-        }
-
-        [HttpGet("staging")]
-        public async Task<IEnumerable<GetStagedCartsResponse>> GetStagedCarts()
-        {
-            var list = await Commands.GetStagedCartLocationsQuery(_svtContext).ToListAsync();
-            return list.Select(loc => new GetStagedCartsResponse()
-            {
-                OrderId = loc.Delivery.OrderId,
-                CartId = loc.Delivery.CartId,
-                StagingLocationId = loc.Name,
-                DeliveryRequestType = loc.Delivery.DeliveryType,
-                DestinationArea = loc.Delivery.DestinationArea.Name
-            });
-        }
-
-        // [HttpPost("staging")]
-        // public async Task CreateStagingRequest()
-        // {
-
-        // }
-
-        [HttpGet("areas")]
-        public async Task<IEnumerable<GetAreasResponse>> GetAreasAsync()
-        {
-            var areas = await _svtContext.Areas.ToListAsync();
-            return areas.Select(area => new GetAreasResponse()
-            {
-                AreaId = area.AreaId,
-                AreaName = area.Name
-            }).OrderBy(x => x.AreaName);
-        }
-
-        [HttpPost("move")]
-        public async Task MoveCartAsync([FromBody] MoveCartRequest request)
-        {
-            await Commands.MoveCart(_svtContext, request.CartId, request.MalLocationName);
-        }
-
-        [HttpGet("cleaninfo")]
-        public async Task<GetOrderAndDestinationResponse> GetOrderAndDestination([FromQuery] GetOrderAndDestinationRequest request)
-        {
-            // var location = _svtContext.Locations
-            var activeDelivery = await _svtContext.Deliveries
-                .Where(d => d.CartId == request.CartId)
-                .Where(d => d.Completed == null)
-                .FirstAsync();
-
-            await Commands.MoveCart(_svtContext, request.CartId, request.MalLocationName);
-
-            return new GetOrderAndDestinationResponse()
-            {
-                DestinationAreaName = activeDelivery.DestinationArea.Name,
-                OrderId = activeDelivery.OrderId
-            };
-        }
-
         [HttpGet("delivery-queue")]
-        public async Task<IEnumerable<DeliveryResponse>> GetDeliveryQueueByPool([FromQuery]int poolId)
+        public async Task<IEnumerable<GetDeliveryQueueByPoolResponse>> GetDeliveryQueueByPool([FromQuery]int poolId)
         {
             Console.WriteLine($"\n\nPool id: {poolId}\n\n");
-            
+
             var firstQueuedDelivery = await DeliveryCommands.GetDeliveryQueue(_svtContext, poolId)
                 .Where(d => d.PreviousPrioritizedDeliveryId == null)
                 .FirstAsync();
@@ -147,16 +39,17 @@ namespace SVT.Platform.Controllers
                 current = current.NextPrioritizedDelivery;
             }
 
-            return queue.Select(d => new DeliveryResponse {
-                    DeliveryId = d.DeliveryId,
-                    UserId = d.UserId,
-                    CartId = d.CartId,
-                    OrderId = d.OrderId,
-                    CurrentLocation = d.Locations.ToList().Find(loc => !loc.Reserved).Name,
-                    ReservedLocation = d.Locations.ToList().Find(loc => loc.Reserved)?.Name,
-                    DestinationArea = d.DestinationArea.Name,
-                    DeliveryType = d.DeliveryType
-                });
+            return queue.Select(d => new GetDeliveryQueueByPoolResponse
+            {
+                DeliveryId = d.DeliveryId,
+                UserId = d.UserId,
+                CartId = d.CartId,
+                OrderId = d.OrderId,
+                CurrentLocation = d.Locations.ToList().Find(loc => !loc.Reserved).Name,
+                ReservedLocation = d.Locations.ToList().Find(loc => loc.Reserved)?.Name,
+                DestinationArea = d.DestinationArea.Name,
+                DeliveryType = d.DeliveryType
+            });
         }
 
         [HttpPut("delivery/{deliveryId}/queue/priority")]
@@ -178,7 +71,7 @@ namespace SVT.Platform.Controllers
             var newParentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, newParentDeliveryId, poolId);
 
             var newChildDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, newChildDeliveryId, poolId);
-            
+
             if (newParentDelivery == null && newChildDelivery == null)
             {
                 return UnprocessableEntity();
@@ -189,14 +82,16 @@ namespace SVT.Platform.Controllers
                 currentDelivery.NextPrioritizedDelivery.PreviousPrioritizedDeliveryId = currentDelivery.PreviousPrioritizedDeliveryId;
             }
 
-            if (newParentDelivery != null) {
+            if (newParentDelivery != null)
+            {
                 currentDelivery.PreviousPrioritizedDeliveryId = newParentDelivery.DeliveryId;
             }
 
-            if(newChildDelivery != null) {
+            if (newChildDelivery != null)
+            {
                 newChildDelivery.PreviousPrioritizedDeliveryId = currentDelivery.DeliveryId;
             }
-            
+
             await _svtContext.SaveChangesAsync();
 
             await transaction.CommitAsync();
@@ -279,7 +174,7 @@ namespace SVT.Platform.Controllers
 
             await _svtContext.SaveChangesAsync();
 
-            return Ok(new DeliveryResponse
+            return Ok(new GetDeliveryQueueByPoolResponse
             {
                 DeliveryId = top.DeliveryId,
                 UserId = top.UserId,
@@ -300,15 +195,27 @@ namespace SVT.Platform.Controllers
             var lastInQueue = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, poolId);
 
             delivery.Queued = true;
-            
+
             if (lastInQueue != null)
             {
                 delivery.PreviousPrioritizedDeliveryId = lastInQueue.DeliveryId;
             }
 
             await _svtContext.SaveChangesAsync();
-            
+
             return NoContent();
+        }
+
+        public class GetDeliveryQueueByPoolResponse
+        {
+            public int DeliveryId { get; set; }
+            public string UserId { get; set; }
+            public string CartId { get; set; }
+            public string OrderId { get; set; }
+            public string CurrentLocation { get; set; }
+            public string ReservedLocation { get; set; }
+            public string DestinationArea { get; set; }
+            public string DeliveryType { get; set; }
         }
     }
 }
