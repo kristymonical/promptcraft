@@ -81,6 +81,18 @@ namespace SVT.Platform.Data
             modelBuilder.Entity<Delivery>(deliveryBuilder =>
             {
                 deliveryBuilder
+                    .Property(d => d.InsertedBy)
+                    .HasDefaultValueSql("suser_sname()");
+                deliveryBuilder
+                    .Property(d => d.InsertedOn)
+                    .HasDefaultValueSql("getdate()");
+                deliveryBuilder
+                    .Property(d => d.ModifiedBy)
+                    .HasDefaultValueSql("suser_sname()");
+                deliveryBuilder
+                    .Property(d => d.ModifiedOn)
+                    .HasDefaultValueSql("getdate()");
+                deliveryBuilder
                     .HasOne(delivery => delivery.DeliveryTypeReference)
                     .WithMany(deliveryType => deliveryType.Deliveries)
                     .HasForeignKey(delivery => delivery.DeliveryType);

@@ -23,8 +23,6 @@ namespace SVT.Platform.Controllers
         [HttpGet("delivery-queue")]
         public async Task<IEnumerable<GetDeliveryQueueByPoolResponse>> GetDeliveryQueueByPool([FromQuery]int poolId)
         {
-            Console.WriteLine($"\n\nPool id: {poolId}\n\n");
-
             var firstQueuedDelivery = await DeliveryCommands.GetHighestPriorityDelivery(_svtContext, poolId);
 
             var current = firstQueuedDelivery;

@@ -11,7 +11,7 @@ using SVT.Platform.Data;
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    [Migration("20191001203859_SCP-22")]
+    [Migration("20191002174920_SCP-22")]
     partial class SCP22
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,20 +144,26 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("InsertedBy")
-                        .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(256)")
+                        .HasDefaultValueSql("suser_sname()")
                         .HasMaxLength(256);
 
                     b.Property<DateTime>("InsertedOn")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("ModifiedBy")
-                        .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(256)")
+                        .HasDefaultValueSql("suser_sname()")
                         .HasMaxLength(256);
 
                     b.Property<DateTime>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("OrderId")
                         .HasColumnType("nvarchar(50)")
@@ -237,7 +243,6 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("InsertedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -251,7 +256,6 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ModifiedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -292,7 +296,6 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("InsertedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -300,7 +303,6 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ModifiedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -333,7 +335,6 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("InsertedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -346,7 +347,6 @@ namespace SVT.Platform.Data.Migrations
                         .HasMaxLength(50);
 
                     b.Property<string>("ModifiedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -424,7 +424,6 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("InsertedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -432,7 +431,6 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ModifiedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 

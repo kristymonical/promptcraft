@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
@@ -14,14 +13,9 @@ namespace SVT.Platform.Commands
                 CartId = request.CartId,
                 DeliveryType = request.DeliveryType,
                 DestinationAreaId = request.DestinationArea.AreaId,
-                InsertedBy = request.UserId,
-                InsertedOn = DateTime.UtcNow,
-                ModifiedBy = request.UserId,
-                ModifiedOn = DateTime.UtcNow, // @hardcoded audit fields
                 OrderId = request.OrderId,
-                PreviousPrioritizedDeliveryId = request.PreviousPrioritizedDeliveryId,
-                Queued = request.Queued,
-                UserId = request.UserId
+                // @todo remove ternary once able to authenticate requests
+                UserId = request.UserId != null ? request.UserId : "lonza/test"
             };
 
             var entityEntry = await context.Deliveries.AddAsync(delivery);
