@@ -37,6 +37,7 @@ export default function DeliveryQueueManagement({
         {queue.length > 0 && (
           <DraggableList
             items={queue}
+            itemIdKey='deliveryId'
             onDragEnd={result => {
               if (!result.destination) return;
 

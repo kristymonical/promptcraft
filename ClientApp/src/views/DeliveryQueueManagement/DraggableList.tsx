@@ -7,6 +7,7 @@ import DraggableListItem from './DraggableListItem';
 
 interface DraggableListProps {
   items: any[];
+  itemIdKey: string;
   onDragEnd: (result: any) => void;
 }
 
@@ -16,6 +17,7 @@ const createStyles = makeStyles<typeof SVT_THEME, Partial<DraggableListProps>>(
 
 export default function DraggableList({
   items,
+  itemIdKey,
   onDragEnd
 }: DraggableListProps) {
   const classes = createStyles({});
@@ -26,7 +28,7 @@ export default function DraggableList({
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {items.map((item, idx) => (
               <DraggableListItem
-                key={`drag-delivery-${item.deliveryId}`}
+                key={`drag-delivery-${item[itemIdKey]}`}
                 item={item}
                 index={idx}
               />
