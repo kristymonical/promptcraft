@@ -3,25 +3,26 @@ using SVT.Platform.Data.Models;
 
 namespace SVT.Platform.Data
 {
-    public class SVTContext : DbContext
+    public partial class SVTContext : DbContext
     {
-        public DbSet<Area> Areas { get; set; }
-        public DbSet<AreaType> AreaTypes { get; set; }
         public DbSet<Delivery> Deliveries { get; set; }
-        public DbSet<DeliveryType> DeliveryTypes { get; set; }
         public DbSet<DevLog> DevLogs { get; set; }
         public DbSet<Itinerary> Itineraries { get; set; }
         public DbSet<Job> Jobs { get; set; }
-        public DbSet<Location> Locations { get; set; }
-        public DbSet<LocationType> LocationTypes { get; set; }
-        public DbSet<Pool> Pools { get; set; }
         public DbSet<UserLog> UserLogs { get; set; }
 
         public SVTContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // self referential area to area many-to-many
+            BuildAreaType(modelBuilder);
+            BuildPool(modelBuilder);
+            BuildArea(modelBuilder);
+            BuildLocationType(modelBuilder);
+            BuildLocation(modelBuilder);
+            BuildDeliveryType(modelBuilder);
+            
+            // self referential area to area many-to-many            
             modelBuilder.Entity<AreaMap>(areaMapBuilder =>
             {
                 areaMapBuilder
@@ -53,19 +54,6 @@ namespace SVT.Platform.Data
                     .WithMany(deliveryType => deliveryType.AreaDeliveryTypes)
                     .HasForeignKey(areaDeliveryType => areaDeliveryType.DeliveryType)
                     .OnDelete(DeleteBehavior.Restrict); // @database fix this stupid thing
-            });
-
-            // Area FKs
-            modelBuilder.Entity<Area>(areaBuilder =>
-            {
-                areaBuilder
-                    .HasOne(area => area.AreaTypeReference)
-                    .WithMany(areaType => areaType.Areas)
-                    .HasForeignKey(area => area.AreaType);
-                areaBuilder
-                    .HasOne(area => area.Pool)
-                    .WithMany(pool => pool.Areas)
-                    .HasForeignKey(area => area.PoolId);
             });
 
             // AreaHierarchy FKs
@@ -110,6 +98,18 @@ namespace SVT.Platform.Data
             modelBuilder.Entity<Itinerary>(itineraryBuilder =>
             {
                 itineraryBuilder
+                    .Property(d => d.InsertedBy)
+                    .HasDefaultValueSql("suser_sname()");
+                itineraryBuilder
+                    .Property(d => d.InsertedOn)
+                    .HasDefaultValueSql("getdate()");
+                itineraryBuilder
+                    .Property(d => d.ModifiedBy)
+                    .HasDefaultValueSql("suser_sname()");
+                itineraryBuilder
+                    .Property(d => d.ModifiedOn)
+                    .HasDefaultValueSql("getdate()");
+                itineraryBuilder
                     .HasOne(itinerary => itinerary.Location)
                     .WithMany(location => location.Itineraries)
                     .HasForeignKey(itinerary => itinerary.LocationId)
@@ -120,27 +120,21 @@ namespace SVT.Platform.Data
                     .HasForeignKey(itinerary => itinerary.JobId);
             });
 
-            // Location FKs
-            modelBuilder.Entity<Location>(locationBuilder =>
-            {
-                locationBuilder
-                    .HasOne(location => location.LocationTypeReference)
-                    .WithMany(locationType => locationType.Locations)
-                    .HasForeignKey(location => location.LocationType);
-                locationBuilder
-                    .HasOne(location => location.Area)
-                    .WithMany(area => area.Locations)
-                    .HasForeignKey(location => location.AreaId);
-                locationBuilder
-                    .HasOne(location => location.Delivery)
-                    .WithMany(delivery => delivery.Locations)
-                    .HasForeignKey(location => location.DeliveryId)
-                    .IsRequired(false);
-            });
-
             // Job FKs
             modelBuilder.Entity<Job>(jobBuilder =>
             {
+                jobBuilder
+                    .Property(d => d.InsertedBy)
+                    .HasDefaultValueSql("suser_sname()");
+                jobBuilder
+                    .Property(d => d.InsertedOn)
+                    .HasDefaultValueSql("getdate()");
+                jobBuilder
+                    .Property(d => d.ModifiedBy)
+                    .HasDefaultValueSql("suser_sname()");
+                jobBuilder
+                    .Property(d => d.ModifiedOn)
+                    .HasDefaultValueSql("getdate()");
                 jobBuilder
                     .HasOne(job => job.Delivery)
                     .WithMany(delivery => delivery.Jobs)
@@ -150,6 +144,18 @@ namespace SVT.Platform.Data
             // ScheduledDelivery FKs
             modelBuilder.Entity<ScheduledDelivery>(scheduledDeliveryBuilder =>
             {
+                scheduledDeliveryBuilder
+                    .Property(d => d.InsertedBy)
+                    .HasDefaultValueSql("suser_sname()");
+                scheduledDeliveryBuilder
+                    .Property(d => d.InsertedOn)
+                    .HasDefaultValueSql("getdate()");
+                scheduledDeliveryBuilder
+                    .Property(d => d.ModifiedBy)
+                    .HasDefaultValueSql("suser_sname()");
+                scheduledDeliveryBuilder
+                    .Property(d => d.ModifiedOn)
+                    .HasDefaultValueSql("getdate()");
                 scheduledDeliveryBuilder
                     .HasOne(scheduledDelivery => scheduledDelivery.Delivery)
                     .WithMany(delivery => delivery.ScheduledDeliveries)

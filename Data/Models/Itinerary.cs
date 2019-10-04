@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace SVT.Platform.Data.Models
@@ -9,9 +10,9 @@ namespace SVT.Platform.Data.Models
 
         public int? AethonRunId { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string State { get; set; }
+        public DateTime Completed { get; set; }
+
+        public DateTime TimedOut { get; set; }
 
         public int JobId { get; set; }
 

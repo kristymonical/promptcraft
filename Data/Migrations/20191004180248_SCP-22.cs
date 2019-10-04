@@ -231,15 +231,15 @@ namespace SVT.Platform.Data.Migrations
                 {
                     JobId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false),
-                    InsertedBy = table.Column<string>(maxLength: 256, nullable: true),
-                    ModifiedOn = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: true),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
+                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     AethonJobId = table.Column<int>(nullable: false),
-                    State = table.Column<string>(maxLength: 50, nullable: false),
                     DeliveryId = table.Column<int>(nullable: false),
                     Completed = table.Column<DateTime>(nullable: false),
-                    Canceled = table.Column<DateTime>(nullable: false)
+                    Canceled = table.Column<DateTime>(nullable: false),
+                    Expired = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -258,13 +258,13 @@ namespace SVT.Platform.Data.Migrations
                 {
                     LocationId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false),
-                    InsertedBy = table.Column<string>(maxLength: 256, nullable: true),
-                    ModifiedOn = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: true),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
+                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     Name = table.Column<string>(maxLength: 50, nullable: false),
                     DeliveryId = table.Column<int>(nullable: true),
-                    Reserved = table.Column<bool>(nullable: false),
+                    Reserved = table.Column<bool>(nullable: false, defaultValue: false),
                     LocationType = table.Column<string>(maxLength: 50, nullable: false),
                     AreaId = table.Column<int>(nullable: false)
                 },
@@ -297,12 +297,13 @@ namespace SVT.Platform.Data.Migrations
                 {
                     ItineraryId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false),
-                    InsertedBy = table.Column<string>(maxLength: 256, nullable: true),
-                    ModifiedOn = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: true),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
+                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     AethonRunId = table.Column<int>(nullable: true),
-                    State = table.Column<string>(maxLength: 50, nullable: false),
+                    Completed = table.Column<DateTime>(nullable: false),
+                    TimedOut = table.Column<DateTime>(nullable: false),
                     JobId = table.Column<int>(nullable: false),
                     LocationId = table.Column<int>(nullable: false)
                 },
@@ -329,10 +330,10 @@ namespace SVT.Platform.Data.Migrations
                 {
                     ScheduledDeliveryId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false),
-                    InsertedBy = table.Column<string>(maxLength: 256, nullable: true),
-                    ModifiedOn = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: true),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
+                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     TTL = table.Column<DateTime>(nullable: false),
                     Completed = table.Column<DateTime>(nullable: false),
                     Canceled = table.Column<DateTime>(nullable: false),
@@ -355,6 +356,288 @@ namespace SVT.Platform.Data.Migrations
                         principalColumn: "LocationId",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AreaTypes",
+                columns: new[] { "Value", "Description" },
+                values: new object[,]
+                {
+                    { "cw", null },
+                    { "fpa", null },
+                    { "mal", null },
+                    { "smal", null },
+                    { "stg", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "DeliveryTypes",
+                columns: new[] { "Value", "Description" },
+                values: new object[,]
+                {
+                    { "return", null },
+                    { "stage", null },
+                    { "deliver", null },
+                    { "manual", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "LocationTypes",
+                columns: new[] { "Value", "Description" },
+                values: new object[,]
+                {
+                    { "cw", null },
+                    { "fpa", null },
+                    { "mal", null },
+                    { "smal", null },
+                    { "stg", null },
+                    { "wait", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Pools",
+                columns: new[] { "PoolId", "Name" },
+                values: new object[,]
+                {
+                    { 2, "Pool 2" },
+                    { 1, "Pool 1" },
+                    { 3, "Pool 3" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Areas",
+                columns: new[] { "AreaId", "AreaType", "Name", "PoolId" },
+                values: new object[,]
+                {
+                    { 1, "fpa", "101B-FPA", 1 },
+                    { 2, "cw", "101C-CarWash", 1 },
+                    { 3, "stg", "1430-Staging", 1 },
+                    { 4, "mal", "1501-MAL-A", 1 },
+                    { 5, "mal", "2501-MAL-A", 1 },
+                    { 6, "mal", "1501-MAL-B", 2 },
+                    { 8, "smal", "15xx-Suite MALs", 2 },
+                    { 7, "mal", "2501-MAL-B", 3 },
+                    { 9, "smal", "25xx-Suite MALs", 3 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 1, 1, null, "fpa", "101B-FPA-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 25, 5, null, "mal", "2501-MAL-A-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 26, 5, null, "wait", "2501-MA-A-WAIT-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 27, 5, null, "wait", "2501-MA-A-WAIT-002" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 28, 5, null, "wait", "2501-MA-A-WAIT-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 29, 6, null, "mal", "1501-MAL-B-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 30, 6, null, "wait", "1501-MAL-B-WAIT-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 31, 6, null, "wait", "1501-MAL-B-WAIT-002" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 32, 6, null, "wait", "1501-MAL-B-WAIT-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 24, 4, null, "wait", "1501-MAL-A-WAIT-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 37, 8, null, "smal", "1528-MAL-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 39, 8, null, "wait", "1528-MAL-WAIT-002" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 40, 8, null, "wait", "1528-MAL-WAIT-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 33, 7, null, "mal", "2501-MAL-B-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 34, 7, null, "wait", "2501-MAL-B-WAIT-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 35, 7, null, "wait", "2501-MAL-B-WAIT-002" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 36, 7, null, "wait", "2501-MAL-B-WAIT-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 41, 9, null, "smal", "2519-MAL-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 42, 9, null, "wait", "2519-MAL-WAIT-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 38, 8, null, "wait", "1528-MAL-WAIT-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 23, 4, null, "wait", "1501-MAL-A-WAIT-002" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 22, 4, null, "wait", "1501-MAL-A-WAIT-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 21, 4, null, "mal", "1501-MAL-A-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 2, 1, null, "fpa", "101B-FPA-002" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 3, 1, null, "fpa", "101B-FPA-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 4, 1, null, "fpa", "101B-FPA-004" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 5, 1, null, "fpa", "101B-FPA-005" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 6, 2, null, "cw", "101C-CW-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 7, 2, null, "cw", "101C-CW-002" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 8, 2, null, "cw", "101C-CW-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 9, 2, null, "cw", "101C-CW-004" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 10, 2, null, "cw", "101C-CW-005" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 11, 3, null, "stg", "1430-STG-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 12, 3, null, "stg", "1430-STG-002" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 13, 3, null, "stg", "1430-STG-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 14, 3, null, "stg", "1430-STG-004" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 15, 3, null, "stg", "1430-STG-005" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 16, 3, null, "stg", "1430-STG-006" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 17, 3, null, "stg", "1430-STG-007" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 18, 3, null, "stg", "1430-STG-008" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 19, 3, null, "stg", "1430-STG-009" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 20, 3, null, "stg", "1430-STG-010" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 43, 9, null, "wait", "2519-MAL-WAIT-002" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 44, 9, null, "wait", "2519-MAL-WAIT-003" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AreaDeliveryTypes_DeliveryType",

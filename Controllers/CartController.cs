@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
+using SVT.Platform.Data.Models;
 
 namespace SVT.Platform.Controllers
 {
@@ -39,27 +40,28 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpPost("move")]
-        public async Task MoveCartAsync([FromBody] MoveCartRequest request)
+        public async Task<IActionResult> MoveCartAsync([FromBody] MoveCartRequest request)
         {
-            await DeliveryCommands.MoveCart(_svtContext, request.CartId, request.MalLocationName);
-        }
+            using var transaction = await _svtContext.Database.BeginTransactionAsync();
 
-        [HttpGet("cleaninfo")]
-        public async Task<GetOrderAndDestinationResponse> GetOrderAndDestination([FromQuery] GetOrderAndDestinationRequest request)
-        {
-            // var location = _svtContext.Locations
-            var activeDelivery = await _svtContext.Deliveries
-                .Where(d => d.CartId == request.CartId)
-                .Where(d => d.Completed == null)
-                .FirstAsync();
+            var currentCartLocation = await LocationCommands.GetCartCurrentLocation(_svtContext, request.CartId);
+            var destinationLocation = await LocationCommands.GetLocationByName(_svtContext, request.LocationName);
+            (bool isValidLocation, string errorMessage) = DeliveryCommands.ValidateCartMove(request.CartId, destinationLocation, currentCartLocation);
 
-            await DeliveryCommands.MoveCart(_svtContext, request.CartId, request.MalLocationName);
-
-            return new GetOrderAndDestinationResponse()
+            if (!isValidLocation)
             {
-                DestinationAreaName = activeDelivery.DestinationArea.Name,
-                OrderId = activeDelivery.OrderId
-            };
+                return Conflict(new { message = errorMessage });
+            }
+
+            await DeliveryCommands.MoveCart(_svtContext, new MoveCartCommand{
+                CartId = request.CartId,
+                CurrentLocation = currentCartLocation,
+                DestinationLocation = destinationLocation,
+                User = HttpContext.User.Identity.Name
+            });
+
+            await transaction.CommitAsync();
+            return NoContent();
         }
 
         public class GetStagedCartsResponse
@@ -73,8 +75,16 @@ namespace SVT.Platform.Controllers
 
         public class MoveCartRequest
         {
-            public string MalLocationName { get; set; }
+            public string LocationName { get; set; }
             public string CartId { get; set; }
+        }
+
+        public class MoveCartCommand
+        {
+            public string CartId { get; set; }
+            public Location CurrentLocation { get; set; }
+            public Location DestinationLocation { get; set; }
+            public string User { get; set; }
         }
 
         public class GetOrderAndDestinationRequest

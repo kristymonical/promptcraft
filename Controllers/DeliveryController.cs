@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
+using SVT.Platform.Data.Models;
 
 namespace SVT.Platform.Controllers
 {
@@ -23,11 +25,11 @@ namespace SVT.Platform.Controllers
 
             var destinationArea = await AreaCommands.GetAreaByName(_svtContext, request.DestinationArea);
             var currentLocation = await LocationCommands.GetLocationByName(_svtContext, request.Location);
-            var isValidCartLocation = await DeliveryCommands.ValidateCartLocation(_svtContext, currentLocation, request.CartId);
+            (bool isValidCartLocation, string validationErrorMessage) = await DeliveryCommands.ValidateCurrentCartLocation(_svtContext, currentLocation, request.CartId);
 
             if (!isValidCartLocation)
             {
-                return Conflict();
+                return Conflict(new { message = validationErrorMessage });
             }
 
             var delivery = await DeliveryCommands.CreateNewDelivery(_svtContext, new DeliveryCommands.CreateNewDeliveryRequest
@@ -48,12 +50,11 @@ namespace SVT.Platform.Controllers
                 delivery.PreviousPrioritizedDeliveryId = lowestPriorityDelivery.DeliveryId;
             }
 
-            await _svtContext.SaveChangesAsync();
+            delivery.Locations = new List<Location>{ currentLocation };
 
-            currentLocation.DeliveryId = delivery.DeliveryId;
             await _svtContext.SaveChangesAsync();
-
             await transaction.CommitAsync();
+
             return Ok(new { DeliveryId = delivery.DeliveryId });
         }
 
