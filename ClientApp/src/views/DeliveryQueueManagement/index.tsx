@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core';
+import {
+  makeStyles,
+  Checkbox,
+  FormControlLabel,
+  Slider,
+  Typography
+} from '@material-ui/core';
 import { Row } from 'react-bootstrap';
 
-import { SVT_THEME, TitleCol } from 'components';
+import { SVT_THEME, TitleCol, AutoRefresh } from 'components';
 import {
   getDeliveryQueue,
   GetDeliveryQueueResponse,
@@ -68,6 +74,14 @@ export default function DeliveryQueueManagement({
         <TitleCol title='Delivery Queue Management' />
       </Row>
       <Row>
+        <AutoRefresh
+          callback={async stuff => {
+            setHasActiveRequest(true);
+            console.log('Refresh count:', stuff.intervalCount);
+            setQueue(await getDeliveryQueue());
+            setHasActiveRequest(false);
+          }}
+        />
         {queue.length > 0 && (
           <DraggableList
             items={queue}

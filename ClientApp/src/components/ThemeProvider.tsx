@@ -26,6 +26,12 @@ const baseTheme = createMuiTheme({
   palette: {
     background: {
       default: '#EEEEEE'
+    },
+    primary: {
+      main: SVT_THEME.primary.background
+    },
+    secondary: {
+      main: SVT_THEME.secondary.background
     }
   },
   typography: {
