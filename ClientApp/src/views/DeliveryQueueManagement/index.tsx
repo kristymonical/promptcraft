@@ -32,12 +32,12 @@ export default function DeliveryQueueManagement({
   }, []);
 
   const onDragEnd = async (result: any) => {
-    if (!result.destination) return;
-    if (result.destination.index === result.source.index) return;
+    if (!result.destination) return; // attempted to drop outside of droppable area
+    if (result.destination.index === result.source.index) return; // dnd to same position
 
-    const newQueue = queue.slice();
-    const movedItem = newQueue.splice(result.source.index, 1)[0];
-    newQueue.splice(result.destination.index, 0, movedItem);
+    const newQueue = queue.slice(); // avoid mutation
+    const movedItem = newQueue.splice(result.source.index, 1)[0]; // remove item from queue
+    newQueue.splice(result.destination.index, 0, movedItem); // insert it in new location
 
     setQueue(newQueue);
 
@@ -48,13 +48,14 @@ export default function DeliveryQueueManagement({
     } else if (result.destination.index === queue.length - 1) {
       await moveDeliveryToBottom(movedItem.deliveryId);
     } else {
-      const newParent = queue[result.destination.index];
-      const newChild = queue[result.destination.index + 1];
-      console.table([newParent, newChild]);
+      const newIdx = newQueue.findIndex(
+        delivery => delivery.deliveryId === movedItem.deliveryId
+      );
+
       await moveDeliveryInQueue(
         movedItem.deliveryId,
-        newParent.deliveryId,
-        newChild.deliveryId
+        newQueue[newIdx - 1].deliveryId,
+        newQueue[newIdx + 1].deliveryId
       );
     }
 
