@@ -12,7 +12,7 @@ namespace SVT.Platform.Commands
             {
                 CartId = request.CartId,
                 DeliveryType = request.DeliveryType,
-                DestinationAreaId = request.DestinationArea.AreaId,
+                DestinationAreaId = request.DestinationAreaId,
                 OrderId = request.OrderId,
                 // @todo remove ternary once able to authenticate requests
                 UserId = request.UserId != null ? request.UserId : "lonza/test"
@@ -29,9 +29,7 @@ namespace SVT.Platform.Commands
             public string OrderId { get; set; }
             public string UserId { get; set; }
             public string DeliveryType { get; set; }
-            public Area DestinationArea { get; set; }
-            public int? PreviousPrioritizedDeliveryId { get; set; }
-            public bool Queued { get; set; }
+            public int DestinationAreaId { get; set; }
         }
     }
 }

@@ -21,7 +21,7 @@ namespace SVT.Platform.Commands
                 delivery = await DeliveryCommands.CreateNewDelivery(context, new DeliveryCommands.CreateNewDeliveryRequest{
                     CartId = moveCartCommand.CartId,
                     DeliveryType = "manual",
-                    DestinationArea = moveCartCommand.DestinationLocation.Area,
+                    DestinationAreaId = moveCartCommand.DestinationLocation.AreaId,
                     UserId = moveCartCommand.User
                 });
                 delivery.Completed = DateTime.UtcNow;
