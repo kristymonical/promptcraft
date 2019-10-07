@@ -7,12 +7,14 @@ export async function createDeliveryRequest({
   try {
     await fetch('/api/delivery', {
       method: 'POST',
-      body: JSON.stringify({
-        orderId: orderNumber,
-        cartId,
-        location: cartLocation,
-        destinationArea
-      }),
+      body: JSON.stringify([
+        {
+          orderId: orderNumber,
+          cartId,
+          location: cartLocation,
+          destinationArea
+        }
+      ]),
       headers: {
         'Content-Type': 'application/json'
       }
