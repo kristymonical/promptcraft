@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles, TextField, Typography } from '@material-ui/core';
 
-import { SVT_THEME, Button } from 'components';
-import { BarcodeIcon } from 'icons';
+import { SVT_THEME } from 'components';
 import ScanButton from './ScanButton';
 
 interface AutoCompleteProps {
@@ -33,13 +32,10 @@ interface Option {
 
 export default function AutoComplete({
   label,
-  onSelect,
-  options,
-  required = false,
-  scannable = false
+  required = false
 }: AutoCompleteProps) {
   const [localValue, setLocalValue] = useState('');
-  const [scanModalOpen, setScanModalOpen] = useState(false);
+  //   const [] = useState(false);
   const classes = createStyles({});
 
   return (

@@ -4,6 +4,7 @@ import Button from './Button';
 import Circle from './Circle';
 import Footer from './Footer';
 import Header from './Header';
+import Overlay from './Overlay';
 import ScanButton from './ScanButton';
 import ScannableTextField from './ScannableTextField';
 import Select from './Select';
@@ -19,6 +20,7 @@ export {
   Circle,
   Footer,
   Header,
+  Overlay,
   ScanButton,
   ScannableTextField,
   SubmitButton,

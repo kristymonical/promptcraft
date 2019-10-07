@@ -15,6 +15,14 @@ const useStyles = makeStyles({
   }
 });
 
+const navItems = [
+  { route: '/request/delivery', label: 'Delivery Request' },
+  { route: '/request/cart', label: 'Cart Handling' },
+  { route: '/request/clean', label: 'Clean Request' },
+  { route: '/manage/staging', label: 'Staging Management' },
+  { route: '/manage/queue', label: 'Delivery Queue Management' }
+];
+
 export default function Header() {
   const classes = useStyles();
   const [navIsOpen, setNavIsOpen] = useState(false);
@@ -33,18 +41,15 @@ export default function Header() {
         onClose={() => setNavIsOpen(false)}
       >
         <List>
-          <ListItem button>
-            <Link to='/request/delivery'>Delivery Request</Link>
-          </ListItem>
-          <ListItem button>
-            <Link to='/request/cart'>Cart Handling</Link>
-          </ListItem>
-          <ListItem button>
-            <Link to='/request/staging'>Staging Management</Link>
-          </ListItem>
-          <ListItem button>
-            <Link to='/request/clean'>Clean Request</Link>
-          </ListItem>
+          {navItems.map(({ route, label }, idx) => (
+            <Link
+              key={`nav-item-${idx}`}
+              to={route}
+              onClick={() => setNavIsOpen(false)}
+            >
+              <ListItem button>{label}</ListItem>
+            </Link>
+          ))}
         </List>
       </Drawer>
     </>

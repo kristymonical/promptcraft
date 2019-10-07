@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, makeStyles, Typography, Modal } from '@material-ui/core';
+import { TextField, makeStyles, Typography } from '@material-ui/core';
 import { fade } from '@material-ui/core/styles';
 
-import { SVT_THEME, BarcodeScanner, Button } from 'components';
-import { BarcodeIcon } from 'icons';
-import { Row } from 'react-bootstrap';
+import { SVT_THEME } from 'components';
 import ScanButton from './ScanButton';
 
 interface ScannableTextFieldProps {

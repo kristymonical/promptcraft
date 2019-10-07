@@ -40,9 +40,9 @@ namespace SVT.Platform.Controllers
                 UserId = HttpContext.User.Identity.Name,
                 DeliveryType = request.DeliveryType
             });
-            
+
             delivery.Queued = true;
-            
+
             var lowestPriorityDelivery = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, currentLocation.Area.PoolId);
 
             if (lowestPriorityDelivery != null)
@@ -50,7 +50,7 @@ namespace SVT.Platform.Controllers
                 delivery.PreviousPrioritizedDeliveryId = lowestPriorityDelivery.DeliveryId;
             }
 
-            delivery.Locations = new List<Location>{ currentLocation };
+            delivery.Locations = new List<Location> { currentLocation };
 
             await _svtContext.SaveChangesAsync();
             await transaction.CommitAsync();
