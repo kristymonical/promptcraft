@@ -75,17 +75,18 @@ namespace SVT.Platform.Controllers
 
             if (currentDelivery.NextPrioritizedDelivery != null)
             {
-                currentDelivery.NextPrioritizedDelivery.PreviousPrioritizedDeliveryId = currentDelivery.PreviousPrioritizedDeliveryId;
+                currentDelivery.NextPrioritizedDelivery.PreviousPrioritizedDelivery = currentDelivery.PreviousPrioritizedDelivery;
+                await _svtContext.SaveChangesAsync(); // @fix this call to save changes fixes a circular dependency error for some reason
             }
 
             if (newParentDelivery != null)
             {
-                currentDelivery.PreviousPrioritizedDeliveryId = newParentDelivery.DeliveryId;
+                currentDelivery.PreviousPrioritizedDelivery = newParentDelivery;
             }
 
             if (newChildDelivery != null)
             {
-                newChildDelivery.PreviousPrioritizedDeliveryId = currentDelivery.DeliveryId;
+                newChildDelivery.PreviousPrioritizedDelivery = currentDelivery;
             }
 
             await _svtContext.SaveChangesAsync();

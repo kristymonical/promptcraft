@@ -11,6 +11,44 @@ export async function getDeliveryQueue(
   return [];
 }
 
+export async function moveDeliveryInQueue(
+  deliveryId: number,
+  newParentId: number,
+  newChildId: number,
+  poolId = 1
+) {
+  try {
+    await fetch(
+      `/api/delivery/${deliveryId}/queue/priority?newParentDeliveryId=${newParentId}&newChildDeliveryId=${newChildId}&poolId=${poolId}`,
+      { method: 'PUT' }
+    );
+  } catch (err) {
+    console.error('[moveDeliveryInQueue]:', err);
+  }
+}
+
+export async function moveDeliveryToTop(deliveryId: number, poolId = 1) {
+  try {
+    await fetch(
+      `/api/delivery/${deliveryId}/queue/priority/top?poolId=${poolId}`,
+      { method: 'PUT' }
+    );
+  } catch (err) {
+    console.error('[moveDeliveryToTop]:', err);
+  }
+}
+
+export async function moveDeliveryToBottom(deliveryId: number, poolId = 1) {
+  try {
+    await fetch(
+      `/api/delivery/${deliveryId}/queue/priority/bottom?poolId=${poolId}`,
+      { method: 'PUT' }
+    );
+  } catch (err) {
+    console.error('[moveDeliveryToTop]:', err);
+  }
+}
+
 export interface GetDeliveryQueueResponse {
   deliveryId: number;
   userId: string;
