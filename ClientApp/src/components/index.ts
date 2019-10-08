@@ -1,4 +1,5 @@
 import AutoComplete from './AutoComplete';
+import AutoRefresh from './AutoRefresh';
 import BarcodeScanner from './BarcodeScanner';
 import Button from './Button';
 import Circle from './Circle';
@@ -15,6 +16,7 @@ import TitleCol from './TitleCol';
 
 export {
   AutoComplete,
+  AutoRefresh,
   BarcodeScanner,
   Button,
   Circle,

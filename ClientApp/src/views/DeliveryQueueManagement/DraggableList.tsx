@@ -17,6 +17,8 @@ const createStyles = makeStyles<typeof SVT_THEME, Partial<DraggableListProps>>({
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
+    marginLeft: -15,
+    marginRight: -15,
     minWidth: '100%',
     position: 'relative'
   }
