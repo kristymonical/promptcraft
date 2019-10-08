@@ -1,19 +1,34 @@
 import React, { useState } from 'react';
 import { Row } from 'react-bootstrap';
 import { makeStyles } from '@material-ui/styles';
+import {
+  Drawer,
+  List,
+  ListItem,
+  IconButton,
+  ListItemText
+} from '@material-ui/core';
+import { Menu } from '@material-ui/icons';
 
 import { ToolkitLogo } from 'icons';
-import Button from './Button';
-import { Drawer, List, ListItem } from '@material-ui/core';
 import { Link } from 'react-router-dom';
+import { SVT_THEME } from 'components';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<typeof SVT_THEME>(({ primary }) => ({
   flexContainerOverride: {
     alignItems: 'center',
     justifyContent: 'space-between',
     margin: '0 -15px'
+  },
+  navDrawer: {
+    '& a': {
+      color: primary.dark,
+      '&:hover': {
+        textDecorationLine: 'none'
+      }
+    }
   }
-});
+}));
 
 const navItems = [
   { route: '/request/delivery', label: 'Delivery Request' },
@@ -31,14 +46,15 @@ export default function Header() {
       <Row className={classes.flexContainerOverride}>
         <ToolkitLogo />
         {/* @missing-assets logo goes here */}
-        <Button variant='primary' onClick={() => setNavIsOpen(true)}>
-          Nav
-        </Button>
+        <IconButton onClick={() => setNavIsOpen(true)}>
+          <Menu />
+        </IconButton>
       </Row>
       <Drawer
-        open={navIsOpen}
         anchor='right'
+        className={classes.navDrawer}
         onClose={() => setNavIsOpen(false)}
+        open={navIsOpen}
       >
         <List>
           {navItems.map(({ route, label }, idx) => (
@@ -47,7 +63,9 @@ export default function Header() {
               to={route}
               onClick={() => setNavIsOpen(false)}
             >
-              <ListItem button>{label}</ListItem>
+              <ListItem button>
+                <ListItemText primary={label} />
+              </ListItem>
             </Link>
           ))}
         </List>
