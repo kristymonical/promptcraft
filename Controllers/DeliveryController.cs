@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
-using System;
 
 namespace SVT.Platform.Controllers
 {
@@ -20,11 +19,11 @@ namespace SVT.Platform.Controllers
 
         // @validation 400 if cartId or cartLocation are not in the correct format
         [HttpPost("delivery/queue")]
-        public async Task<IActionResult> CreateDeliveryRequest([FromBody] List<DeliveryRequest> request)
+        public async Task<IActionResult> CreateDeliveryRequest([FromBody] DeliveryRequests request)
         {
             using var transaction = await _svtContext.Database.BeginTransactionAsync();
 
-            foreach (var deliveryRequest in request)
+            foreach (var deliveryRequest in request.Deliveries)
             {
                 var destinationArea = await AreaCommands.GetAreaByName(_svtContext, deliveryRequest.DestinationArea);
                 var currentLocation = await LocationCommands.GetLocationByName(_svtContext, deliveryRequest.Location);
@@ -81,6 +80,11 @@ namespace SVT.Platform.Controllers
             public string Location { get; set; }
             public string DestinationArea { get; set; }
             public string DeliveryType { get; set; }
+        }
+
+        public class DeliveryRequests
+        {
+            public List<DeliveryRequest> Deliveries { get; set; }
         }
     }
 }

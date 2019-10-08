@@ -7,6 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SVT.Platform.Data;
+using SVT.Platform.Filters;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using SVT.Platform.Controllers;
+using SVT.Platform.Validators;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SVT.Platform
 {
@@ -25,6 +31,17 @@ namespace SVT.Platform
             // All FE is handled by React. No need for views or pages.
             services.AddControllers();
 
+            services
+                .AddMvc(options =>
+                {
+                    options.Filters.Add(new ModelStateFilter());
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddFluentValidation();
+
+            // Validators
+            services.AddTransient<IValidator<DeliveryController.DeliveryRequests>, DeliveryRequestsValidator>();
+
             // DI
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddDbContext<SVTContext>(options => options
@@ -36,6 +53,8 @@ namespace SVT.Platform
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddSingleton<IConfiguration>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
