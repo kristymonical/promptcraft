@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.SqlServer.Types;
 
 namespace SVT.Platform.Data.Migrations
 {
@@ -140,43 +139,25 @@ namespace SVT.Platform.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AreaHierarchy",
-                columns: table => new
-                {
-                    Node = table.Column<SqlHierarchyId>(nullable: false),
-                    NodeLevel = table.Column<short>(nullable: true, computedColumnSql: "[Node].[GetLevel]()"),
-                    AreaId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AreaHierarchy", x => x.Node);
-                    table.ForeignKey(
-                        name: "FK_AreaHierarchy_Areas_AreaId",
-                        column: x => x.AreaId,
-                        principalTable: "Areas",
-                        principalColumn: "AreaId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AreaMaps",
                 columns: table => new
                 {
-                    SourceAreaId = table.Column<int>(nullable: false),
-                    DestinationAreaId = table.Column<int>(nullable: false)
+                    PreviousAreaId = table.Column<int>(nullable: false),
+                    NextAreaId = table.Column<int>(nullable: false),
+                    Active = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AreaMaps", x => new { x.DestinationAreaId, x.SourceAreaId });
+                    table.PrimaryKey("PK_AreaMaps", x => new { x.NextAreaId, x.PreviousAreaId });
                     table.ForeignKey(
-                        name: "FK_AreaMaps_Areas_DestinationAreaId",
-                        column: x => x.DestinationAreaId,
+                        name: "FK_AreaMaps_Areas_NextAreaId",
+                        column: x => x.NextAreaId,
                         principalTable: "Areas",
                         principalColumn: "AreaId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AreaMaps_Areas_SourceAreaId",
-                        column: x => x.SourceAreaId,
+                        name: "FK_AreaMaps_Areas_PreviousAreaId",
+                        column: x => x.PreviousAreaId,
                         principalTable: "Areas",
                         principalColumn: "AreaId",
                         onDelete: ReferentialAction.Restrict);
@@ -420,19 +401,26 @@ namespace SVT.Platform.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 1, 1, null, "fpa", "101B-FPA-001" });
+                table: "AreaMaps",
+                columns: new[] { "NextAreaId", "PreviousAreaId", "Active" },
+                values: new object[,]
+                {
+                    { 5, 1, true },
+                    { 5, 2, true },
+                    { 3, 2, true },
+                    { 3, 1, true },
+                    { 6, 4, true },
+                    { 8, 6, true },
+                    { 7, 5, true },
+                    { 4, 2, true },
+                    { 9, 7, true },
+                    { 4, 1, true }
+                });
 
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 25, 5, null, "mal", "2501-MAL-A-001" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 26, 5, null, "wait", "2501-MA-A-WAIT-001" });
+                values: new object[] { 28, 5, null, "wait", "2501-MA-A-WAIT-003" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
@@ -442,7 +430,7 @@ namespace SVT.Platform.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 28, 5, null, "wait", "2501-MA-A-WAIT-003" });
+                values: new object[] { 26, 5, null, "wait", "2501-MA-A-WAIT-001" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
@@ -457,22 +445,22 @@ namespace SVT.Platform.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 25, 5, null, "mal", "2501-MAL-A-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
                 values: new object[] { 31, 6, null, "wait", "1501-MAL-B-WAIT-002" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 32, 6, null, "wait", "1501-MAL-B-WAIT-003" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 24, 4, null, "wait", "1501-MAL-A-WAIT-003" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
                 values: new object[] { 37, 8, null, "smal", "1528-MAL-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 38, 8, null, "wait", "1528-MAL-WAIT-001" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
@@ -517,7 +505,12 @@ namespace SVT.Platform.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 38, 8, null, "wait", "1528-MAL-WAIT-001" });
+                values: new object[] { 32, 6, null, "wait", "1501-MAL-B-WAIT-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 1, 1, null, "fpa", "101B-FPA-001" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
@@ -527,12 +520,7 @@ namespace SVT.Platform.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 22, 4, null, "wait", "1501-MAL-A-WAIT-001" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 21, 4, null, "mal", "1501-MAL-A-001" });
+                values: new object[] { 43, 9, null, "wait", "2519-MAL-WAIT-002" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
@@ -632,7 +620,17 @@ namespace SVT.Platform.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 43, 9, null, "wait", "2519-MAL-WAIT-002" });
+                values: new object[] { 21, 4, null, "mal", "1501-MAL-A-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 22, 4, null, "wait", "1501-MAL-A-WAIT-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 24, 4, null, "wait", "1501-MAL-A-WAIT-003" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
@@ -645,14 +643,9 @@ namespace SVT.Platform.Data.Migrations
                 column: "DeliveryType");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AreaHierarchy_AreaId",
-                table: "AreaHierarchy",
-                column: "AreaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AreaMaps_SourceAreaId",
+                name: "IX_AreaMaps_PreviousAreaId",
                 table: "AreaMaps",
-                column: "SourceAreaId");
+                column: "PreviousAreaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Areas_AreaType",
@@ -726,9 +719,6 @@ namespace SVT.Platform.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AreaDeliveryTypes");
-
-            migrationBuilder.DropTable(
-                name: "AreaHierarchy");
 
             migrationBuilder.DropTable(
                 name: "AreaMaps");

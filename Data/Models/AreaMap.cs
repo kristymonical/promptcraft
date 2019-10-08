@@ -5,11 +5,12 @@ namespace SVT.Platform.Data.Models
     [Table("AreaMaps")]
     public class AreaMap
     {
-        public int SourceAreaId { get; set; }
-        public int DestinationAreaId { get; set; }
+        public int PreviousAreaId { get; set; }
+        public int NextAreaId { get; set; }
+        public bool Active { get; set; }
 
         // NAVIGATION MEMBERS
-        public virtual Area SourceArea { get; set; }
-        public virtual Area DestinationArea { get; set; }
+        public virtual Area PreviousArea { get; set; }
+        public virtual Area NextArea { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.SqlServer.Types;
 using SVT.Platform.Data;
 
 namespace SVT.Platform.Data.Migrations
@@ -130,39 +129,84 @@ namespace SVT.Platform.Data.Migrations
                     b.ToTable("AreaDeliveryTypes");
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.AreaHierarchy", b =>
-                {
-                    b.Property<SqlHierarchyId>("Node")
-                        .HasColumnType("hierarchyid");
-
-                    b.Property<int>("AreaId")
-                        .HasColumnType("int");
-
-                    b.Property<short?>("NodeLevel")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("smallint")
-                        .HasComputedColumnSql("[Node].[GetLevel]()");
-
-                    b.HasKey("Node");
-
-                    b.HasIndex("AreaId");
-
-                    b.ToTable("AreaHierarchy");
-                });
-
             modelBuilder.Entity("SVT.Platform.Data.Models.AreaMap", b =>
                 {
-                    b.Property<int>("DestinationAreaId")
+                    b.Property<int>("NextAreaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SourceAreaId")
+                    b.Property<int>("PreviousAreaId")
                         .HasColumnType("int");
 
-                    b.HasKey("DestinationAreaId", "SourceAreaId");
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
 
-                    b.HasIndex("SourceAreaId");
+                    b.HasKey("NextAreaId", "PreviousAreaId");
+
+                    b.HasIndex("PreviousAreaId");
 
                     b.ToTable("AreaMaps");
+
+                    b.HasData(
+                        new
+                        {
+                            NextAreaId = 3,
+                            PreviousAreaId = 1,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 4,
+                            PreviousAreaId = 1,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 5,
+                            PreviousAreaId = 1,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 3,
+                            PreviousAreaId = 2,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 4,
+                            PreviousAreaId = 2,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 5,
+                            PreviousAreaId = 2,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 6,
+                            PreviousAreaId = 4,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 7,
+                            PreviousAreaId = 5,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 8,
+                            PreviousAreaId = 6,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 9,
+                            PreviousAreaId = 7,
+                            Active = true
+                        });
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.AreaType", b =>
@@ -1130,26 +1174,17 @@ namespace SVT.Platform.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.AreaHierarchy", b =>
-                {
-                    b.HasOne("SVT.Platform.Data.Models.Area", "Area")
-                        .WithMany("AreaHierarchies")
-                        .HasForeignKey("AreaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("SVT.Platform.Data.Models.AreaMap", b =>
                 {
-                    b.HasOne("SVT.Platform.Data.Models.Area", "DestinationArea")
-                        .WithMany("SourceAreas")
-                        .HasForeignKey("DestinationAreaId")
+                    b.HasOne("SVT.Platform.Data.Models.Area", "NextArea")
+                        .WithMany("PreviousAreas")
+                        .HasForeignKey("NextAreaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SVT.Platform.Data.Models.Area", "SourceArea")
-                        .WithMany("DestinationAreas")
-                        .HasForeignKey("SourceAreaId")
+                    b.HasOne("SVT.Platform.Data.Models.Area", "PreviousArea")
+                        .WithMany("NextAreas")
+                        .HasForeignKey("PreviousAreaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -22,11 +23,25 @@ namespace SVT.Platform.Data.Models
         // NAVIGATION MEMBERS
         public virtual AreaType AreaTypeReference { get; set; }
         public virtual Pool Pool { get; set; }
-        public virtual ICollection<AreaMap> SourceAreas { get; set; }
-        public virtual ICollection<AreaMap> DestinationAreas { get; set; }
+        public virtual ICollection<AreaMap> PreviousAreas { get; set; }
+        public virtual ICollection<AreaMap> NextAreas { get; set; }
         public virtual ICollection<AreaDeliveryType> AreaDeliveryTypes { get; set; }
         public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual ICollection<Location> Locations { get; set; }
-        public virtual ICollection<AreaHierarchy> AreaHierarchies { get; set; }
+
+        public bool GetLeafNodes(List<Area> accumulator)
+        {
+            if (this.NextAreas.Count == 0)
+            {
+                accumulator.Add(this);
+            }
+
+            foreach (var areaMap in this.NextAreas)
+            {
+                areaMap.NextArea.GetLeafNodes(accumulator);
+            }
+
+            return true;
+        }
     }
 }

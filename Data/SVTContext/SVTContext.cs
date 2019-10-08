@@ -18,28 +18,11 @@ namespace SVT.Platform.Data
             BuildAreaType(modelBuilder);
             BuildPool(modelBuilder);
             BuildArea(modelBuilder);
+            BuildAreaMap(modelBuilder);
             BuildLocationType(modelBuilder);
             BuildLocation(modelBuilder);
             BuildDeliveryType(modelBuilder);
             
-            // self referential area to area many-to-many            
-            modelBuilder.Entity<AreaMap>(areaMapBuilder =>
-            {
-                areaMapBuilder
-                    .HasKey(areaMap => new { areaMap.DestinationAreaId, areaMap.SourceAreaId });
-                areaMapBuilder
-                    .HasOne(areaMap => areaMap.DestinationArea)
-                    .WithMany(area => area.SourceAreas)
-                    .HasForeignKey(areaMap => areaMap.DestinationAreaId)
-                    .OnDelete(DeleteBehavior.Restrict); // @database fix this stupid thing
-                areaMapBuilder
-                    .HasOne(areaMap => areaMap.SourceArea)
-                    .WithMany(area => area.DestinationAreas)
-                    .HasForeignKey(areaMap => areaMap.SourceAreaId)
-                    .OnDelete(DeleteBehavior.Restrict); // @database fix this stupid thing
-            });
-
-            // AreaDeliveryTypes many-to-many
             modelBuilder.Entity<AreaDeliveryType>(areaDeliveryTypeBuilder =>
             {
                 areaDeliveryTypeBuilder
@@ -54,15 +37,6 @@ namespace SVT.Platform.Data
                     .WithMany(deliveryType => deliveryType.AreaDeliveryTypes)
                     .HasForeignKey(areaDeliveryType => areaDeliveryType.DeliveryType)
                     .OnDelete(DeleteBehavior.Restrict); // @database fix this stupid thing
-            });
-
-            // AreaHierarchy FKs
-            modelBuilder.Entity<AreaHierarchy>(areaHierarchyBuilder =>
-            {
-                areaHierarchyBuilder
-                    .HasOne(areaHierarchy => areaHierarchy.Area)
-                    .WithMany(area => area.AreaHierarchies)
-                    .HasForeignKey(areaHierarchy => areaHierarchy.AreaId);
             });
 
             // Delivery FKs
@@ -172,10 +146,6 @@ namespace SVT.Platform.Data
             modelBuilder.Entity<UserLog>()
                 .Property(log => log.vUserId)
                 .HasComputedColumnSql("CONVERT([nvarchar](256),json_value([Serialized],N'$.UserId'))");
-
-            modelBuilder.Entity<AreaHierarchy>()
-                .Property(hierarchy => hierarchy.NodeLevel)
-                .HasComputedColumnSql("[Node].[GetLevel]()");
         }
     }
 }
