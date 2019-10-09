@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, Ref } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 function valueEquality<T>(left: T, right: T): boolean {
   return left === right;
@@ -34,7 +34,7 @@ export function useDebounce<T>(
   return [state, cancel];
 }
 
-const NOOP_TIMEOUT = new NodeJS.Timeout();
+const NOOP_TIMEOUT = setTimeout(() => {}, 1e9); // 1e9 ms noop timeout placeholder
 
 export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,

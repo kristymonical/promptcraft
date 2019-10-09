@@ -21,33 +21,38 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpGet("areas")]
-        public async Task<IEnumerable<GetAreasResponse>> GetAreas()
+        public async Task<IActionResult> GetAreas()
         {
             var areas = await _svtContext.Areas.ToListAsync();
-            return areas.Select(area => new GetAreasResponse()
+            var mappedAreas = areas.Select(area => new GetAreasResponse()
             {
                 AreaId = area.AreaId,
                 AreaName = area.Name
             }).OrderBy(x => x.AreaName);
+
+            return Ok(new { success = true, message = "", data = mappedAreas });
         }
 
         [HttpGet("areas/destination")]
         public async Task<IActionResult> GetDestinationAreas([FromQuery] string locationName)
         {
             var currentLocation = await LocationCommands.GetLocationByName(_svtContext, locationName);
-            
+
             if (currentLocation == null)
             {
                 return NotFound(new { success = false, message = $"Location: '{locationName}' Not Found." });
             }
-            
+
             var destinations = new List<GetAreasResponse>();
             var nodes = new List<Area>();
             currentLocation.Area.GetLeafNodes(nodes);
 
             foreach (var area in nodes)
             {
-                destinations.Add(new GetAreasResponse{
+                if (area.AreaId == currentLocation.Area.AreaId) continue;
+
+                destinations.Add(new GetAreasResponse
+                {
                     AreaId = area.AreaId,
                     AreaName = area.Name
                 });

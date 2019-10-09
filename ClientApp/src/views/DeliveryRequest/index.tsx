@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row } from 'react-bootstrap';
 import { Typography, makeStyles } from '@material-ui/core';
-import os from 'os';
 
 import {
   ScannableTextField,
@@ -10,13 +9,11 @@ import {
   TitleCol,
   SubmitButton
 } from 'components';
-import {
-  GetAreasResult,
-  getAreas,
-  createDeliveryRequest
-} from 'services/Delivery';
+import { createDeliveryRequest } from 'services/Delivery';
+import { getDestinationAreas, GetAreasResult } from 'services/Area';
+import { useDebounce } from 'hooks';
 
-const useStyles = makeStyles(({ flex, secondary }: typeof SVT_THEME) => ({
+const useStyles = makeStyles(({  }: typeof SVT_THEME) => ({
   flexFormContainer: {
     justifyContent: 'space-between',
     '& > *': {
@@ -33,10 +30,10 @@ const initialFormValues = {
 };
 
 export default function DeliveryRequest() {
-  console.log('TEST', os.homedir());
   const classes = useStyles({});
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [debouncedCartLocation] = useDebounce(formValues.cartLocation, 500); // half second debounce for cart location
 
   const [areas, setAreas] = useState<GetAreasResult[]>([]);
 
@@ -49,10 +46,11 @@ export default function DeliveryRequest() {
 
   // get data on mount
   useEffect(() => {
-    getAreas()
+    if (!debouncedCartLocation || debouncedCartLocation.length === 0) return;
+    getDestinationAreas(debouncedCartLocation)
       .then(returnedAreas => setAreas(returnedAreas))
       .catch(err => console.error(err)); // @error-handling FE
-  }, []);
+  }, [debouncedCartLocation]);
 
   // determine if create button should be disabled
   useEffect(() => {
@@ -120,20 +118,24 @@ export default function DeliveryRequest() {
           value={formValues.orderNumber}
         />
       </Row>
-      <Row>
-        <Typography variant='h5'>Destination</Typography>
-      </Row>
-      <Row className={classes.flexFormContainer}>
-        <Select
-          items={areas.map(area => area.areaName)}
-          label='Area'
-          handleChange={handleChange('area')}
-          required
-          value={formValues.area}
-        />
-        <span>{/* Placeholder */}</span>
-        <span>{/* Placeholder */}</span>
-      </Row>
+      {areas && areas.length > 0 && (
+        <>
+          <Row>
+            <Typography variant='h5'>Destination</Typography>
+          </Row>
+          <Row className={classes.flexFormContainer}>
+            <Select
+              items={areas.map(area => area.areaName)}
+              label='Area'
+              handleChange={handleChange('area')}
+              required
+              value={formValues.area}
+            />
+            <span>{/* Placeholder */}</span>
+            <span>{/* Placeholder */}</span>
+          </Row>
+        </>
+      )}
       <Row>
         <SubmitButton
           disabled={submitDisabled}
