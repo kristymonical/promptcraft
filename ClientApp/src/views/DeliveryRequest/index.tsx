@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row } from 'react-bootstrap';
 import { Typography, makeStyles } from '@material-ui/core';
+import os from 'os';
 
 import {
   ScannableTextField,
@@ -31,7 +32,8 @@ const initialFormValues = {
   orderNumber: ''
 };
 
-export default function ManualRequest() {
+export default function DeliveryRequest() {
+  console.log('TEST', os.homedir());
   const classes = useStyles({});
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitDisabled, setSubmitDisabled] = useState(true);
