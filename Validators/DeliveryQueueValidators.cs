@@ -29,9 +29,9 @@ namespace SVT.Platform.Validators
         }
     }
     
-    public class GetDeliveryQueueByPoolValidator : AbstractValidator<DeliveryQueueController.GetDeliveryQueueByPoolRequest>
+    public class ByPoolRequestValidator : AbstractValidator<DeliveryQueueController.ByPoolRequest>
     {
-        public GetDeliveryQueueByPoolValidator()
+        public ByPoolRequestValidator()
         {
             RuleFor(x => x.PoolId)
                 .NotNull()

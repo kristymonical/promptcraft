@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,7 +31,7 @@ namespace SVT.Platform.Controllers
         /// <param name="poolId">Filter queued deliveries by Robot (TUG) pool</param>
         /// <returns>Task that resolves to IActionResult - Ok (200) on success</returns>
         [HttpGet("delivery-queue")]
-        public async Task<IActionResult> GetDeliveryQueueByPool([FromQuery] GetDeliveryQueueByPoolRequest queryParams)
+        public async Task<IActionResult> GetDeliveryQueueByPool([FromQuery] ByPoolRequest queryParams)
         {
             var firstQueuedDelivery = await DeliveryCommands.GetHighestPriorityDelivery(_svtContext, queryParams.PoolId);
 
@@ -100,18 +99,18 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpPut("delivery/{deliveryId}/queue/priority/top")]
-        public async Task<IActionResult> ChangeDeliveryPriorityTop([FromRoute]int deliveryId, [FromQuery]int poolId)
+        public async Task<IActionResult> ChangeDeliveryPriorityTop([FromRoute]PriorityRoute route, [FromQuery]ByPoolRequest query)
         {
             using var transaction = await _svtContext.Database.BeginTransactionAsync();
 
-            var currentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, deliveryId, poolId);
+            var currentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, route.DeliveryId, query.PoolId);
 
             if (currentDelivery == null)
             {
                 return NotFound();
             }
 
-            var newChildDelivery = await DeliveryCommands.GetHighestPriorityDelivery(_svtContext, poolId);
+            var newChildDelivery = await DeliveryCommands.GetHighestPriorityDelivery(_svtContext, query.PoolId);
 
             if (newChildDelivery == null)
             {
@@ -135,18 +134,18 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpPut("delivery/{deliveryId}/queue/priority/bottom")]
-        public async Task<IActionResult> ChangeDeliveryPriorityBottom([FromRoute]int deliveryId, [FromQuery]int poolId)
+        public async Task<IActionResult> ChangeDeliveryPriorityBottom([FromRoute]PriorityRoute route, [FromQuery]ByPoolRequest query)
         {
             using var transaction = await _svtContext.Database.BeginTransactionAsync();
 
-            var currentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, deliveryId, poolId);
+            var currentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, route.DeliveryId, query.PoolId);
 
             if (currentDelivery == null)
             {
                 return NotFound();
             }
 
-            var newParentDelivery = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, poolId);
+            var newParentDelivery = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, query.PoolId);
 
             if (newParentDelivery == null)
             {
@@ -168,9 +167,9 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpPut("delivery/queue/pop")]
-        public async Task<IActionResult> PopDeliveryFromQueue([FromQuery]int poolId)
+        public async Task<IActionResult> PopDeliveryFromQueue([FromQuery]ByPoolRequest query)
         {
-            var top = await DeliveryCommands.PopDeliveryQueue(_svtContext, poolId);
+            var top = await DeliveryCommands.PopDeliveryQueue(_svtContext, query.PoolId);
 
             await _svtContext.SaveChangesAsync();
 
@@ -188,11 +187,11 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpPut("delivery/{deliveryId}/queue/append")]
-        public async Task<IActionResult> AppendDeliveryToQueue([FromRoute]int deliveryId, [FromQuery]int poolId)
+        public async Task<IActionResult> AppendDeliveryToQueue([FromRoute]PriorityRoute route, [FromQuery]ByPoolRequest query)
         {
-            var delivery = await DeliveryCommands.GetDeliveryById(_svtContext, deliveryId);
+            var delivery = await DeliveryCommands.GetDeliveryById(_svtContext, route.DeliveryId);
 
-            var lastInQueue = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, poolId);
+            var lastInQueue = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, query.PoolId);
 
             delivery.Queued = true;
 
@@ -218,7 +217,7 @@ namespace SVT.Platform.Controllers
             public string DeliveryType { get; set; }
         }
 
-        public class GetDeliveryQueueByPoolRequest
+        public class ByPoolRequest
         {
             public int PoolId { get; set; }
         }
