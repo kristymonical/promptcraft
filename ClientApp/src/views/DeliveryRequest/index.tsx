@@ -81,7 +81,22 @@ export default function DeliveryRequest() {
   return (
     <>
       <Row>
-        <TitleCol title='Delivery Request' />
+        <TitleCol title='Delivery Request'>
+          <Typography>
+            Use this screen to create delivery requests for loaded and unloaded
+            carts
+          </Typography>
+          <Typography>
+            <b>Loaded Carts:</b> Enter Cart ID, Cart's current location, Order
+            Number, and Destination of Suite MAL or Staging to create Delivery
+            Request.
+          </Typography>
+          <Typography>
+            <b>Unloaded Carts:</b> Enter Cart ID, Cart's current floor location
+            and destination of FPA or CARWASH to create delivery request to
+            return a cart.
+          </Typography>
+        </TitleCol>
       </Row>
       <Row>
         <Typography variant='h5'>Cart Information</Typography>

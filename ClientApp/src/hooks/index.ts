@@ -1,3 +1,4 @@
 import useInterval from './useInterval';
+import { useDebounce, useDebouncedCallback } from './useDebounce';
 
-export { useInterval };
+export { useDebounce, useDebouncedCallback, useInterval };
