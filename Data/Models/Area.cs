@@ -29,19 +29,28 @@ namespace SVT.Platform.Data.Models
         public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual ICollection<Location> Locations { get; set; }
 
-        public bool GetLeafNodes(List<Area> accumulator)
+        public static List<Area> GetLeafNodes(Area startingNode)
         {
-            if (this.NextAreas.Count == 0)
+            var accumulator = new List<Area>();
+            
+            bool _getLeafNodes(Area currentNode)
             {
-                accumulator.Add(this);
+                if (currentNode.AreaId != startingNode.AreaId && currentNode.NextAreas.Count == 0)
+                {
+                    accumulator.Add(currentNode);
+                }
+
+                foreach (var areaMap in currentNode.NextAreas)
+                {
+                    _getLeafNodes(areaMap.NextArea);
+                }
+
+                return true;
             }
 
-            foreach (var areaMap in this.NextAreas)
-            {
-                areaMap.NextArea.GetLeafNodes(accumulator);
-            }
+            _getLeafNodes(startingNode);
 
-            return true;
+            return accumulator;
         }
     }
 }

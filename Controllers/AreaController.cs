@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,29 +33,17 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpGet("areas/destination")]
-        public async Task<IActionResult> GetDestinationAreas([FromQuery] string locationName)
+        public async Task<IActionResult> GetDestinationAreas([FromQuery]ByLocationName query)
         {
-            var currentLocation = await LocationCommands.GetLocationByName(_svtContext, locationName);
+            var currentLocation = await LocationCommands.GetLocationByName(_svtContext, query.LocationName);
 
             if (currentLocation == null)
             {
-                return NotFound(new { success = false, message = $"Location: '{locationName}' Not Found." });
+                return NotFound(new { success = false, message = $"Location: '{query.LocationName}' Not Found." });
             }
 
-            var destinations = new List<GetAreasResponse>();
-            var nodes = new List<Area>();
-            currentLocation.Area.GetLeafNodes(nodes);
-
-            foreach (var area in nodes)
-            {
-                if (area.AreaId == currentLocation.Area.AreaId) continue;
-
-                destinations.Add(new GetAreasResponse
-                {
-                    AreaId = area.AreaId,
-                    AreaName = area.Name
-                });
-            }
+            var destinations = Area.GetLeafNodes(currentLocation.Area)
+                .Select(area => new GetAreasResponse { AreaId = area.AreaId, AreaName = area.Name });
 
             return Ok(new { success = true, message = "", data = destinations });
         }
@@ -65,6 +52,11 @@ namespace SVT.Platform.Controllers
         {
             public int AreaId { get; set; }
             public string AreaName { get; set; }
+        }
+
+        public class ByLocationName
+        {
+            public string LocationName { get; set; }
         }
     }
 }
