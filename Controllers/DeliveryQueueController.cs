@@ -3,27 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
 
 namespace SVT.Platform.Controllers
 {
+    /// <summary>
+    /// Delivery Queue Controller definition
+    /// </summary>
     [Route("api")]
     public class DeliveryQueueController : ControllerBase
     {
         private SVTContext _svtContext;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="svtContext">SQL Server database context</param>
         public DeliveryQueueController(SVTContext svtContext)
         {
             _svtContext = svtContext;
         }
 
+        /// <summary>
+        /// GET route to retrieve all "queued" deliveries
+        /// </summary>
+        /// <param name="poolId">Filter queued deliveries by Robot (TUG) pool</param>
+        /// <returns>Task that resolves to IActionResult - Ok (200) on success</returns>
         [HttpGet("delivery-queue")]
-        public async Task<IEnumerable<GetDeliveryQueueByPoolResponse>> GetDeliveryQueueByPool([FromQuery]int poolId)
+        public async Task<IActionResult> GetDeliveryQueueByPool([FromQuery] GetDeliveryQueueByPoolRequest queryParams)
         {
-            var firstQueuedDelivery = await DeliveryCommands.GetHighestPriorityDelivery(_svtContext, poolId);
+            var firstQueuedDelivery = await DeliveryCommands.GetHighestPriorityDelivery(_svtContext, queryParams.PoolId);
 
             var current = firstQueuedDelivery;
 
@@ -35,38 +46,36 @@ namespace SVT.Platform.Controllers
                 current = current.NextPrioritizedDelivery;
             }
 
-            return queue.Select(d => new GetDeliveryQueueByPoolResponse
-            {
-                DeliveryId = d.DeliveryId,
-                UserId = d.UserId,
-                CartId = d.CartId,
-                OrderId = d.OrderId,
-                CurrentLocation = d.Locations.ToList().Find(loc => !loc.Reserved).Name,
-                ReservedLocation = d.Locations.ToList().Find(loc => loc.Reserved)?.Name,
-                DestinationArea = d.DestinationArea.Name,
-                DeliveryType = d.DeliveryType
-            });
+            return Ok(queue.Select(d =>
+                new GetDeliveryQueueByPoolResponse
+                {
+                    DeliveryId = d.DeliveryId,
+                    UserId = d.UserId,
+                    CartId = d.CartId,
+                    OrderId = d.OrderId,
+                    CurrentLocation = d.Locations.ToList().Find(loc => !loc.Reserved).Name,
+                    ReservedLocation = d.Locations.ToList().Find(loc => loc.Reserved)?.Name,
+                    DestinationArea = d.DestinationArea.Name,
+                    DeliveryType = d.DeliveryType
+                })
+            );
         }
 
         [HttpPut("delivery/{deliveryId}/queue/priority")]
-        public async Task<IActionResult> ChangeDeliveryPriority(
-            [FromRoute]int deliveryId,
-            [FromQuery]int newParentDeliveryId,
-            [FromQuery]int newChildDeliveryId,
-            [FromQuery]int poolId)
+        public async Task<IActionResult> ChangeDeliveryPriority([FromRoute]PriorityRoute route, [FromQuery]PriorityQuery query)
         {
             using var transaction = await _svtContext.Database.BeginTransactionAsync();
 
-            var currentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, deliveryId, poolId);
+            var currentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, route.DeliveryId, query.PoolId);
 
             if (currentDelivery == null)
             {
                 return NotFound();
             }
 
-            var newParentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, newParentDeliveryId, poolId);
+            var newParentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, query.NewParentDeliveryId, query.PoolId);
 
-            var newChildDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, newChildDeliveryId, poolId);
+            var newChildDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, query.NewChildDeliveryId, query.PoolId);
 
             if (newParentDelivery == null && newChildDelivery == null)
             {
@@ -79,15 +88,9 @@ namespace SVT.Platform.Controllers
                 await _svtContext.SaveChangesAsync(); // @fix this call to save changes fixes a circular dependency error for some reason
             }
 
-            if (newParentDelivery != null)
-            {
-                currentDelivery.PreviousPrioritizedDelivery = newParentDelivery;
-            }
+            currentDelivery.PreviousPrioritizedDelivery = newParentDelivery;
 
-            if (newChildDelivery != null)
-            {
-                newChildDelivery.PreviousPrioritizedDelivery = currentDelivery;
-            }
+            newChildDelivery.PreviousPrioritizedDelivery = currentDelivery;
 
             await _svtContext.SaveChangesAsync();
 
@@ -213,6 +216,23 @@ namespace SVT.Platform.Controllers
             public string ReservedLocation { get; set; }
             public string DestinationArea { get; set; }
             public string DeliveryType { get; set; }
+        }
+
+        public class GetDeliveryQueueByPoolRequest
+        {
+            public int PoolId { get; set; }
+        }
+
+        public class PriorityRoute
+        {
+            public int DeliveryId { get; set; }
+        }
+
+        public class PriorityQuery
+        {
+            public int NewChildDeliveryId { get; set; }
+            public int NewParentDeliveryId { get; set; }
+            public int PoolId { get; set; }
         }
     }
 }

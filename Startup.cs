@@ -41,6 +41,9 @@ namespace SVT.Platform
 
             // Validators
             services.AddTransient<IValidator<DeliveryController.DeliveryRequests>, DeliveryRequestsValidator>();
+            services.AddTransient<IValidator<DeliveryQueueController.GetDeliveryQueueByPoolRequest>, GetDeliveryQueueByPoolValidator>();
+            services.AddTransient<IValidator<DeliveryQueueController.PriorityRoute>, PriorityRouteValidator>();
+            services.AddTransient<IValidator<DeliveryQueueController.PriorityQuery>, PriorityQueryValidator>();
 
             // DI
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

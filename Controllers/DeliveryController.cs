@@ -1,23 +1,34 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
+using System.Threading.Tasks;
 
 namespace SVT.Platform.Controllers
 {
+    /// <summary>
+    /// Delivery Controller Definition
+    /// </summary>
     [Route("api")]
     public class DeliveryController : ControllerBase
     {
         private SVTContext _svtContext;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="svtContext">SQL Server database context</param>
         public DeliveryController(SVTContext svtContext)
         {
             _svtContext = svtContext;
         }
 
-        // @validation 400 if cartId or cartLocation are not in the correct format
+        /// <summary>
+        /// POST route to create/queue a new Delivery
+        /// </summary>
+        /// <param name="request">List of Delivery instances</param>
+        /// <returns>Task that resovles IActionResult - NoContent (204) on success</returns>
         [HttpPost("delivery/queue")]
         public async Task<IActionResult> CreateDeliveryRequest([FromBody] DeliveryRequests request)
         {
@@ -73,17 +84,51 @@ namespace SVT.Platform.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Delivery to be created/queued
+        /// </summary>
         public class DeliveryRequest
         {
+            /// <summary>
+            /// Gets/sets OrderId property
+            /// </summary>
+            /// <value>Order associated with delivery request</value>
             public string OrderId { get; set; }
+
+            /// <summary>
+            /// Gets/sets CartId property
+            /// </summary>
+            /// <value>Cart requested for delivery</value>
             public string CartId { get; set; }
+
+            /// <summary>
+            /// Gets/sets Location property
+            /// </summary>
+            /// <value>Requested starting location</value>
             public string Location { get; set; }
+
+            /// <summary>
+            /// Gets/sets DestinationArea property
+            /// </summary>
+            /// <value>Requested ultimate destination</value>
             public string DestinationArea { get; set; }
+
+            /// <summary>
+            /// Gets/sets DeliveryType property
+            /// </summary>
+            /// <value>Type of delivery</value>
             public string DeliveryType { get; set; }
         }
 
+        /// <summary>
+        /// Represents request body
+        /// </summary>
         public class DeliveryRequests
         {
+            /// <summary>
+            /// Gets/sets Deliveries property
+            /// </summary>
+            /// <value>N number of DeliveryRequest instances to create/queue</value>
             public List<DeliveryRequest> Deliveries { get; set; }
         }
     }
