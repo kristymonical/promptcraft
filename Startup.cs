@@ -40,6 +40,7 @@ namespace SVT.Platform
                 .AddFluentValidation();
 
             // Validators
+            services.AddTransient<IValidator<AreaController.ByLocationName>, ByLocationNameValidator>();
             services.AddTransient<IValidator<DeliveryController.DeliveryRequests>, DeliveryRequestsValidator>();
             services.AddTransient<IValidator<DeliveryQueueController.ByPoolRequest>, ByPoolRequestValidator>();
             services.AddTransient<IValidator<DeliveryQueueController.PriorityQuery>, PriorityQueryValidator>();
