@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,13 +21,13 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpGet("staging")]
-        public async Task<IEnumerable<GetStagedCartsResponse>> GetStagedCarts([FromQuery] string deliveryType)
+        public async Task<IEnumerable<GetStagedCartsResponse>> GetStagedCarts([FromQuery]ByDeliveryType query)
         {
             var stagedCartLocationsQueryable = LocationCommands.GetStagedCartLocations(_svtContext);
 
-            if (deliveryType != null)
+            if (query.DeliveryType != null)
             {
-                stagedCartLocationsQueryable = stagedCartLocationsQueryable.Where(loc => loc.Delivery.DeliveryType == deliveryType);
+                stagedCartLocationsQueryable = stagedCartLocationsQueryable.Where(loc => loc.Delivery.DeliveryType == query.DeliveryType);
             }
             return (await stagedCartLocationsQueryable.ToListAsync())
                 .Select(loc => new GetStagedCartsResponse()
@@ -39,18 +40,24 @@ namespace SVT.Platform.Controllers
                 });
         }
 
-        [HttpPost("move")]
-        public async Task<IActionResult> MoveCartAsync([FromBody] MoveCartRequest request)
+        [HttpPut("move")]
+        public async Task<IActionResult> MoveCartAsync([FromBody]MoveCartRequest request)
         {
             using var transaction = await _svtContext.Database.BeginTransactionAsync();
 
-            var currentCartLocation = await LocationCommands.GetCartCurrentLocation(_svtContext, request.CartId);
             var destinationLocation = await LocationCommands.GetLocationByName(_svtContext, request.LocationName);
+            
+            if (destinationLocation == null)
+            {
+                return NotFound(new { success = false, message = $"Location: {request.LocationName} Not Found" });
+            }
+
+            var currentCartLocation = await LocationCommands.GetCartCurrentLocation(_svtContext, request.CartId);
             (bool isValidLocation, string errorMessage) = DeliveryCommands.ValidateCartMove(request.CartId, destinationLocation, currentCartLocation);
 
             if (!isValidLocation)
             {
-                return Conflict(new { message = errorMessage });
+                return Conflict(new { success = false, message = errorMessage });
             }
 
             await DeliveryCommands.MoveCart(_svtContext, new MoveCartCommand{
@@ -62,6 +69,11 @@ namespace SVT.Platform.Controllers
 
             await transaction.CommitAsync();
             return NoContent();
+        }
+
+        public class ByDeliveryType
+        {
+            public string DeliveryType { get; set; }
         }
 
         public class GetStagedCartsResponse
@@ -87,11 +99,11 @@ namespace SVT.Platform.Controllers
             public string User { get; set; }
         }
 
-        public class GetOrderAndDestinationRequest
-        {
-            public string MalLocationName { get; set; }
-            public string CartId { get; set; }
-        }
+        // public class GetOrderAndDestinationRequest
+        // {
+        //     public string MalLocationName { get; set; }
+        //     public string CartId { get; set; }
+        // }
 
         public class GetOrderAndDestinationResponse
         {
