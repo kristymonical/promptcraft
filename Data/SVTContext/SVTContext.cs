@@ -19,6 +19,7 @@ namespace SVT.Platform.Data
             BuildPool(modelBuilder);
             BuildArea(modelBuilder);
             BuildAreaMap(modelBuilder);
+            BuildAreaOverflow(modelBuilder);
             BuildLocationType(modelBuilder);
             BuildLocation(modelBuilder);
             BuildDeliveryType(modelBuilder);
