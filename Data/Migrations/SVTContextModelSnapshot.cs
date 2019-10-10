@@ -209,6 +209,57 @@ namespace SVT.Platform.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SVT.Platform.Data.Models.AreaOverflow", b =>
+                {
+                    b.Property<int>("DestinationAreaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OverflowAreaId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.HasKey("DestinationAreaId", "OverflowAreaId");
+
+                    b.HasIndex("OverflowAreaId");
+
+                    b.ToTable("AreaOverflow");
+
+                    b.HasData(
+                        new
+                        {
+                            DestinationAreaId = 4,
+                            OverflowAreaId = 3,
+                            Active = true,
+                            Priority = 1
+                        },
+                        new
+                        {
+                            DestinationAreaId = 5,
+                            OverflowAreaId = 3,
+                            Active = true,
+                            Priority = 1
+                        },
+                        new
+                        {
+                            DestinationAreaId = 1,
+                            OverflowAreaId = 3,
+                            Active = true,
+                            Priority = 1
+                        },
+                        new
+                        {
+                            DestinationAreaId = 2,
+                            OverflowAreaId = 3,
+                            Active = true,
+                            Priority = 1
+                        });
+                });
+
             modelBuilder.Entity("SVT.Platform.Data.Models.AreaType", b =>
                 {
                     b.Property<string>("Value")
@@ -1185,6 +1236,21 @@ namespace SVT.Platform.Data.Migrations
                     b.HasOne("SVT.Platform.Data.Models.Area", "PreviousArea")
                         .WithMany("NextAreas")
                         .HasForeignKey("PreviousAreaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.AreaOverflow", b =>
+                {
+                    b.HasOne("SVT.Platform.Data.Models.Area", "DestinationArea")
+                        .WithMany("AreasOverflowFor")
+                        .HasForeignKey("DestinationAreaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SVT.Platform.Data.Models.Area", "OverflowArea")
+                        .WithMany("AreaOverflows")
+                        .HasForeignKey("OverflowAreaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

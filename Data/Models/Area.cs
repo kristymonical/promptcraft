@@ -25,6 +25,8 @@ namespace SVT.Platform.Data.Models
         public virtual Pool Pool { get; set; }
         public virtual ICollection<AreaMap> PreviousAreas { get; set; }
         public virtual ICollection<AreaMap> NextAreas { get; set; }
+        public virtual ICollection<AreaOverflow> AreaOverflows { get; set; }
+        public virtual ICollection<AreaOverflow> AreasOverflowFor { get; set; }
         public virtual ICollection<AreaDeliveryType> AreaDeliveryTypes { get; set; }
         public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual ICollection<Location> Locations { get; set; }
