@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Row } from 'react-bootstrap';
+import { makeStyles } from '@material-ui/styles';
 
-import { TitleCol, AutoRefresh } from 'components';
+import { TitleCol, AutoRefresh, SVT_THEME } from 'components';
 import {
   getDeliveryQueue,
   GetDeliveryQueueResponse,
@@ -11,9 +12,17 @@ import {
 } from 'services/DeliveryQueue';
 import DraggableList from './DraggableList';
 
+const createStyles = makeStyles<typeof SVT_THEME>({
+  queueContainer: {
+    maxWidth: 650,
+    margin: '0 auto'
+  }
+});
+
 export default function DeliveryQueueManagement() {
   const [queue, setQueue] = useState<GetDeliveryQueueResponse[]>([]);
   const [hasActiveRequest, setHasActiveRequest] = useState(false);
+  const classes = createStyles({});
 
   useEffect(() => {
     getDeliveryQueue().then(setQueue);
@@ -55,7 +64,7 @@ export default function DeliveryQueueManagement() {
       <Row>
         <TitleCol title='Delivery Queue Management' />
       </Row>
-      <Row>
+      <Row className={classes.queueContainer}>
         <AutoRefresh
           callback={async stuff => {
             setHasActiveRequest(true);

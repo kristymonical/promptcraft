@@ -1,9 +1,10 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 import { SVT_THEME, Overlay } from 'components';
 import DraggableListItem from './DraggableListItem';
+import { Row, Col } from 'react-bootstrap';
 
 interface DraggableListProps {
   items: any[];
@@ -14,13 +15,22 @@ interface DraggableListProps {
 
 const createStyles = makeStyles<typeof SVT_THEME, Partial<DraggableListProps>>({
   listContainer: {
-    alignItems: 'center',
     flexDirection: 'column',
-    justifyContent: 'center',
-    marginLeft: -15,
-    marginRight: -15,
-    minWidth: '100%',
-    position: 'relative'
+    flexGrow: 1,
+    margin: '0 auto',
+    position: 'relative',
+    '& .row': {
+      justifyContent: 'space-around',
+      '& .col': {
+        maxWidth: '25%'
+      }
+    }
+  },
+  headerRow: {
+    padding: 10,
+    '& .col > p': {
+      fontWeight: 'bold'
+    }
   }
 });
 
@@ -40,6 +50,17 @@ export default function DraggableList({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
+            <Row className={classes.headerRow}>
+              <Col>
+                <Typography>Cart Id</Typography>
+              </Col>
+              <Col>
+                <Typography>Current Location</Typography>
+              </Col>
+              <Col>
+                <Typography>Destination Area</Typography>
+              </Col>
+            </Row>
             {items.map((item, idx) => (
               <DraggableListItem
                 key={`drag-delivery-${item[itemIdKey]}`}

@@ -1,9 +1,18 @@
+import ServiceResponse from './ServiceResponse';
+import { toast } from 'react-toastify';
+
 export async function getDeliveryQueue(
   poolId = 1
 ): Promise<GetDeliveryQueueResponse[]> {
   try {
     const res = await fetch(`/api/delivery-queue?poolId=${poolId}`);
-    return await res.json();
+    const json: ServiceResponse = await res.json();
+    if (!json.success) {
+      toast.error(`Unable to retrieve delivery queue for pool ${poolId}`);
+      return [];
+    }
+
+    return json.data;
   } catch (err) {
     console.error('[getDeliveryQueue]:', err);
     throw err;

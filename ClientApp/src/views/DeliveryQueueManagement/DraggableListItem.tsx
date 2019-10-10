@@ -3,6 +3,7 @@ import { makeStyles, Typography, Card } from '@material-ui/core';
 import { Draggable } from 'react-beautiful-dnd';
 
 import { SVT_THEME } from 'components';
+import { Row, Col } from 'react-bootstrap';
 
 interface DraggableListItemProps {
   index: number;
@@ -21,7 +22,7 @@ const createStyles = makeStyles<
 
 export default function DraggableListItem({
   index,
-  item: { deliveryId, currentLocation }
+  item: { deliveryId, cartId, currentLocation, destinationArea }
 }: DraggableListItemProps) {
   const classes = createStyles({});
   return (
@@ -33,9 +34,17 @@ export default function DraggableListItem({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          <Typography>
-            {deliveryId} - {currentLocation}
-          </Typography>
+          <Row>
+            <Col>
+              <Typography>{cartId}</Typography>
+            </Col>
+            <Col>
+              <Typography>{currentLocation}</Typography>
+            </Col>
+            <Col>
+              <Typography>{destinationArea}</Typography>
+            </Col>
+          </Row>
         </Card>
       )}
     </Draggable>
