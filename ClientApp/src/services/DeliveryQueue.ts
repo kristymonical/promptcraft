@@ -26,10 +26,17 @@ export async function moveDeliveryInQueue(
   poolId = 1
 ) {
   try {
-    await fetch(
+    const result = await fetch(
       `/api/delivery/${deliveryId}/queue/priority?newParentDeliveryId=${newParentId}&newChildDeliveryId=${newChildId}&poolId=${poolId}`,
       { method: 'PUT' }
     );
+    const response: ServiceResponse = await result.json();
+
+    if (!response.success) {
+      toast.error(response.message || 'Unable to move item in queue');
+    } else {
+      toast.success('Delivery moved successfully');
+    }
   } catch (err) {
     console.error('[moveDeliveryInQueue]:', err);
     throw err;
@@ -38,10 +45,18 @@ export async function moveDeliveryInQueue(
 
 export async function moveDeliveryToTop(deliveryId: number, poolId = 1) {
   try {
-    await fetch(
+    const result = await fetch(
       `/api/delivery/${deliveryId}/queue/priority/top?poolId=${poolId}`,
       { method: 'PUT' }
     );
+
+    const response: ServiceResponse = await result.json();
+
+    if (!response.success) {
+      toast.error(response.message || 'Unable to move item to top of queue');
+    } else {
+      toast.success('Delivery moved successfully');
+    }
   } catch (err) {
     console.error('[moveDeliveryToTop]:', err);
     throw err;
@@ -50,12 +65,20 @@ export async function moveDeliveryToTop(deliveryId: number, poolId = 1) {
 
 export async function moveDeliveryToBottom(deliveryId: number, poolId = 1) {
   try {
-    await fetch(
+    const result = await fetch(
       `/api/delivery/${deliveryId}/queue/priority/bottom?poolId=${poolId}`,
       { method: 'PUT' }
     );
+
+    const response: ServiceResponse = await result.json();
+
+    if (!response.success) {
+      toast.error(response.message || 'Unable to move item to bottom of queue');
+    } else {
+      toast.success('Delivery moved successfully');
+    }
   } catch (err) {
-    console.error('[moveDeliveryToTop]:', err);
+    console.error('[moveDeliveryToBottom]:', err);
     throw err;
   }
 }
