@@ -29,7 +29,7 @@ const createStyles = makeStyles<typeof SVT_THEME, Partial<OverlayProps>>(
   })
 );
 
-export default function Overlay({  }: OverlayProps) {
+export default function Overlay() {
   const classes = createStyles({});
   return (
     <div className={classes.overlayRoot}>

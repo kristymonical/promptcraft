@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {
-  makeStyles,
-  Checkbox,
-  FormControlLabel,
-  Slider,
-  Typography
-} from '@material-ui/core';
 import { Row } from 'react-bootstrap';
 
-import { SVT_THEME, TitleCol, AutoRefresh } from 'components';
+import { TitleCol, AutoRefresh } from 'components';
 import {
   getDeliveryQueue,
   GetDeliveryQueueResponse,
@@ -18,18 +11,7 @@ import {
 } from 'services/DeliveryQueue';
 import DraggableList from './DraggableList';
 
-interface DeliveryQueueManagementProps {}
-
-const createStyles = makeStyles<
-  typeof SVT_THEME,
-  Partial<DeliveryQueueManagementProps>
->({});
-
-export default function DeliveryQueueManagement({
-
-}: DeliveryQueueManagementProps) {
-  const classes = createStyles({});
-
+export default function DeliveryQueueManagement() {
   const [queue, setQueue] = useState<GetDeliveryQueueResponse[]>([]);
   const [hasActiveRequest, setHasActiveRequest] = useState(false);
 

@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Row } from 'react-bootstrap';
 import { Typography, makeStyles } from '@material-ui/core';
 
-import {
-  ScannableTextField,
-  Select,
-  SVT_THEME,
-  TitleCol,
-  SubmitButton
-} from 'components';
+import { ScannableTextField, Select, TitleCol, SubmitButton } from 'components';
 import { createDeliveryRequest } from 'services/Delivery';
 import { getDestinationAreas, GetAreasResult } from 'services/Area';
 import { useDebounce } from 'hooks';
 
-const useStyles = makeStyles(({  }: typeof SVT_THEME) => ({
+const useStyles = makeStyles(() => ({
   flexFormContainer: {
     justifyContent: 'space-between',
     '& > *': {
@@ -33,24 +27,26 @@ export default function DeliveryRequest() {
   const classes = useStyles({});
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitDisabled, setSubmitDisabled] = useState(true);
-  const [debouncedCartLocation] = useDebounce(formValues.cartLocation, 500); // half second debounce for cart location
+  const [debouncedCartLocation] = useDebounce(formValues.cartLocation, 1e3); // 1 second debounce for cart location
 
   const [areas, setAreas] = useState<GetAreasResult[]>([]);
 
   // "reducer" for form value state
-  const handleChange = (name: keyof typeof formValues) => (
-    newValue: string
-  ) => {
-    setFormValues({ ...formValues, [name]: newValue });
-  };
+  const handleChange = useCallback(
+    (name: keyof typeof initialFormValues) => (newValue: string) => {
+      setFormValues(old => ({ ...old, [name]: newValue }));
+    },
+    []
+  );
 
-  // get data on mount
+  // get data on debounced value change
   useEffect(() => {
     if (!debouncedCartLocation || debouncedCartLocation.length === 0) return;
-    getDestinationAreas(debouncedCartLocation)
-      .then(returnedAreas => setAreas(returnedAreas))
-      .catch(err => console.error(err)); // @error-handling FE
-  }, [debouncedCartLocation]);
+    getDestinationAreas(debouncedCartLocation).then(returnedAreas => {
+      setAreas(returnedAreas);
+      handleChange('area')('');
+    });
+  }, [debouncedCartLocation, handleChange]);
 
   // determine if create button should be disabled
   useEffect(() => {
@@ -66,14 +62,18 @@ export default function DeliveryRequest() {
     }
   }, [formValues, submitDisabled]);
 
-  const onSubmit = () => {
-    createDeliveryRequest({
-      cartId: formValues.cartId,
-      cartLocation: formValues.cartLocation,
-      destinationArea: formValues.area,
-      orderNumber: formValues.orderNumber
-    });
-    setFormValues(initialFormValues);
+  const onSubmit = async () => {
+    try {
+      const success = await createDeliveryRequest({
+        cartId: formValues.cartId,
+        cartLocation: formValues.cartLocation,
+        destinationArea: formValues.area,
+        orderNumber: formValues.orderNumber
+      });
+
+      // reset form on success
+      if (success) setFormValues(initialFormValues);
+    } catch (err) {}
   };
 
   return (
@@ -118,7 +118,7 @@ export default function DeliveryRequest() {
           value={formValues.orderNumber}
         />
       </Row>
-      {areas && areas.length > 0 && (
+      {areas && areas.length > 0 && formValues.cartId.length > 0 && (
         <>
           <Row>
             <Typography variant='h5'>Destination</Typography>
