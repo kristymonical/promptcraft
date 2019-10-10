@@ -14,7 +14,7 @@ export async function createStagingRequest({
     return (await result.json()) as GetStagedCartsResult[];
   } catch (err) {
     console.error('[createStagingRequest]:', err);
-    return [] as GetStagedCartsResult[];
+    throw err;
   }
 }
 
@@ -24,7 +24,7 @@ export async function getStagedCarts() {
     return (await result.json()) as GetStagedCartsResult[];
   } catch (err) {
     console.error('[getStagedCarts]:', err);
-    return [] as GetStagedCartsResult[];
+    throw err;
   }
 }
 

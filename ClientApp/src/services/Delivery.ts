@@ -5,7 +5,7 @@ export async function createDeliveryRequest({
   orderNumber
 }: CreateDeliveryRequest) {
   try {
-    await fetch('/api/delivery', {
+    await fetch('/api/delivery/queue', {
       method: 'POST',
       body: JSON.stringify([
         {
@@ -21,6 +21,7 @@ export async function createDeliveryRequest({
     });
   } catch (err) {
     console.error('[createDeliveryRequest]:', err);
+    throw err;
   }
 }
 

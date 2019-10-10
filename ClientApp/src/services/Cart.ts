@@ -9,7 +9,7 @@ export async function getOrderAndDestination(
     return await result.json();
   } catch (err) {
     console.error('[getStagedCarts]:', err);
-    return { destinationAreaName: '', orderId: '' };
+    throw err;
   }
 }
 
@@ -27,6 +27,7 @@ export async function moveCart(cartId: string, malLocationName: string) {
     });
   } catch (err) {
     console.error('[moveCart]:', err);
+    throw err;
   }
 }
 

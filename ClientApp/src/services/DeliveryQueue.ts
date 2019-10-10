@@ -6,9 +6,8 @@ export async function getDeliveryQueue(
     return await res.json();
   } catch (err) {
     console.error('[getDeliveryQueue]:', err);
+    throw err;
   }
-
-  return [];
 }
 
 export async function moveDeliveryInQueue(
@@ -24,6 +23,7 @@ export async function moveDeliveryInQueue(
     );
   } catch (err) {
     console.error('[moveDeliveryInQueue]:', err);
+    throw err;
   }
 }
 
@@ -35,6 +35,7 @@ export async function moveDeliveryToTop(deliveryId: number, poolId = 1) {
     );
   } catch (err) {
     console.error('[moveDeliveryToTop]:', err);
+    throw err;
   }
 }
 
@@ -46,6 +47,7 @@ export async function moveDeliveryToBottom(deliveryId: number, poolId = 1) {
     );
   } catch (err) {
     console.error('[moveDeliveryToTop]:', err);
+    throw err;
   }
 }
 

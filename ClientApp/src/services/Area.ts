@@ -6,7 +6,7 @@ export async function getAreas() {
     return (await result.json()) as GetAreasResult[];
   } catch (err) {
     console.error('[getAreas]:', err);
-    return [] as GetAreasResult[];
+    throw err;
   }
 }
 
@@ -24,7 +24,7 @@ export async function getDestinationAreas(locationName: string) {
     return (await result.json()).data as GetAreasResult[];
   } catch (err) {
     console.error('[getDestinationAreas]:', err);
-    return [] as GetAreasResult[];
+    throw err;
   }
 }
 
