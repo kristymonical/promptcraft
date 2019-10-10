@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Row } from 'react-bootstrap';
 import { Typography, makeStyles } from '@material-ui/core';
 
@@ -32,19 +32,21 @@ export default function DeliveryRequest() {
   const [areas, setAreas] = useState<GetAreasResult[]>([]);
 
   // "reducer" for form value state
-  const handleChange = (name: keyof typeof formValues) => (
-    newValue: string
-  ) => {
-    setFormValues({ ...formValues, [name]: newValue });
-  };
+  const handleChange = useCallback(
+    (name: keyof typeof initialFormValues) => (newValue: string) => {
+      setFormValues(old => ({ ...old, [name]: newValue }));
+    },
+    []
+  );
 
-  // get data on mount
+  // get data on debounced value change
   useEffect(() => {
     if (!debouncedCartLocation || debouncedCartLocation.length === 0) return;
-    getDestinationAreas(debouncedCartLocation)
-      .then(returnedAreas => setAreas(returnedAreas))
-      .catch(err => console.error(err)); // @error-handling FE
-  }, [debouncedCartLocation]);
+    getDestinationAreas(debouncedCartLocation).then(returnedAreas => {
+      setAreas(returnedAreas);
+      handleChange('area')('');
+    });
+  }, [debouncedCartLocation, handleChange]);
 
   // determine if create button should be disabled
   useEffect(() => {
@@ -60,14 +62,18 @@ export default function DeliveryRequest() {
     }
   }, [formValues, submitDisabled]);
 
-  const onSubmit = () => {
-    createDeliveryRequest({
-      cartId: formValues.cartId,
-      cartLocation: formValues.cartLocation,
-      destinationArea: formValues.area,
-      orderNumber: formValues.orderNumber
-    });
-    setFormValues(initialFormValues);
+  const onSubmit = async () => {
+    try {
+      const success = await createDeliveryRequest({
+        cartId: formValues.cartId,
+        cartLocation: formValues.cartLocation,
+        destinationArea: formValues.area,
+        orderNumber: formValues.orderNumber
+      });
+
+      // reset form on success
+      if (success) setFormValues(initialFormValues);
+    } catch (err) {}
   };
 
   return (

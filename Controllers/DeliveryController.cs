@@ -78,10 +78,10 @@ namespace SVT.Platform.Controllers
 
                 await _svtContext.SaveChangesAsync();
             }
-            
+
             await transaction.CommitAsync();
 
-            return NoContent();
+            return Ok(new { success = true, message = "" });
         }
 
         /// <summary>

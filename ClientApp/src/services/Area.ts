@@ -17,7 +17,7 @@ export async function getDestinationAreas(locationName: string) {
     );
 
     if (result.status === 404) {
-      toast.error(`No valid destination areas for ${locationName} found.`);
+      toast.error(`No valid destination areas for '${locationName}' found.`);
       return [] as GetAreasResult[];
     }
 
