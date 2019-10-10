@@ -13,32 +13,6 @@ const cartsTableShape = [
   { label: 'Destination Area', key: 'destinationArea' }
 ];
 
-const testData = [
-  {
-    orderId: '1A',
-    cartId: '1300',
-    stagingLocationId: '9AB',
-    deliveryRequestType: 'stage',
-    destinationArea: '1010A'
-  },
-  {
-    orderId: '101',
-    cartId: '1309',
-    stagingLocationId: '9AC',
-    deliveryRequestType: 'deliver',
-    destinationArea: '1012B'
-  },
-  {
-    orderId: '101',
-    cartId: '1310',
-    stagingLocationId: '8AB',
-    deliveryRequestType: 'deliver',
-    destinationArea: '1012C'
-  }
-];
-
-const getStagingTableTestData = async () => await Staging.getStagedCarts();
-
 export default function StagingManagement() {
   const [finalDestination, setFinalDestination] = useState('');
   const [stagingTableData, setStagingTableData] = useState<
@@ -47,8 +21,8 @@ export default function StagingManagement() {
 
   // get data on mount
   useEffect(() => {
-    getStagingTableTestData()
-      .then(cartsData => setStagingTableData(cartsData.concat(testData)))
+    Staging.getStagedCarts()
+      .then(cartsData => setStagingTableData(cartsData))
       .catch(err => console.error(err)); // @error-handling FE
   }, []);
 

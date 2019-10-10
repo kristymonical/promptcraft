@@ -1,3 +1,5 @@
+import { toast } from 'react-toastify';
+
 export async function createStagingRequest({
   cartIds,
   destinationArea,
@@ -18,10 +20,16 @@ export async function createStagingRequest({
   }
 }
 
-export async function getStagedCarts() {
+export async function getStagedCarts(deliveryType = 'staged') {
   try {
-    const result = await fetch('/api/staging');
-    return (await result.json()) as GetStagedCartsResult[];
+    const result = await fetch(`/api/staging?deliveryType=${deliveryType}`);
+    const json = await result.json();
+    if (!json.success) {
+      toast.error(json.message || 'Failed to get staged carts');
+      return [] as GetStagedCartsResult[];
+    }
+
+    return json.data as GetStagedCartsResult[];
   } catch (err) {
     console.error('[getStagedCarts]:', err);
     throw err;
