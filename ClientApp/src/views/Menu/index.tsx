@@ -26,21 +26,24 @@ export default function Menu() {
   return (
     <>
       <Row>
-        <TitleCol title='Title' />
+        <TitleCol title='MacGregor Toolkit' />
       </Row>
       <Row>
         <Col className={classes.buttonGroup}>
-          <Link className={classes.link} to='/request/manual'>
-            <BigButton>Request</BigButton>
+          <Link className={classes.link} to='/request/delivery'>
+            <BigButton>Delivery Request</BigButton>
           </Link>
-          <Link className={classes.link} to='/deliveries'>
-            <BigButton>Deliveries</BigButton>
+          <Link className={classes.link} to='/manage/queue'>
+            <BigButton>Delivery Queue</BigButton>
           </Link>
-          <Link className={classes.link} to='/mapping'>
-            <BigButton variant='secondary'>Mapping</BigButton>
+          <Link className={classes.link} to='/request/cart'>
+            <BigButton variant='secondary'>Cart Handling</BigButton>
           </Link>
-          <Link className={classes.link} to='/configure'>
-            <BigButton variant='secondary'>Configuration</BigButton>
+          <Link className={classes.link} to='/request/clean'>
+            <BigButton variant='secondary'>Clean Request</BigButton>
+          </Link>
+          <Link className={classes.link} to='/manage/staging'>
+            <BigButton>Staging Management</BigButton>
           </Link>
         </Col>
       </Row>
