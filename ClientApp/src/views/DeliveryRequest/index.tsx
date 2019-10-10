@@ -2,18 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Row } from 'react-bootstrap';
 import { Typography, makeStyles } from '@material-ui/core';
 
-import {
-  ScannableTextField,
-  Select,
-  SVT_THEME,
-  TitleCol,
-  SubmitButton
-} from 'components';
+import { ScannableTextField, Select, TitleCol, SubmitButton } from 'components';
 import { createDeliveryRequest } from 'services/Delivery';
 import { getDestinationAreas, GetAreasResult } from 'services/Area';
 import { useDebounce } from 'hooks';
 
-const useStyles = makeStyles(({  }: typeof SVT_THEME) => ({
+const useStyles = makeStyles(() => ({
   flexFormContainer: {
     justifyContent: 'space-between',
     '& > *': {
@@ -33,7 +27,7 @@ export default function DeliveryRequest() {
   const classes = useStyles({});
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitDisabled, setSubmitDisabled] = useState(true);
-  const [debouncedCartLocation] = useDebounce(formValues.cartLocation, 500); // half second debounce for cart location
+  const [debouncedCartLocation] = useDebounce(formValues.cartLocation, 1e3); // 1 second debounce for cart location
 
   const [areas, setAreas] = useState<GetAreasResult[]>([]);
 
@@ -118,7 +112,7 @@ export default function DeliveryRequest() {
           value={formValues.orderNumber}
         />
       </Row>
-      {areas && areas.length > 0 && (
+      {areas && areas.length > 0 && formValues.cartId.length > 0 && (
         <>
           <Row>
             <Typography variant='h5'>Destination</Typography>
