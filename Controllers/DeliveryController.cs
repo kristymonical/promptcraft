@@ -28,7 +28,7 @@ namespace SVT.Platform.Controllers
         /// POST route to create/queue a new Delivery
         /// </summary>
         /// <param name="request">List of Delivery instances</param>
-        /// <returns>Task that resovles IActionResult - NoContent (204) on success</returns>
+        /// <returns>Task that resovles IActionResult - Ok (200) on success</returns>
         [HttpPost("delivery/queue")]
         public async Task<IActionResult> CreateDeliveryRequest([FromBody] DeliveryRequests request)
         {
@@ -81,7 +81,7 @@ namespace SVT.Platform.Controllers
             
             await transaction.CommitAsync();
 
-            return NoContent();
+            return Ok(new { success = true, message = "" });
         }
 
         /// <summary>

@@ -45,19 +45,22 @@ namespace SVT.Platform.Controllers
                 current = current.NextPrioritizedDelivery;
             }
 
-            return Ok(queue.Select(d =>
-                new GetDeliveryQueueByPoolResponse
-                {
-                    DeliveryId = d.DeliveryId,
-                    UserId = d.UserId,
-                    CartId = d.CartId,
-                    OrderId = d.OrderId,
-                    CurrentLocation = d.Locations.ToList().Find(loc => !loc.Reserved).Name,
-                    ReservedLocation = d.Locations.ToList().Find(loc => loc.Reserved)?.Name,
-                    DestinationArea = d.DestinationArea.Name,
-                    DeliveryType = d.DeliveryType
-                })
-            );
+            return Ok(new {
+                success = true,
+                message = "",
+                data = queue.Select(d =>
+                    new GetDeliveryQueueByPoolResponse
+                    {
+                        DeliveryId = d.DeliveryId,
+                        UserId = d.UserId,
+                        CartId = d.CartId,
+                        OrderId = d.OrderId,
+                        CurrentLocation = d.Locations.ToList().Find(loc => !loc.Reserved).Name,
+                        ReservedLocation = d.Locations.ToList().Find(loc => loc.Reserved)?.Name,
+                        DestinationArea = d.DestinationArea.Name,
+                        DeliveryType = d.DeliveryType
+                    })
+            });
         }
 
         [HttpPut("delivery/{deliveryId}/queue/priority")]
@@ -69,7 +72,7 @@ namespace SVT.Platform.Controllers
 
             if (currentDelivery == null)
             {
-                return NotFound();
+                return NotFound(new { success = false, message = $"Delivery: {route.DeliveryId} Not Found"});
             }
 
             var newParentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, query.NewParentDeliveryId, query.PoolId);
@@ -78,7 +81,7 @@ namespace SVT.Platform.Controllers
 
             if (newParentDelivery == null && newChildDelivery == null)
             {
-                return UnprocessableEntity();
+                return UnprocessableEntity(new { success = false, message = $"Delivery: {route.DeliveryId} Priority can't be changed as requested" });
             }
 
             if (currentDelivery.NextPrioritizedDelivery != null)
@@ -95,7 +98,7 @@ namespace SVT.Platform.Controllers
 
             await transaction.CommitAsync();
 
-            return NoContent();
+            return Ok(new { success = true, message = "" });
         }
 
         [HttpPut("delivery/{deliveryId}/queue/priority/top")]
@@ -107,14 +110,14 @@ namespace SVT.Platform.Controllers
 
             if (currentDelivery == null)
             {
-                return NotFound();
+                return NotFound(new { success = false, message = $"Delivery: {route.DeliveryId} Not Found" });
             }
 
             var newChildDelivery = await DeliveryCommands.GetHighestPriorityDelivery(_svtContext, query.PoolId);
 
             if (newChildDelivery == null)
             {
-                return UnprocessableEntity();
+                return UnprocessableEntity(new { success = false, message = $"Delivery: {route.DeliveryId} Priority can't be changed as requested" });
             }
 
             if (currentDelivery.NextPrioritizedDelivery != null)
@@ -130,7 +133,7 @@ namespace SVT.Platform.Controllers
 
             await transaction.CommitAsync();
 
-            return NoContent();
+            return Ok(new { success = true, message = "" });
         }
 
         [HttpPut("delivery/{deliveryId}/queue/priority/bottom")]
@@ -142,14 +145,14 @@ namespace SVT.Platform.Controllers
 
             if (currentDelivery == null)
             {
-                return NotFound();
+                return NotFound(new { success = false, message = $"Delivery: {route.DeliveryId} Not Found" });
             }
 
             var newParentDelivery = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, query.PoolId);
 
             if (newParentDelivery == null)
             {
-                return UnprocessableEntity();
+                return UnprocessableEntity(new { success = false, message = $"Delivery: {route.DeliveryId} Priority can't be changed as requested" });
             }
 
             if (currentDelivery.NextPrioritizedDelivery != null)
@@ -163,7 +166,7 @@ namespace SVT.Platform.Controllers
 
             await transaction.CommitAsync();
 
-            return NoContent();
+            return Ok(new { success = true, message = "" });
         }
 
         [HttpPut("delivery/queue/pop")]
@@ -202,7 +205,7 @@ namespace SVT.Platform.Controllers
 
             await _svtContext.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(new { success = true, message = "" });
         }
 
         public class GetDeliveryQueueByPoolResponse

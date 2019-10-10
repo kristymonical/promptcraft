@@ -21,23 +21,25 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpGet("staging")]
-        public async Task<IEnumerable<GetStagedCartsResponse>> GetStagedCarts([FromQuery]ByDeliveryType query)
+        public async Task<IActionResult> GetStagedCarts([FromQuery]ByDeliveryType query)
         {
             var stagedCartLocationsQueryable = LocationCommands.GetStagedCartLocations(_svtContext);
 
-            if (query.DeliveryType != null)
-            {
-                stagedCartLocationsQueryable = stagedCartLocationsQueryable.Where(loc => loc.Delivery.DeliveryType == query.DeliveryType);
-            }
-            return (await stagedCartLocationsQueryable.ToListAsync())
-                .Select(loc => new GetStagedCartsResponse()
-                {
-                    OrderId = loc.Delivery.OrderId,
-                    CartId = loc.Delivery.CartId,
-                    StagingLocationId = loc.Name,
-                    DeliveryRequestType = loc.Delivery.DeliveryType,
-                    DestinationArea = loc.Delivery.DestinationArea.Name
-                });
+            stagedCartLocationsQueryable = stagedCartLocationsQueryable.Where(loc => loc.Delivery.DeliveryType == query.DeliveryType);
+            
+            return Ok(new {
+                success = true,
+                message = "",
+                data = (await stagedCartLocationsQueryable.ToListAsync())
+                    .Select(loc => new GetStagedCartsResponse()
+                    {
+                        OrderId = loc.Delivery.OrderId,
+                        CartId = loc.Delivery.CartId,
+                        StagingLocationId = loc.Name,
+                        DeliveryRequestType = loc.Delivery.DeliveryType,
+                        DestinationArea = loc.Delivery.DestinationArea.Name
+                    })
+            });
         }
 
         [HttpPut("move")]
@@ -68,7 +70,7 @@ namespace SVT.Platform.Controllers
             });
 
             await transaction.CommitAsync();
-            return NoContent();
+            return Ok(new { success = true, message = "" });
         }
 
         public class ByDeliveryType
@@ -98,12 +100,6 @@ namespace SVT.Platform.Controllers
             public Location DestinationLocation { get; set; }
             public string User { get; set; }
         }
-
-        // public class GetOrderAndDestinationRequest
-        // {
-        //     public string MalLocationName { get; set; }
-        //     public string CartId { get; set; }
-        // }
 
         public class GetOrderAndDestinationResponse
         {

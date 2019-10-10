@@ -11,9 +11,11 @@ namespace SVT.Platform.Commands
         {
             var top = await DeliveryCommands.GetHighestPriorityDelivery(context, poolId);
 
-            top.Queued = false;
-
-            top.NextPrioritizedDelivery.PreviousPrioritizedDeliveryId = null;
+            if (top != null)
+            {
+                top.Queued = false;
+                top.NextPrioritizedDelivery.PreviousPrioritizedDeliveryId = null;
+            }
 
             return top;
         }
