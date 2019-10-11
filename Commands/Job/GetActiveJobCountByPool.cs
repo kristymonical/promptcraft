@@ -11,9 +11,10 @@ namespace SVT.Platform.Commands
         {
             return (await JobCommands
                 .GetActiveJobs(context)
-                .Where(j => j.Itineraries.All(i => i.Location.Area.PoolId == poolId))
-                .ToListAsync())
-                .Count;
+                .Where(job => job.Delivery
+                    .Locations.All(loc => loc.Area.PoolId == poolId)
+                )
+                .ToListAsync()).Count;
         }
     }
 }

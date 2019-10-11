@@ -10,7 +10,7 @@ using SVT.Platform.Data;
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    [Migration("20191010191411_SCP-22")]
+    [Migration("20191011185732_SCP-22")]
     partial class SCP22
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -439,10 +439,10 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AethonRunId")
+                    b.Property<int>("AethonRunId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Completed")
+                    b.Property<DateTime?>("Completed")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("InsertedBy")
@@ -473,7 +473,7 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<DateTime>("TimedOut")
+                    b.Property<DateTime?>("TimedOut")
                         .HasColumnType("datetime2");
 
                     b.HasKey("ItineraryId");
@@ -495,16 +495,16 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<int>("AethonJobId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Canceled")
+                    b.Property<DateTime?>("Canceled")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Completed")
+                    b.Property<DateTime?>("Completed")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("DeliveryId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Expired")
+                    b.Property<DateTime?>("Expired")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("InsertedBy")

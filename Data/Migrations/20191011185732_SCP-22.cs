@@ -244,9 +244,9 @@ namespace SVT.Platform.Data.Migrations
                     ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     AethonJobId = table.Column<int>(nullable: false),
                     DeliveryId = table.Column<int>(nullable: false),
-                    Completed = table.Column<DateTime>(nullable: false),
-                    Canceled = table.Column<DateTime>(nullable: false),
-                    Expired = table.Column<DateTime>(nullable: false)
+                    Completed = table.Column<DateTime>(nullable: true),
+                    Canceled = table.Column<DateTime>(nullable: true),
+                    Expired = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -308,9 +308,9 @@ namespace SVT.Platform.Data.Migrations
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
                     ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
-                    AethonRunId = table.Column<int>(nullable: true),
-                    Completed = table.Column<DateTime>(nullable: false),
-                    TimedOut = table.Column<DateTime>(nullable: false),
+                    AethonRunId = table.Column<int>(nullable: false),
+                    Completed = table.Column<DateTime>(nullable: true),
+                    TimedOut = table.Column<DateTime>(nullable: true),
                     JobId = table.Column<int>(nullable: false),
                     LocationId = table.Column<int>(nullable: false)
                 },

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
+using SVT.Platform.Data.Models;
 
 namespace SVT.Platform.Controllers
 {
@@ -13,8 +14,9 @@ namespace SVT.Platform.Controllers
     public class ScheduleController : ControllerBase
     {
         private SVTContext _svtContext;
+        // @TODO: remove once configuration is implemented
         private Dictionary<int, int> _poolThresholds = new Dictionary<int, int>{
-            { 1, 2 },
+            { 1, 3 },
             { 2, 1 },
             { 3, 1 }
         };
@@ -27,6 +29,23 @@ namespace SVT.Platform.Controllers
         [HttpPost("schedule")]
         public async Task<IActionResult> ScheduleJob()
         {
+            // @TODO: remove between below tags when Aethon adapter/connector call is implemented
+            // @from-here
+            var rnd = new Random();
+            var ceiling = (int)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+            var idCache = new List<int>();
+            int _getId()
+            {
+                int newId = rnd.Next(1, ceiling);
+                while(idCache.Contains(newId)){
+                    newId = rnd.Next(1, ceiling);
+                }
+                idCache.Add(newId);
+                return newId;
+            }
+            // @to-here
+
+            // @TODO: figure out how to implement configurable pool threshold values
             foreach (var pool in _poolThresholds.Keys)
             {
                 var threshold = _poolThresholds.GetValueOrDefault(pool);
@@ -34,36 +53,67 @@ namespace SVT.Platform.Controllers
                 var activeJobCount = await JobCommands.GetActiveJobCountByPool(_svtContext, pool);
 
                 var currentCount = activeJobCount;
+
                 while (!deliveryQueueEmpty && currentCount < threshold)
                 {
                     /*
                         @TODO
-                        ======
+                        =====
                         1.  _start X-action_
-                        2.  _get first delivery in queue (by pool)_
-                        3.  calculate destination location
-                        4.  reserve destination location
-                        5.  create Aethon /send payload
-                        6.  call Aethon /send
-                        7.  parse Aethon /send response
-                        8.  create Job entity
-                        9.  create Itirneray entities
-                        10. pop delivery off queue (by pool)
-                        11. commit/rollback Xaction                    
+                        2.  _pop delivery off queue (by pool)_
+                        3.  _calculate/reserve destination location_
+                        4.  create Aethon /send payload - stubbed for now
+                        5.  call Aethon /send - stubbed for now
+                        6.  parse Aethon /send response - stubbed for now
+                        7.  _create Job entity_
+                        8.  _create Itinerary entities_
+                        9.  _commit/rollback Xaction_
                     */
 
                     using var transaction = await _svtContext.Database.BeginTransactionAsync();
 
-                    var currentDelivery = DeliveryCommands.GetHighestPriorityDelivery(_svtContext, pool);
+                    var currentDelivery = await DeliveryCommands.PopDeliveryQueue(_svtContext, pool);
 
                     if (currentDelivery == null)
                     {
                         deliveryQueueEmpty = true;
+                        await transaction.CommitAsync();
                         continue;
                     }
 
-                    // @TODO - replace this increment with a call to 'JobCommands.GetActiveJobCountByPool'
-                    currentCount += 1;
+                    var startingLocation = currentDelivery.Locations.FirstOrDefault();
+                    var destinationArea = AreaCommands.GetIntermediateArea(startingLocation.Area, currentDelivery.DestinationArea);
+                    
+                    if (startingLocation == null || destinationArea == null)
+                    {
+                        // @TODO: write to ErrorLog table here
+                        currentDelivery.Canceled = DateTime.UtcNow;
+                        await _svtContext.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                        continue;
+                    }
+
+                    var destinationLocation = LocationCommands.GetDeliverableLocationByArea(destinationArea);
+
+                    destinationLocation.Reserved = true;                    
+                    currentDelivery.Locations.Add(destinationLocation);
+
+                    // @TODO: Aethon adapter/connector call(s) go here
+                    // @TODO: Write to AethonLog table here
+
+                    currentDelivery.Jobs.Add(new Job {
+                        AethonJobId = _getId(),
+                        Itineraries = new List<Itinerary> {
+                            new Itinerary { AethonRunId = _getId(), Location = startingLocation },
+                            new Itinerary { AethonRunId = _getId(), Location = destinationLocation }
+                        }
+                    });
+
+                    await _svtContext.SaveChangesAsync();
+
+                    currentCount = await JobCommands.GetActiveJobCountByPool(_svtContext, pool);
+                    
+                    await transaction.CommitAsync();
                 }
             }
             

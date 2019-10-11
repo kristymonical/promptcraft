@@ -14,7 +14,11 @@ namespace SVT.Platform.Commands
             if (top != null)
             {
                 top.Queued = false;
-                top.NextPrioritizedDelivery.PreviousPrioritizedDeliveryId = null;
+
+                if (top.NextPrioritizedDelivery != null)
+                {
+                    top.NextPrioritizedDelivery.PreviousPrioritizedDeliveryId = null;
+                }
             }
 
             return top;
