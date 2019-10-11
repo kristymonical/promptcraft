@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
@@ -31,14 +30,14 @@ namespace SVT.Platform.Controllers
         {
             // @TODO: remove between below tags when Aethon adapter/connector call is implemented
             // @from-here
-            var rnd = new Random();
-            var ceiling = (int)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+            var rnd = new Random((int)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds());
             var idCache = new List<int>();
             int _getId()
             {
-                int newId = rnd.Next(1, ceiling);
-                while(idCache.Contains(newId)){
-                    newId = rnd.Next(1, ceiling);
+                int newId = rnd.Next();
+                while (idCache.Contains(newId))
+                {
+                    newId = rnd.Next();
                 }
                 idCache.Add(newId);
                 return newId;
@@ -83,7 +82,7 @@ namespace SVT.Platform.Controllers
 
                     var startingLocation = currentDelivery.Locations.FirstOrDefault();
                     var destinationArea = AreaCommands.GetIntermediateArea(startingLocation.Area, currentDelivery.DestinationArea);
-                    
+
                     if (startingLocation == null || destinationArea == null)
                     {
                         // @TODO: write to ErrorLog table here
@@ -95,13 +94,14 @@ namespace SVT.Platform.Controllers
 
                     var destinationLocation = LocationCommands.GetDeliverableLocationByArea(destinationArea);
 
-                    destinationLocation.Reserved = true;                    
+                    destinationLocation.Reserved = true;
                     currentDelivery.Locations.Add(destinationLocation);
 
                     // @TODO: Aethon adapter/connector call(s) go here
                     // @TODO: Write to AethonLog table here
 
-                    currentDelivery.Jobs.Add(new Job {
+                    currentDelivery.Jobs.Add(new Job
+                    {
                         AethonJobId = _getId(),
                         Itineraries = new List<Itinerary> {
                             new Itinerary { AethonRunId = _getId(), Location = startingLocation },
@@ -111,12 +111,12 @@ namespace SVT.Platform.Controllers
 
                     await _svtContext.SaveChangesAsync();
 
-                    currentCount = await JobCommands.GetActiveJobCountByPool(_svtContext, pool);
-                    
                     await transaction.CommitAsync();
+
+                    currentCount = await JobCommands.GetActiveJobCountByPool(_svtContext, pool);
                 }
             }
-            
+
             return Ok(new { success = true, message = "" });
         }
     }
