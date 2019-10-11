@@ -42,6 +42,49 @@ export async function createDeliveryRequest({
   }
 }
 
+export async function batchCreateDeliveryRequests(
+  requests: CreateDeliveryRequest[]
+) {
+  try {
+    const deliveries = requests.map(
+      ({
+        cartId,
+        cartLocation,
+        deliveryType,
+        destinationArea,
+        orderNumber
+      }) => ({
+        orderId: orderNumber,
+        cartId,
+        location: cartLocation,
+        deliveryType,
+        destinationArea
+      })
+    );
+    const result = await fetch('/api/delivery/queue', {
+      method: 'POST',
+      body: JSON.stringify({
+        deliveries
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const response: ServiceResponse = await result.json();
+    if (response.success) {
+      toast.success('Created delivery requests!');
+    } else {
+      toast.error(response.message);
+    }
+
+    return response.success;
+  } catch (err) {
+    console.error('[createDeliveryRequest]:', err);
+    throw err;
+  }
+}
+
 // Types and stuff
 export interface CreateDeliveryRequest {
   cartId: string;

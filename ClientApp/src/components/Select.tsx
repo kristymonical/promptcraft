@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Typography, makeStyles, MenuItem, TextField } from '@material-ui/core';
 
 import { SVT_THEME } from 'components';
@@ -6,7 +6,7 @@ import { SVT_THEME } from 'components';
 interface SelectProps {
   handleChange: (value: string) => void;
   items: string[];
-  label: string;
+  label: string | ReactNode;
   maxWidth?: number;
   required?: boolean;
   value: string;

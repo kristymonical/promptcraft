@@ -16,12 +16,14 @@ export async function getDestinationAreas(locationName: string) {
       `/api/areas/destination?locationName=${locationName}`
     );
 
-    if (result.status === 404) {
+    const json = await result.json();
+
+    if (!json.success) {
       toast.error(`No valid destination areas for '${locationName}' found.`);
       return [] as GetAreasResult[];
     }
 
-    return (await result.json()).data as GetAreasResult[];
+    return json.data as GetAreasResult[];
   } catch (err) {
     console.error('[getDestinationAreas]:', err);
     throw err;

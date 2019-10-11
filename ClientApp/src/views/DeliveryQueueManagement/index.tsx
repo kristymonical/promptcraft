@@ -11,11 +11,17 @@ import {
   moveDeliveryInQueue
 } from 'services/DeliveryQueue';
 import DraggableList from './DraggableList';
+import { Typography, Card } from '@material-ui/core';
 
 const createStyles = makeStyles<typeof SVT_THEME>({
   queueContainer: {
     maxWidth: 650,
     margin: '0 auto'
+  },
+  emptyQueueCard: {
+    padding: 10,
+    width: '100%',
+    textAlign: 'center'
   }
 });
 
@@ -73,13 +79,17 @@ export default function DeliveryQueueManagement() {
             setHasActiveRequest(false);
           }}
         />
-        {queue.length > 0 && (
+        {queue.length > 0 ? (
           <DraggableList
             items={queue}
             itemIdKey='deliveryId'
             locked={hasActiveRequest}
             onDragEnd={onDragEnd}
           />
+        ) : (
+          <Card className={classes.emptyQueueCard}>
+            <Typography>No deliveries in queue</Typography>
+          </Card>
         )}
       </Row>
     </>

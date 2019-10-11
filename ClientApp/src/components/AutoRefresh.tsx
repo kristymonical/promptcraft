@@ -16,7 +16,7 @@ interface CallbackStuff {
 }
 
 interface AutoRefreshProps {
-  callback: (stuff: CallbackStuff) => Promise<any> | void;
+  callback: (stuff: CallbackStuff) => Promise<any> | any;
   children?: React.ReactNode;
 }
 
@@ -70,9 +70,8 @@ export default function AutoRefresh({
             onChange={(_, value) => setSeconds(value as number)}
           />
         </Col>
-        <Col></Col>
+        <Col>{children}</Col>
       </Row>
-      {children}
     </>
   );
 }

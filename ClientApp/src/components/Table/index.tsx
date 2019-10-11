@@ -18,9 +18,10 @@ interface Filters {
   };
 }
 
-export interface TableProps<TData = any> {
+export interface TableProps<TData> {
   data: TData[];
   maxWidth?: string;
+  noMargins?: boolean;
   onSelectRow?: (selectedRows: TData[]) => void;
   selectable?: boolean;
   shape: ColumnShape[];
@@ -46,49 +47,54 @@ function getActiveFilters(filters: Filters) {
   return activeFilters;
 }
 
-const useStyles = makeStyles(({ primary }: typeof SVT_THEME) => ({
-  tableRoot: {
-    // CSS hack to do rounded borders that look collapsed
-    borderCollapse: 'initial',
-    borderSpacing: 0,
-    marginTop: '1rem', // @styles add props to easily define margins
-    maxWidth: ({ maxWidth }: Partial<TableProps>) => maxWidth || 'initial',
-    '& tbody tr': {
-      cursor: ({ selectable }: Partial<TableProps>) =>
-        selectable ? 'pointer' : 'inherit'
+const useStyles = makeStyles<typeof SVT_THEME, Partial<TableProps<any>>>(
+  ({ primary }) => ({
+    tableRoot: {
+      // CSS hack to do rounded borders that look collapsed
+      borderCollapse: 'initial',
+      borderSpacing: 0,
+      marginTop: ({ noMargins }) =>
+        `${noMargins ? 'unset' : '1rem'} !important`,
+      marginBottom: ({ noMargins }) =>
+        `${noMargins ? 'unset' : '1rem'} !important`,
+      maxWidth: ({ maxWidth }) => maxWidth || 'initial',
+      '& tbody tr': {
+        cursor: ({ selectable }) => (selectable ? 'pointer' : 'inherit')
+      }
+    },
+    tableHeaderItem: {
+      background: primary.background,
+      border: '1px solid #D5D5D5 !important', // @styles figure out how to remove !important
+      borderRadius: 5,
+      color: 'white'
+    },
+    tableHeaderItemFlex: {
+      display: 'flex',
+      justifyContent: 'space-between'
+    },
+    tableItem: {
+      background: 'white',
+      border: '1px solid #D5D5D5 !important', // @styles figure out how to remove !important
+      borderRadius: 5,
+      color: 'black'
+    },
+    selectedRow: {
+      '& td': {
+        background: `${primary.background}50`
+      }
     }
-  },
-  tableHeaderItem: {
-    background: primary.background,
-    border: '1px solid #D5D5D5 !important', // @styles figure out how to remove !important
-    borderRadius: 5,
-    color: 'white'
-  },
-  tableHeaderItemFlex: {
-    display: 'flex',
-    justifyContent: 'space-between'
-  },
-  tableItem: {
-    background: 'white',
-    border: '1px solid #D5D5D5 !important', // @styles figure out how to remove !important
-    borderRadius: 5,
-    color: 'black'
-  },
-  selectedRow: {
-    '& td': {
-      background: `${primary.background}50`
-    }
-  }
-}));
+  })
+);
 
-export default function Table({
+export default function Table<TData extends any>({
   data,
   maxWidth,
+  noMargins = false,
   onSelectRow,
   selectable,
   shape
-}: TableProps) {
-  const classes = useStyles({ maxWidth, selectable });
+}: TableProps<TData>) {
+  const classes = useStyles({ maxWidth, noMargins, selectable });
 
   const [filters, setFilters] = useState<Filters>({}); // filters for display purposes
   const [filteredData, setFilteredData] = useState<typeof data>(data); // filtered data
@@ -169,8 +175,14 @@ export default function Table({
           newArr = curSelectedRows.slice();
           newArr.splice(selectedArrIdx, 1);
         }
-        typeof onSelectRow === 'function' &&
-          onSelectRow(_.pick<number[]>(newArr, filteredData));
+
+        if (onSelectRow !== undefined) {
+          const selectedRows = filteredData.filter((datum, idx) =>
+            newArr.includes(idx)
+          );
+          onSelectRow(selectedRows);
+        }
+
         return newArr;
       });
     };
