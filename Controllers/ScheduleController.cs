@@ -15,7 +15,7 @@ namespace SVT.Platform.Controllers
         private SVTContext _svtContext;
         // @TODO: remove once configuration is implemented
         private Dictionary<int, int> _poolThresholds = new Dictionary<int, int>{
-            { 1, 3 },
+            { 1, 2 },
             { 2, 1 },
             { 3, 1 }
         };
@@ -25,7 +25,7 @@ namespace SVT.Platform.Controllers
             _svtContext = svtContext;
         }
 
-        [HttpPost("schedule")]
+        [HttpPost("delivery/schedule")]
         public async Task<IActionResult> ScheduleJob()
         {
             // @TODO: remove between below tags when Aethon adapter/connector call is implemented
@@ -93,6 +93,13 @@ namespace SVT.Platform.Controllers
                     }
 
                     var destinationLocation = LocationCommands.GetDeliverableLocationByArea(destinationArea);
+
+                    if (destinationLocation == null)
+                    {
+                        // @TODO: implement alerting here
+                        await transaction.RollbackAsync();
+                        continue;
+                    }
 
                     destinationLocation.Reserved = true;
                     currentDelivery.Locations.Add(destinationLocation);

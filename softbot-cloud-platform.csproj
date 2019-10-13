@@ -47,6 +47,12 @@
       <HintPath>ref.dlls/SVT.Sensors</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Aethon">
+      <HintPath>ref.dlls/Aethon.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <Exec Command="node --version" ContinueOnError="true">
       <Output TaskParameter="ExitCode" PropertyName="ErrorCode"/>

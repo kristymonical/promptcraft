@@ -10,7 +10,8 @@ namespace SVT.Platform.Commands
         {
             return context.Jobs
                 .Where(j => j.Completed == null)
-                .Where(j => j.Canceled == null);
+                .Where(j => j.Canceled == null)
+                .Where(j => j.Expired == null);
         }
     }
 }
