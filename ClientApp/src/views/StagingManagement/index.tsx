@@ -65,7 +65,7 @@ export default function StagingManagement() {
 
       const cartsData = await getStagedCarts();
       setStagingTableData(cartsData);
-    } catch (err) {
+    } catch {
     } finally {
       setLocked(false);
     }
@@ -102,8 +102,8 @@ export default function StagingManagement() {
   }, [refreshStagedCarts]);
 
   // submit batch delivery queue request and reset UI values
-  const onSubmit = useCallback(() => {
-    batchCreateDeliveryRequests(
+  const onSubmit = useCallback(async () => {
+    const success = await batchCreateDeliveryRequests(
       selectedRows.map(row => ({
         cartId: row.cartId,
         cartLocation: row.stagingLocationId,
@@ -112,9 +112,21 @@ export default function StagingManagement() {
         orderNumber: row.orderId
       }))
     );
+
+    if (!success) return;
+
+    refreshStagedCarts();
     setFinalDestination('');
     setSelectedRows([]);
-  }, [finalDestination, setFinalDestination, setSelectedRows, selectedRows]);
+    setAvailableFinalDestinations([]);
+  }, [
+    finalDestination,
+    setFinalDestination,
+    setSelectedRows,
+    selectedRows,
+    refreshStagedCarts,
+    setAvailableFinalDestinations
+  ]);
 
   return (
     <>
@@ -147,9 +159,11 @@ export default function StagingManagement() {
             {locked && <Overlay />}
             <Table
               data={stagingTableData}
+              dataIdField='cartId'
               noMargins
               onSelectRow={selected => setSelectedRows(selected)}
               selectable
+              selectedRows={selectedRows}
               shape={cartsTableShape}
             />
           </Row>

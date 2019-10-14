@@ -20,10 +20,12 @@ interface Filters {
 
 export interface TableProps<TData> {
   data: TData[];
+  dataIdField: keyof TData;
   maxWidth?: string;
   noMargins?: boolean;
   onSelectRow?: (selectedRows: TData[]) => void;
   selectable?: boolean;
+  selectedRows?: TData[];
   shape: ColumnShape[];
 }
 
@@ -88,17 +90,18 @@ const useStyles = makeStyles<typeof SVT_THEME, Partial<TableProps<any>>>(
 
 export default function Table<TData extends any>({
   data,
+  dataIdField,
   maxWidth,
   noMargins = false,
   onSelectRow,
   selectable,
+  selectedRows = [],
   shape
 }: TableProps<TData>) {
   const classes = useStyles({ maxWidth, noMargins, selectable });
 
   const [filters, setFilters] = useState<Filters>({}); // filters for display purposes
   const [filteredData, setFilteredData] = useState<typeof data>(data); // filtered data
-  const [selectedRows, setSelectedRows] = useState<number[]>([]); // selected rows
 
   // update/reset filters when data or shape changes
   useEffect(() => {
@@ -159,32 +162,28 @@ export default function Table<TData extends any>({
       return newFilters;
     });
 
-  const onTableRowClick = (rowIdx: number) => {
-    if (!selectable) return () => {};
+  const onTableRowClick = (item: TData) => {
+    if (!selectable) return undefined;
 
     return () => {
-      setSelectedRows(curSelectedRows => {
-        const selectedArrIdx = curSelectedRows.indexOf(rowIdx);
-        let newArr: number[] = [];
+      const newSelectedRows = selectedRows.slice();
+      const selectedArrIdx = newSelectedRows.findIndex(
+        row => row[dataIdField] === item[dataIdField]
+      );
 
-        if (selectedArrIdx === -1) {
-          // if row index is not in array, add it
-          newArr = [...curSelectedRows, rowIdx];
-        } else {
-          // otherwise, remove it
-          newArr = curSelectedRows.slice();
-          newArr.splice(selectedArrIdx, 1);
-        }
+      if (selectedArrIdx === -1) {
+        newSelectedRows.push(item); // not in array, add it
+      } else {
+        // otherwise, remove it
+        newSelectedRows.splice(selectedArrIdx, 1);
+      }
 
-        if (onSelectRow !== undefined) {
-          const selectedRows = filteredData.filter((datum, idx) =>
-            newArr.includes(idx)
-          );
-          onSelectRow(selectedRows);
-        }
+      // invoke callback if provided
+      if (onSelectRow !== undefined) {
+        onSelectRow(newSelectedRows);
+      }
 
-        return newArr;
-      });
+      return newSelectedRows;
     };
   };
 
@@ -219,8 +218,8 @@ export default function Table<TData extends any>({
         {filteredData.map((datum, rowIdx) => (
           <tr
             key={`${rowIdx}`}
-            onClick={onTableRowClick(rowIdx)}
-            className={selectedRows.includes(rowIdx) ? classes.selectedRow : ''}
+            onClick={onTableRowClick(datum)}
+            className={selectedRows.includes(datum) ? classes.selectedRow : ''}
           >
             {shape.map(({ key }, idx) => (
               <td

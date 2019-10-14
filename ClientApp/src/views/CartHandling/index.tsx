@@ -52,26 +52,14 @@ export default function CartHandling() {
             required
             value={floorLocation}
           />
-          {/* <AutoComplete
-            label='Cart Location'
-            onSelect={value => console.log(value)}
-            options={[
-              { value: 'test1' },
-              { value: 'aaaaa1' },
-              { value: 'aaaaa2' },
-              { value: 'aaaaa3' }
-            ]}
-            required
-            value={''}
-          /> */}
         </Col>
         <Col></Col>
       </Row>
-      {tableData.length > 0 && (
+      {/* {tableData.length > 0 && (
         <Row>
           <Table data={tableData} shape={tableShape} />
         </Row>
-      )}
+      )} */}
       <Row>
         <Col>
           <SubmitButton

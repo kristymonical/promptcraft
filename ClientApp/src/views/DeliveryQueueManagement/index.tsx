@@ -72,9 +72,8 @@ export default function DeliveryQueueManagement() {
       </Row>
       <Row className={classes.queueContainer}>
         <AutoRefresh
-          callback={async stuff => {
+          callback={async () => {
             setHasActiveRequest(true);
-            console.log('Refresh count:', stuff.intervalCount);
             setQueue(await getDeliveryQueue());
             setHasActiveRequest(false);
           }}

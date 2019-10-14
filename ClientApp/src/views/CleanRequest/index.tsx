@@ -112,7 +112,12 @@ export default function CleanRequest() {
       </Row>
       {tableData.length > 0 && (
         <Row>
-          <Table data={tableData} shape={tableShape} maxWidth='50%' />
+          <Table
+            data={tableData}
+            dataIdField='orderId'
+            shape={tableShape}
+            maxWidth='50%'
+          />
         </Row>
       )}
       <Row>

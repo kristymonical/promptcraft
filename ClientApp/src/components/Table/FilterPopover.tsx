@@ -47,18 +47,20 @@ export default function FilterPopover({
         open={open}
       >
         <Container className={classes.popoverContainer}>
-          {Object.keys(filters).map((value: string, idx) => (
-            <FormControlLabel
-              key={`filter-${idx}`}
-              label={value}
-              control={
-                <Checkbox
-                  checked={filters[value]}
-                  onChange={() => onToggleFilter(value)}
-                />
-              }
-            />
-          ))}
+          {Object.keys(filters)
+            .filter(key => !['undefined', 'null'].includes(key)) // filter out blank options
+            .map((value: string, idx) => (
+              <FormControlLabel
+                key={`filter-${idx}`}
+                label={value}
+                control={
+                  <Checkbox
+                    checked={filters[value]}
+                    onChange={() => onToggleFilter(value)}
+                  />
+                }
+              />
+            ))}
         </Container>
       </Popover>
     </>
