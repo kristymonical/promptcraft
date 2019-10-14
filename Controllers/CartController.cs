@@ -25,9 +25,13 @@ namespace SVT.Platform.Controllers
         {
             var stagedCartLocationsQueryable = LocationCommands.GetStagedCartLocations(_svtContext);
 
-            stagedCartLocationsQueryable = stagedCartLocationsQueryable.Where(loc => loc.Delivery.DeliveryType == query.DeliveryType);
-            
-            return Ok(new {
+            if (!string.IsNullOrWhiteSpace(query.DeliveryType))
+            {
+                stagedCartLocationsQueryable = stagedCartLocationsQueryable.Where(loc => loc.Delivery.DeliveryType == query.DeliveryType);
+            }
+
+            return Ok(new
+            {
                 success = true,
                 message = "",
                 data = (await stagedCartLocationsQueryable.ToListAsync())
@@ -48,7 +52,7 @@ namespace SVT.Platform.Controllers
             using var transaction = await _svtContext.Database.BeginTransactionAsync();
 
             var destinationLocation = await LocationCommands.GetLocationByName(_svtContext, request.LocationName);
-            
+
             if (destinationLocation == null)
             {
                 return NotFound(new { success = false, message = $"Location: {request.LocationName} Not Found" });
@@ -62,7 +66,8 @@ namespace SVT.Platform.Controllers
                 return Conflict(new { success = false, message = errorMessage });
             }
 
-            await DeliveryCommands.MoveCart(_svtContext, new MoveCartCommand{
+            await DeliveryCommands.MoveCart(_svtContext, new MoveCartCommand
+            {
                 CartId = request.CartId,
                 CurrentLocation = currentCartLocation,
                 DestinationLocation = destinationLocation,

@@ -41,7 +41,7 @@ namespace SVT.Platform
 
             // Validators
             services.AddTransient<IValidator<AreaController.ByLocationName>, ByLocationNameValidator>();
-            services.AddTransient<IValidator<CartController.ByDeliveryType>, ByDeliveryTypeValidator>();
+            // services.AddTransient<IValidator<CartController.ByDeliveryType>, ByDeliveryTypeValidator>();
             services.AddTransient<IValidator<CartController.MoveCartRequest>, MoveCartRequestValidator>();
             services.AddTransient<IValidator<DeliveryController.DeliveryRequests>, DeliveryRequestsValidator>();
             services.AddTransient<IValidator<DeliveryQueueController.ByPoolRequest>, ByPoolRequestValidator>();
