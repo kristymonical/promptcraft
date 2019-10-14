@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles, Button as MuiButton } from '@material-ui/core';
 import { ButtonProps as MuiButtonProps } from '@material-ui/core/Button';
 import { fade } from '@material-ui/core/styles';
+import classNames from 'classnames';
 
 import { SVT_THEME } from 'components';
 
@@ -29,10 +30,6 @@ const createStyles = makeStyles<typeof SVT_THEME, StyleProps>(theme => ({
       fontSize || theme.initial.fontSize * scale,
     maxHeight: ({ maxHeight, scale }) => maxHeight || 40 * scale,
     maxWidth: ({ maxWidth, scale }) => maxWidth || 110 * scale,
-    alignItems: 'center',
-    display: 'flex',
-    flexGrow: 1,
-    justifyContent: 'space-between',
     '&:hover': {
       background: ({ variant }) => fade(theme[variant].background, 0.75)
     }
@@ -41,6 +38,7 @@ const createStyles = makeStyles<typeof SVT_THEME, StyleProps>(theme => ({
 
 export default function Button({
   children,
+  className,
   disabled,
   fontSize,
   maxHeight,
@@ -58,7 +56,7 @@ export default function Button({
   });
   return (
     <MuiButton
-      className={classes.buttonRoot}
+      className={classNames(classes.buttonRoot, className)}
       disabled={disabled}
       onClick={onClick}
       variant='contained'

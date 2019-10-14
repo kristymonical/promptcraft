@@ -98,6 +98,9 @@ export default function Table<TData extends any>({
   selectedRows = [],
   shape
 }: TableProps<TData>) {
+  if (selectable && !onSelectRow)
+    throw new Error('Expected onSelectRow when selectable is true');
+
   const classes = useStyles({ maxWidth, noMargins, selectable });
 
   const [filters, setFilters] = useState<Filters>({}); // filters for display purposes
@@ -155,12 +158,15 @@ export default function Table<TData extends any>({
     }
   }, [data, filters]);
 
-  const onToggleFilter = (key: string) => (filterValue: string) =>
+  const onToggleFilter = (key: string) => (filterValue: string) => {
+    if (onSelectRow !== undefined) onSelectRow([]); // clear selected rows;
+
     setFilters(curFilters => {
       const newFilters = { ...curFilters };
       newFilters[key][filterValue] = !newFilters[key][filterValue];
       return newFilters;
     });
+  };
 
   const onTableRowClick = (item: TData) => {
     if (!selectable) return undefined;

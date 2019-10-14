@@ -10,6 +10,7 @@ import { Col, Row } from 'react-bootstrap';
 
 import { SVT_THEME } from 'components';
 import { useInterval } from 'hooks';
+import Button from './Button';
 
 interface CallbackStuff {
   intervalCount: number;
@@ -24,7 +25,9 @@ const createStyles = makeStyles<typeof SVT_THEME, Partial<AutoRefreshProps>>({
   controlRow: {
     width: '100%',
     '& > *': {
-      textAlign: 'center'
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
     }
   }
 });
@@ -60,8 +63,8 @@ export default function AutoRefresh({
             label='Pause Auto-Refresh'
           />
         </Col>
-        <Col>
-          <Typography>Refresh Rate: {seconds} seconds</Typography>
+        <Col style={{ flexDirection: 'column' }}>
+          <Typography>Auto-Refresh Rate: {seconds} seconds</Typography>
           <Slider
             min={1}
             max={120}
@@ -70,8 +73,17 @@ export default function AutoRefresh({
             onChange={(_, value) => setSeconds(value as number)}
           />
         </Col>
-        <Col>{children}</Col>
+        <Col>
+          <Button
+            onClick={() => callback({ intervalCount })}
+            maxWidth={250}
+            scale={1.25}
+          >
+            Manual Refresh
+          </Button>
+        </Col>
       </Row>
+      {children}
     </>
   );
 }

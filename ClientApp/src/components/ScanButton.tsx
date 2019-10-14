@@ -33,6 +33,9 @@ const createStyles = makeStyles<typeof SVT_THEME, Partial<ScanButtonProps>>({
     color: '#555',
     flexDirection: 'column',
     fontWeight: 300
+  },
+  scanButton: {
+    justifyContent: 'space-around'
   }
 });
 
@@ -41,7 +44,10 @@ export default function ScanButton({ onScan }: ScanButtonProps) {
   const [scanModalOpen, setScanModalOpen] = useState(false);
   return (
     <>
-      <Button onClick={() => setScanModalOpen(true)}>
+      <Button
+        className={classes.scanButton}
+        onClick={() => setScanModalOpen(true)}
+      >
         <Typography>Scan</Typography>
         <BarcodeIcon />
       </Button>

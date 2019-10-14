@@ -119,14 +119,7 @@ export default function StagingManagement() {
     setFinalDestination('');
     setSelectedRows([]);
     setAvailableFinalDestinations([]);
-  }, [
-    finalDestination,
-    setFinalDestination,
-    setSelectedRows,
-    selectedRows,
-    refreshStagedCarts,
-    setAvailableFinalDestinations
-  ]);
+  }, [finalDestination, selectedRows, refreshStagedCarts]);
 
   return (
     <>
