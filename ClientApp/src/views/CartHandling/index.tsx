@@ -18,7 +18,6 @@ const tableShape = [
 ];
 
 export default function CartHandling() {
-  const [tableData] = useState([]);
   const [cartId, setCartId] = useState('');
   const [floorLocation, setFloorLocation] = useState('');
 
@@ -55,15 +54,10 @@ export default function CartHandling() {
         </Col>
         <Col></Col>
       </Row>
-      {/* {tableData.length > 0 && (
-        <Row>
-          <Table data={tableData} shape={tableShape} />
-        </Row>
-      )} */}
       <Row>
         <Col>
           <SubmitButton
-            disabled={false}
+            disabled={cartId && floorLocation ? false : true}
             text='Confirm Move'
             variant='secondary'
             onClick={() => {
