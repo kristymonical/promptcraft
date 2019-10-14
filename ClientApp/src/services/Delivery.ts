@@ -80,7 +80,7 @@ export async function batchCreateDeliveryRequests(
 
     return response.success;
   } catch (err) {
-    console.error('[createDeliveryRequest]:', err);
+    console.error('[batchCreateDeliveryRequests]:', err);
     throw err;
   }
 }

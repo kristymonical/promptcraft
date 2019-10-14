@@ -15,6 +15,7 @@ import {
 } from 'components';
 import { getDestinationAreas, GetAreasResult } from 'services/Area';
 import { toast } from 'react-toastify';
+import { batchCreateDeliveryRequests } from 'services/Delivery';
 
 const cartsTableShape = [
   { label: 'Current Location', key: 'stagingLocationId' },
@@ -78,7 +79,7 @@ export default function StagingManagement() {
       });
 
       try {
-        const results = await Promise.all(promises);
+        const results = _.flatten(await Promise.all(promises));
         const destinationAreas = _.unionBy(_.flatten(results), 'areaId').map(
           area => area.areaName
         );
@@ -99,6 +100,21 @@ export default function StagingManagement() {
   useEffect(() => {
     refreshStagedCarts();
   }, [refreshStagedCarts]);
+
+  // submit batch delivery queue request and reset UI values
+  const onSubmit = useCallback(() => {
+    batchCreateDeliveryRequests(
+      selectedRows.map(row => ({
+        cartId: row.cartId,
+        cartLocation: row.stagingLocationId,
+        deliveryType: 'stage',
+        destinationArea: finalDestination,
+        orderNumber: row.orderId
+      }))
+    );
+    setFinalDestination('');
+    setSelectedRows([]);
+  }, [finalDestination, setFinalDestination, setSelectedRows, selectedRows]);
 
   return (
     <>
@@ -149,23 +165,23 @@ export default function StagingManagement() {
               </Button>
             </Col>
             <Col>
-              <Select
-                handleChange={newValue => setFinalDestination(newValue)}
-                items={availableFinalDestinations}
-                label={<Typography variant='button'>Destination</Typography>}
-                value={finalDestination}
-              />
+              {availableFinalDestinations.length > 0 && (
+                <Select
+                  handleChange={newValue => setFinalDestination(newValue)}
+                  items={availableFinalDestinations}
+                  label={<Typography variant='button'>Destination</Typography>}
+                  value={finalDestination}
+                />
+              )}
             </Col>
             <Col>
-              <SubmitButton
-                disabled={finalDestination.length === 0}
-                onClick={() => {
-                  setFinalDestination('');
-                  setStagingTableData(stagingTableData);
-                }}
-                text='Create Staging Request'
-                variant='secondary'
-              />
+              {finalDestination.length > 0 && (
+                <SubmitButton
+                  onClick={onSubmit}
+                  text='Create Staging Request'
+                  variant='secondary'
+                />
+              )}
             </Col>
           </Row>
         </>
