@@ -4,6 +4,7 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { makeStyles } from '@material-ui/styles';
 
 import { ThemeProvider, Header, Footer } from 'components';
 import {
@@ -28,26 +29,38 @@ toast.configure({
   position: toast.POSITION.BOTTOM_LEFT
 });
 
+const useStyles = makeStyles({
+  appRoot: {
+    paddingTop: 15,
+    '& .row': {
+      margin: '20px -15px'
+    }
+  }
+});
+
+const AppRoot = () => {
+  const classes = useStyles({});
+  return (
+    <Container className={classes.appRoot}>
+      <Header />
+      <Switch>
+        <Route exact path='/' component={Menu} />
+        <Route exact path='/request/cart' component={CartHandling} />
+        <Route exact path='/request/delivery' component={DeliveryRequest} />
+        <Route exact path='/request/clean' component={CleanRequest} />
+        <Route exact path='/manage/staging' component={StagingManagement} />
+        <Route exact path='/manage/queue' component={DeliveryQueueManagement} />
+        <Redirect to='/' />
+      </Switch>
+      <Footer />
+    </Container>
+  );
+};
+
 ReactDOM.render(
   <BrowserRouter basename={baseUrl}>
     <ThemeProvider>
-      <Container style={{ paddingTop: 15 }}>
-        <Header />
-        <Switch>
-          <Route exact path='/' component={Menu} />
-          <Route exact path='/request/cart' component={CartHandling} />
-          <Route exact path='/request/delivery' component={DeliveryRequest} />
-          <Route exact path='/request/clean' component={CleanRequest} />
-          <Route exact path='/manage/staging' component={StagingManagement} />
-          <Route
-            exact
-            path='/manage/queue'
-            component={DeliveryQueueManagement}
-          />
-          <Redirect to='/' />
-        </Switch>
-        <Footer />
-      </Container>
+      <AppRoot />
     </ThemeProvider>
   </BrowserRouter>,
   rootElement

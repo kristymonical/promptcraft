@@ -17,7 +17,7 @@ const createStyles = makeStyles<typeof SVT_THEME, Partial<DraggableListProps>>({
   listContainer: {
     flexDirection: 'column',
     flexGrow: 1,
-    margin: '0 auto',
+    margin: '0 auto !important',
     position: 'relative',
     '& .row': {
       justifyContent: 'space-around',
