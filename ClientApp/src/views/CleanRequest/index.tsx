@@ -77,7 +77,7 @@ export default function CleanRequest() {
     }
   };
 
-  const timerEnd = useCallback(async () => {
+  const timerThreshold = useCallback(async () => {
     const success = await createDeliveryRequest({
       cartId,
       cartLocation: mal,
@@ -90,6 +90,7 @@ export default function CleanRequest() {
       setCartId('');
       setVerified(false);
       setTableData([]);
+    } else {
       setModalOpen(false);
     }
   }, [cartId, mal, tableData]);
@@ -150,6 +151,8 @@ export default function CleanRequest() {
       </Row>
       <Modal
         className={classes.modal}
+        disableBackdropClick
+        disableEscapeKeyDown
         open={modalOpen}
         onClose={() => setModalOpen(false)}
       >
@@ -161,7 +164,15 @@ export default function CleanRequest() {
           </Row>
           <Row>
             <Col>
-              <Timer minutes={0.05} onTimerEnd={timerEnd} />
+              <Timer
+                minutes={1.05}
+                onTimerEnd={() => setModalOpen(false)}
+                threshold={1}
+                thresholdCallback={timerThreshold}
+                userCanCancel
+                userCancelThreshold={1}
+                userCancelCallback={() => setModalOpen(false)}
+              />
             </Col>
           </Row>
           <div className={classes.customBackdrop} />
