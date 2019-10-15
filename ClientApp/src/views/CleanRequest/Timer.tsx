@@ -64,7 +64,7 @@ export default function Timer({
       setTimerEndCallbackUsed(true);
       onTimerEnd();
     }
-  }, [onTimerEnd, timeRemaining]);
+  }, [onTimerEnd, timeRemaining, timerEndCallbackUsed]);
 
   useEffect(() => {
     if (
@@ -75,7 +75,7 @@ export default function Timer({
       setThresholdCallbackUsed(true);
       thresholdCallback();
     }
-  }, [threshold, thresholdCallback, timeRemaining]);
+  }, [threshold, thresholdCallback, timeRemaining, thresholdCallbackUsed]);
 
   useEffect(() => {
     const iv = setInterval(() => setTimeRemaining(time => time - 1), 1000);

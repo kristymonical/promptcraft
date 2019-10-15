@@ -2,20 +2,8 @@ import React, { useState } from 'react';
 import { Typography } from '@material-ui/core';
 import { Row, Col } from 'react-bootstrap';
 
-import {
-  Table,
-  TitleCol,
-  ScannableTextField,
-  SubmitButton
-  //   AutoComplete
-} from 'components';
+import { TitleCol, ScannableTextField, SubmitButton } from 'components';
 import { moveCart } from 'services/Cart';
-
-const tableShape = [
-  { label: 'Order ID', key: 'orderId' },
-  { label: 'Destination SuiteMAL', key: 'destination' },
-  { label: 'Current Location', key: 'currentLocation' }
-];
 
 export default function CartHandling() {
   const [cartId, setCartId] = useState('');

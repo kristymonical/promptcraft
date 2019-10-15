@@ -12,7 +12,6 @@ import { Col, Row } from 'react-bootstrap';
 
 import { SVT_THEME } from 'components';
 import { useInterval } from 'hooks';
-import Button from './Button';
 
 interface CallbackStuff {
   intervalCount: number;
