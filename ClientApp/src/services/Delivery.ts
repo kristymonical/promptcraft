@@ -32,7 +32,7 @@ export async function createDeliveryRequest({
     if (response.success) {
       toast.success('Created delivery request!');
     } else {
-      toast.error(response.message);
+      toast.error(response.message || 'Unable to create delivery request');
     }
 
     return response.success;

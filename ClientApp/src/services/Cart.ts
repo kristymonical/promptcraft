@@ -4,14 +4,25 @@ import { toast } from 'react-toastify';
 export async function getOrderAndDestination(
   cartId: string,
   currentLocationName: string
-): Promise<GetOrderAndDestinationResponse> {
+) {
   try {
-    const result = await fetch(
+    const res = await fetch(
       `/api/cleaninfo?MalLocationName=${currentLocationName}&CartId=${cartId}`
     );
-    return await result.json();
+    const json: ServiceResponse = await res.json();
+
+    if (!json.success) {
+      toast.error(json.message || 'Unable to verify cart');
+
+      return null;
+    }
+
+    toast.success(
+      `Verified cart ${cartId} and moved into ${currentLocationName}`
+    );
+    return json.data as GetOrderAndDestinationResponse;
   } catch (err) {
-    console.error('[getStagedCarts]:', err);
+    console.error('[getOrderAndDestination]:', err);
     throw err;
   }
 }

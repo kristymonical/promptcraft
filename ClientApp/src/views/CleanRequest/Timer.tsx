@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
+import { Button } from 'components';
 
 interface TimerProps {
   minutes: number;
   onTimerEnd?: () => void;
+  userCanCancel?: boolean;
+  userCancelThreshold?: number;
 }
 
 const createStyles = makeStyles({
@@ -34,18 +37,20 @@ const createStyles = makeStyles({
   }
 });
 
-export default function Timer({ minutes, onTimerEnd }: TimerProps) {
+export default function Timer({
+  minutes,
+  onTimerEnd,
+  userCanCancel = false,
+  userCancelThreshold = 0
+}: TimerProps) {
   const classes = createStyles({});
   const [timeRemaining, setTimeRemaining] = useState(minutes * 60); // number of seconds left
   const [, setIntervalId] = useState();
 
   useEffect(() => {
-    if (timeRemaining === 0) {
-      if (typeof onTimerEnd !== 'undefined') onTimerEnd();
-      setIntervalId((id: NodeJS.Timeout) => {
-        clearInterval(id);
-        return undefined;
-      });
+    if (timeRemaining === 0 && typeof onTimerEnd !== 'undefined') {
+      onTimerEnd();
+      setTimeRemaining(-1); // prevent a re-render from executing this again
     }
   }, [onTimerEnd, timeRemaining]);
 
@@ -64,6 +69,7 @@ export default function Timer({ minutes, onTimerEnd }: TimerProps) {
         <span>:{(timeRemaining % 60).toString().padStart(2, '0')}</span>
       </div>
       <Typography className={classes.timerLabel}>Minutes Remaining</Typography>
+      <Button>Cancel</Button>
     </div>
   );
 }

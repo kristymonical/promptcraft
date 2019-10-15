@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { makeStyles, Modal, Typography } from '@material-ui/core';
 import { Row, Col } from 'react-bootstrap';
 
@@ -15,6 +15,7 @@ import {
   GetOrderAndDestinationResponse,
   getOrderAndDestination
 } from 'services/Cart';
+import { createDeliveryRequest } from 'services/Delivery';
 
 const createStyles = makeStyles(
   ({ flex: { horizontalSpacing }, primary }: typeof SVT_THEME) => ({
@@ -70,9 +71,28 @@ export default function CleanRequest() {
 
   const verify = async (cartId: string, malLocationName: string) => {
     const ret = await getOrderAndDestination(cartId, malLocationName);
-    setTableData([ret]);
-    setVerified(true);
+    if (ret !== null) {
+      setTableData([ret]);
+      setVerified(true);
+    }
   };
+
+  const timerEnd = useCallback(async () => {
+    const success = await createDeliveryRequest({
+      cartId,
+      cartLocation: mal,
+      deliveryType: 'deliver',
+      destinationArea: tableData[0].destinationAreaName,
+      orderNumber: tableData[0].orderId
+    });
+
+    if (success) {
+      setCartId('');
+      setVerified(false);
+      setTableData([]);
+      setModalOpen(false);
+    }
+  }, [cartId, mal, tableData]);
 
   return (
     <>
@@ -123,10 +143,7 @@ export default function CleanRequest() {
       <Row>
         <SubmitButton
           disabled={!verified}
-          onClick={() => {
-            setModalOpen(true);
-            setCartId('');
-          }}
+          onClick={() => setModalOpen(true)}
           text='Start Cleaning Process'
           variant='secondary'
         />
@@ -144,16 +161,7 @@ export default function CleanRequest() {
           </Row>
           <Row>
             <Col>
-              <Timer
-                minutes={0.1}
-                onTimerEnd={() => {
-                  fetch('/api/cleandelivery');
-                  setVerified(false);
-                  setTableData([]);
-                  setCartId('');
-                  setModalOpen(false);
-                }}
-              />
+              <Timer minutes={0.05} onTimerEnd={timerEnd} />
             </Col>
           </Row>
           <div className={classes.customBackdrop} />

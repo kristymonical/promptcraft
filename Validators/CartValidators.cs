@@ -25,4 +25,17 @@ namespace SVT.Platform.Validators
                 .NotEmpty();
         }
     }
+
+    public class CleanInfoRequestValidator : AbstractValidator<CartController.CleanInfoRequest>
+    {
+        public CleanInfoRequestValidator()
+        {
+            RuleFor(x => x.CartId)
+                .NotNull()
+                .NotEmpty();
+            RuleFor(x => x.MalLocationName)
+                .NotNull()
+                .NotEmpty();
+        }
+    }
 }

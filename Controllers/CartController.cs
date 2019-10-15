@@ -78,6 +78,52 @@ namespace SVT.Platform.Controllers
             return Ok(new { success = true, message = "" });
         }
 
+        [HttpGet("cleaninfo")]
+        public async Task<IActionResult> GetCleanInfoAsync([FromQuery] CleanInfoRequest request)
+        {
+            using var transaction = await _svtContext.Database.BeginTransactionAsync();
+
+            // ensure valid location is passed
+            var destinationLocation = await LocationCommands.GetLocationByName(_svtContext, request.MalLocationName);
+            if (destinationLocation == null)
+            {
+                return NotFound(new { success = false, message = $"Location: {request.MalLocationName} Not Found" });
+            }
+
+            // ensure cart can be moved to the request location
+            var currentCartLocation = await LocationCommands.GetCartCurrentLocation(_svtContext, request.CartId);
+            (bool isValidLocation, string errorMessage) = DeliveryCommands.ValidateCartMove(request.CartId, destinationLocation, currentCartLocation);
+            if (!isValidLocation)
+            {
+                return Conflict(new { success = false, message = errorMessage });
+            }
+
+            // ensure there is an active delivery for this cart so we can pull destination area and order id
+            var delivery = await DeliveryCommands.GetActiveDeliveryByCartId(_svtContext, request.CartId);
+            if (delivery == null)
+            {
+                return NotFound(new { success = false, message = $"No delivery found for Cart: {request.CartId}" });
+            }
+
+            await DeliveryCommands.MoveCart(_svtContext, new MoveCartCommand
+            {
+                CartId = request.CartId,
+                CurrentLocation = currentCartLocation,
+                DestinationLocation = destinationLocation,
+                User = HttpContext.User.Identity.Name
+            });
+
+            await transaction.CommitAsync();
+
+            return Ok(new { success = true, message = "", Data = new { DestinationAreaName = delivery.DestinationArea.Name, OrderId = delivery.OrderId } });
+        }
+
+        public class CleanInfoRequest
+        {
+            public string MalLocationName { get; set; }
+            public string CartId { get; set; }
+        }
+
         public class ByDeliveryType
         {
             public string DeliveryType { get; set; }
