@@ -15,7 +15,7 @@ import { Typography, Card } from '@material-ui/core';
 
 const createStyles = makeStyles<typeof SVT_THEME>({
   queueContainer: {
-    maxWidth: 650,
+    maxWidth: 750,
     margin: '0 auto'
   },
   emptyQueueCard: {
