@@ -13,6 +13,9 @@ using FluentValidation.AspNetCore;
 using SVT.Platform.Controllers;
 using SVT.Platform.Validators;
 using Microsoft.AspNetCore.Mvc;
+using Aethon;
+using System.Net.Http;
+using System;
 
 namespace SVT.Platform
 {
@@ -61,6 +64,10 @@ namespace SVT.Platform
             });
 
             services.AddSingleton<IConfiguration>(Configuration);
+
+            var client = new HttpClient { BaseAddress = new Uri("http://localhost:3000/") };
+
+            services.AddSingleton<AethonApi>(new AethonApi(client));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

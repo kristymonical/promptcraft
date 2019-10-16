@@ -10,7 +10,7 @@ using SVT.Platform.Data;
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    [Migration("20191011185732_SCP-22")]
+    [Migration("20191015153217_SCP-22")]
     partial class SCP22
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -183,6 +183,18 @@ namespace SVT.Platform.Data.Migrations
                         {
                             NextAreaId = 5,
                             PreviousAreaId = 2,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 4,
+                            PreviousAreaId = 3,
+                            Active = true
+                        },
+                        new
+                        {
+                            NextAreaId = 5,
+                            PreviousAreaId = 3,
                             Active = true
                         },
                         new
@@ -1245,13 +1257,13 @@ namespace SVT.Platform.Data.Migrations
             modelBuilder.Entity("SVT.Platform.Data.Models.AreaOverflow", b =>
                 {
                     b.HasOne("SVT.Platform.Data.Models.Area", "DestinationArea")
-                        .WithMany("AreasOverflowFor")
+                        .WithMany("AreaOverflows")
                         .HasForeignKey("DestinationAreaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SVT.Platform.Data.Models.Area", "OverflowArea")
-                        .WithMany("AreaOverflows")
+                        .WithMany("AreasOverflowFor")
                         .HasForeignKey("OverflowAreaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();

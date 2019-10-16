@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Aethon;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
@@ -13,16 +15,18 @@ namespace SVT.Platform.Controllers
     public class ScheduleController : ControllerBase
     {
         private SVTContext _svtContext;
+        private AethonApi _aethonApi;
         // @TODO: remove once configuration is implemented
         private Dictionary<int, int> _poolThresholds = new Dictionary<int, int>{
-            { 1, 2 },
+            { 1, 10 },
             { 2, 1 },
             { 3, 1 }
         };
 
-        public ScheduleController(SVTContext svtContext)
+        public ScheduleController(SVTContext svtContext, AethonApi aethonApi)
         {
             _svtContext = svtContext;
+            _aethonApi = aethonApi;
         }
 
         [HttpPost("delivery/schedule")]
@@ -44,39 +48,25 @@ namespace SVT.Platform.Controllers
             }
             // @to-here
 
-            // @TODO: figure out how to implement configurable pool threshold values
+            // @TODO: implement configurable pool threshold values
             foreach (var pool in _poolThresholds.Keys)
             {
                 var threshold = _poolThresholds.GetValueOrDefault(pool);
                 var deliveryQueueEmpty = false;
                 var activeJobCount = await JobCommands.GetActiveJobCountByPool(_svtContext, pool);
+                var queueOffset = 0;
 
                 var currentCount = activeJobCount;
-
                 while (!deliveryQueueEmpty && currentCount < threshold)
                 {
-                    /*
-                        @TODO
-                        =====
-                        1.  _start X-action_
-                        2.  _pop delivery off queue (by pool)_
-                        3.  _calculate/reserve destination location_
-                        4.  create Aethon /send payload - stubbed for now
-                        5.  call Aethon /send - stubbed for now
-                        6.  parse Aethon /send response - stubbed for now
-                        7.  _create Job entity_
-                        8.  _create Itinerary entities_
-                        9.  _commit/rollback Xaction_
-                    */
+                    Console.WriteLine($"\n\nOffset: {queueOffset}\n\n");
 
-                    using var transaction = await _svtContext.Database.BeginTransactionAsync();
-
-                    var currentDelivery = await DeliveryCommands.PopDeliveryQueue(_svtContext, pool);
+                    var currentDelivery = (await DeliveryCommands.GetDeliveryQueueInPriorityOrder(_svtContext, pool))
+                        .ElementAtOrDefault(queueOffset);
 
                     if (currentDelivery == null)
                     {
                         deliveryQueueEmpty = true;
-                        await transaction.CommitAsync();
                         continue;
                     }
 
@@ -86,9 +76,10 @@ namespace SVT.Platform.Controllers
                     if (startingLocation == null || destinationArea == null)
                     {
                         // @TODO: write to ErrorLog table here
+                        // @TODO: implement possible bad data alerting here
                         currentDelivery.Canceled = DateTime.UtcNow;
+                        await DeliveryCommands.PopDeliveryQueue(_svtContext, pool);
                         await _svtContext.SaveChangesAsync();
-                        await transaction.CommitAsync();
                         continue;
                     }
 
@@ -96,29 +87,47 @@ namespace SVT.Platform.Controllers
 
                     if (destinationLocation == null)
                     {
-                        // @TODO: implement alerting here
-                        await transaction.RollbackAsync();
+                        // @TODO: implement no available destination locations alerting here
+                        queueOffset += 1;
                         continue;
                     }
 
                     destinationLocation.Reserved = true;
                     currentDelivery.Locations.Add(destinationLocation);
+                    await _svtContext.SaveChangesAsync();
 
-                    // @TODO: Aethon adapter/connector call(s) go here
+                    (bool success, int aethonJobId) = await JobCommands.ScheduleTug(_aethonApi, new MultiDestinationRequest
+                    {
+                        PoolId = pool,
+                        GroupId = 1,
+                        Timeout = -1,
+                        Destinations = new string[] { startingLocation.Name, destinationLocation.Name }
+                    });
+
+                    if (!success || aethonJobId == -1)
+                    {
+                        // @TODO: log unexpected Aethon error to ErrorLog table here
+                        destinationLocation.Reserved = false;
+                        currentDelivery.Locations.Remove(destinationLocation);
+                        await _svtContext.SaveChangesAsync();
+                        queueOffset += 1;
+                        continue;
+                    }
+
                     // @TODO: Write to AethonLog table here
+                    // @TODO: Aethon job status call(s) (for Itineraries) go here
 
                     currentDelivery.Jobs.Add(new Job
                     {
-                        AethonJobId = _getId(),
+                        AethonJobId = aethonJobId,
                         Itineraries = new List<Itinerary> {
                             new Itinerary { AethonRunId = _getId(), Location = startingLocation },
                             new Itinerary { AethonRunId = _getId(), Location = destinationLocation }
                         }
                     });
 
+                    await DeliveryCommands.PopDeliveryQueue(_svtContext, pool);
                     await _svtContext.SaveChangesAsync();
-
-                    await transaction.CommitAsync();
 
                     currentCount = await JobCommands.GetActiveJobCountByPool(_svtContext, pool);
                 }

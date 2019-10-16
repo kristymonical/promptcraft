@@ -9,12 +9,12 @@ namespace SVT.Platform.Commands
     {
         public static async Task<int> GetActiveJobCountByPool(SVTContext context, int poolId)
         {
-            return (await JobCommands
+            return await JobCommands
                 .GetActiveJobs(context)
                 .Where(job => job.Delivery
                     .Locations.All(loc => loc.Area.PoolId == poolId)
                 )
-                .ToListAsync()).Count;
+                .CountAsync();
         }
     }
 }

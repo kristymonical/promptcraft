@@ -13,12 +13,12 @@ namespace SVT.Platform.Data
                     .HasKey(areaOverflow => new { areaOverflow.DestinationAreaId, areaOverflow.OverflowAreaId });
                 areaOverflowBuilder
                     .HasOne(areaOverflow => areaOverflow.DestinationArea)
-                    .WithMany(area => area.AreasOverflowFor)
+                    .WithMany(area => area.AreaOverflows)
                     .HasForeignKey(areaOverflow => areaOverflow.DestinationAreaId)
                     .OnDelete(DeleteBehavior.Restrict);
                 areaOverflowBuilder
                     .HasOne(areaOverflow => areaOverflow.OverflowArea)
-                    .WithMany(area => area.AreaOverflows)
+                    .WithMany(area => area.AreasOverflowFor)
                     .HasForeignKey(areaOverflow => areaOverflow.OverflowAreaId)
                     .OnDelete(DeleteBehavior.Restrict);
                 areaOverflowBuilder

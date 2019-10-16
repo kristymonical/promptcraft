@@ -33,17 +33,7 @@ namespace SVT.Platform.Controllers
         [HttpGet("delivery-queue")]
         public async Task<IActionResult> GetDeliveryQueueByPool([FromQuery] ByPoolRequest queryParams)
         {
-            var firstQueuedDelivery = await DeliveryCommands.GetHighestPriorityDelivery(_svtContext, queryParams.PoolId);
-
-            var current = firstQueuedDelivery;
-
-            var queue = new List<Delivery>();
-
-            while (current != null)
-            {
-                queue.Add(current);
-                current = current.NextPrioritizedDelivery;
-            }
+            var queue = await DeliveryCommands.GetDeliveryQueueInPriorityOrder(_svtContext, queryParams.PoolId);
 
             return Ok(new {
                 success = true,
