@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { makeStyles, Modal, Typography } from '@material-ui/core';
 import { Row, Col } from 'react-bootstrap';
 
@@ -15,6 +15,7 @@ import {
   GetOrderAndDestinationResponse,
   getOrderAndDestination
 } from 'services/Cart';
+import { createDeliveryRequest } from 'services/Delivery';
 
 const createStyles = makeStyles(
   ({ flex: { horizontalSpacing }, primary }: typeof SVT_THEME) => ({
@@ -70,9 +71,29 @@ export default function CleanRequest() {
 
   const verify = async (cartId: string, malLocationName: string) => {
     const ret = await getOrderAndDestination(cartId, malLocationName);
-    setTableData([ret]);
-    setVerified(true);
+    if (ret !== null) {
+      setTableData([ret]);
+      setVerified(true);
+    }
   };
+
+  const timerThreshold = useCallback(async () => {
+    const success = await createDeliveryRequest({
+      cartId,
+      cartLocation: mal,
+      deliveryType: 'deliver',
+      destinationArea: tableData[0].destinationAreaName,
+      orderNumber: tableData[0].orderId
+    });
+
+    if (success) {
+      setCartId('');
+      setVerified(false);
+      setTableData([]);
+    } else {
+      setModalOpen(false);
+    }
+  }, [cartId, mal, tableData]);
 
   return (
     <>
@@ -112,22 +133,26 @@ export default function CleanRequest() {
       </Row>
       {tableData.length > 0 && (
         <Row>
-          <Table data={tableData} shape={tableShape} maxWidth='50%' />
+          <Table
+            data={tableData}
+            dataIdField='orderId'
+            shape={tableShape}
+            maxWidth='50%'
+          />
         </Row>
       )}
       <Row>
         <SubmitButton
           disabled={!verified}
-          onClick={() => {
-            setModalOpen(true);
-            setCartId('');
-          }}
+          onClick={() => setModalOpen(true)}
           text='Start Cleaning Process'
           variant='secondary'
         />
       </Row>
       <Modal
         className={classes.modal}
+        disableBackdropClick
+        disableEscapeKeyDown
         open={modalOpen}
         onClose={() => setModalOpen(false)}
       >
@@ -140,14 +165,13 @@ export default function CleanRequest() {
           <Row>
             <Col>
               <Timer
-                minutes={0.1}
-                onTimerEnd={() => {
-                  fetch('/api/cleandelivery');
-                  setVerified(false);
-                  setTableData([]);
-                  setCartId('');
-                  setModalOpen(false);
-                }}
+                minutes={1.05}
+                onTimerEnd={() => setModalOpen(false)}
+                threshold={1}
+                thresholdCallback={timerThreshold}
+                userCanCancel
+                userCancelThreshold={1}
+                userCancelCallback={() => setModalOpen(false)}
               />
             </Col>
           </Row>

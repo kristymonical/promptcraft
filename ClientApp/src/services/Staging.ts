@@ -1,9 +1,9 @@
 import { toast } from 'react-toastify';
 import ServiceResponse from './ServiceResponse';
 
-export async function getStagedCarts(deliveryType = 'stage') {
+export async function getStagedCarts() {
   try {
-    const result = await fetch(`/api/staging?deliveryType=${deliveryType}`);
+    const result = await fetch('/api/staging');
     const json: ServiceResponse = await result.json();
     if (!json.success) {
       toast.error(json.message || 'Failed to get staged carts');

@@ -6,6 +6,7 @@ import { ScannableTextField, Select, TitleCol, SubmitButton } from 'components';
 import { createDeliveryRequest } from 'services/Delivery';
 import { getDestinationAreas, GetAreasResult } from 'services/Area';
 import { useDebounce } from 'hooks';
+import _ from 'lodash';
 
 const useStyles = makeStyles(() => ({
   flexFormContainer: {
@@ -43,7 +44,7 @@ export default function DeliveryRequest() {
   useEffect(() => {
     if (!debouncedCartLocation || debouncedCartLocation.length === 0) return;
     getDestinationAreas(debouncedCartLocation).then(returnedAreas => {
-      setAreas(returnedAreas);
+      setAreas(_.uniqBy(returnedAreas, 'areaName'));
       handleChange('area')('');
     });
   }, [debouncedCartLocation, handleChange]);

@@ -2,23 +2,10 @@ import React, { useState } from 'react';
 import { Typography } from '@material-ui/core';
 import { Row, Col } from 'react-bootstrap';
 
-import {
-  Table,
-  TitleCol,
-  ScannableTextField,
-  SubmitButton
-  //   AutoComplete
-} from 'components';
+import { TitleCol, ScannableTextField, SubmitButton } from 'components';
 import { moveCart } from 'services/Cart';
 
-const tableShape = [
-  { label: 'Order ID', key: 'orderId' },
-  { label: 'Destination SuiteMAL', key: 'destination' },
-  { label: 'Current Location', key: 'currentLocation' }
-];
-
 export default function CartHandling() {
-  const [tableData] = useState([]);
   const [cartId, setCartId] = useState('');
   const [floorLocation, setFloorLocation] = useState('');
 
@@ -52,30 +39,13 @@ export default function CartHandling() {
             required
             value={floorLocation}
           />
-          {/* <AutoComplete
-            label='Cart Location'
-            onSelect={value => console.log(value)}
-            options={[
-              { value: 'test1' },
-              { value: 'aaaaa1' },
-              { value: 'aaaaa2' },
-              { value: 'aaaaa3' }
-            ]}
-            required
-            value={''}
-          /> */}
         </Col>
         <Col></Col>
       </Row>
-      {tableData.length > 0 && (
-        <Row>
-          <Table data={tableData} shape={tableShape} />
-        </Row>
-      )}
       <Row>
         <Col>
           <SubmitButton
-            disabled={false}
+            disabled={cartId && floorLocation ? false : true}
             text='Confirm Move'
             variant='secondary'
             onClick={() => {

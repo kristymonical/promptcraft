@@ -16,7 +16,10 @@ const createStyles = makeStyles<
 >({
   listItem: {
     padding: 10,
-    marginBottom: 5
+    marginBottom: 5,
+    '& > .row': {
+      margin: 'initial !important'
+    }
   }
 });
 

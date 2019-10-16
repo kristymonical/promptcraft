@@ -4,8 +4,10 @@ import {
   FormControlLabel,
   Checkbox,
   Typography,
-  Slider
+  Slider,
+  IconButton
 } from '@material-ui/core';
+import { Refresh } from '@material-ui/icons';
 import { Col, Row } from 'react-bootstrap';
 
 import { SVT_THEME } from 'components';
@@ -24,7 +26,9 @@ const createStyles = makeStyles<typeof SVT_THEME, Partial<AutoRefreshProps>>({
   controlRow: {
     width: '100%',
     '& > *': {
-      textAlign: 'center'
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
     }
   }
 });
@@ -52,6 +56,15 @@ export default function AutoRefresh({
         <Col>
           <FormControlLabel
             control={
+              <IconButton onClick={() => callback({ intervalCount })}>
+                <Refresh />
+              </IconButton>
+            }
+            label=''
+          />
+
+          <FormControlLabel
+            control={
               <Checkbox
                 checked={paused}
                 onChange={() => setPaused(old => !old)}
@@ -60,17 +73,17 @@ export default function AutoRefresh({
             label='Pause Auto-Refresh'
           />
         </Col>
-        <Col>
-          <Typography>Refresh Rate: {seconds} seconds</Typography>
+        <Col style={{ flexDirection: 'column' }}>
+          <Typography>Auto-Refresh Rate: {seconds} seconds</Typography>
           <Slider
-            min={1}
+            min={15}
             max={120}
             step={1}
             value={seconds}
             onChange={(_, value) => setSeconds(value as number)}
           />
         </Col>
-        <Col>{children}</Col>
+        {children && <Col>{children}</Col>}
       </Row>
     </>
   );

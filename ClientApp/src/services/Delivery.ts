@@ -32,7 +32,7 @@ export async function createDeliveryRequest({
     if (response.success) {
       toast.success('Created delivery request!');
     } else {
-      toast.error(response.message);
+      toast.error(response.message || 'Unable to create delivery request');
     }
 
     return response.success;
@@ -80,7 +80,7 @@ export async function batchCreateDeliveryRequests(
 
     return response.success;
   } catch (err) {
-    console.error('[createDeliveryRequest]:', err);
+    console.error('[batchCreateDeliveryRequests]:', err);
     throw err;
   }
 }

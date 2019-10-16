@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
+import { Button } from 'components';
 
 interface TimerProps {
   minutes: number;
   onTimerEnd?: () => void;
+  threshold?: number;
+  thresholdCallback?: () => void;
+  userCanCancel?: boolean;
+  userCancelCallback?: () => void;
+  userCancelThreshold?: number;
 }
 
 const createStyles = makeStyles({
@@ -34,20 +40,42 @@ const createStyles = makeStyles({
   }
 });
 
-export default function Timer({ minutes, onTimerEnd }: TimerProps) {
+export default function Timer({
+  minutes,
+  onTimerEnd,
+  threshold = -1,
+  thresholdCallback,
+  userCanCancel = false,
+  userCancelCallback,
+  userCancelThreshold = 0
+}: TimerProps) {
   const classes = createStyles({});
   const [timeRemaining, setTimeRemaining] = useState(minutes * 60); // number of seconds left
+  const [thresholdCallbackUsed, setThresholdCallbackUsed] = useState(false);
+  const [timerEndCallbackUsed, setTimerEndCallbackUsed] = useState(false);
   const [, setIntervalId] = useState();
 
   useEffect(() => {
-    if (timeRemaining === 0) {
-      if (typeof onTimerEnd !== 'undefined') onTimerEnd();
-      setIntervalId((id: NodeJS.Timeout) => {
-        clearInterval(id);
-        return undefined;
-      });
+    if (
+      timeRemaining === 0 &&
+      typeof onTimerEnd !== 'undefined' &&
+      !timerEndCallbackUsed
+    ) {
+      setTimerEndCallbackUsed(true);
+      onTimerEnd();
     }
-  }, [onTimerEnd, timeRemaining]);
+  }, [onTimerEnd, timeRemaining, timerEndCallbackUsed]);
+
+  useEffect(() => {
+    if (
+      timeRemaining === threshold * 60 &&
+      typeof thresholdCallback !== 'undefined' &&
+      !thresholdCallbackUsed
+    ) {
+      setThresholdCallbackUsed(true);
+      thresholdCallback();
+    }
+  }, [threshold, thresholdCallback, timeRemaining, thresholdCallbackUsed]);
 
   useEffect(() => {
     const iv = setInterval(() => setTimeRemaining(time => time - 1), 1000);
@@ -64,6 +92,14 @@ export default function Timer({ minutes, onTimerEnd }: TimerProps) {
         <span>:{(timeRemaining % 60).toString().padStart(2, '0')}</span>
       </div>
       <Typography className={classes.timerLabel}>Minutes Remaining</Typography>
+      {userCanCancel && (
+        <Button
+          disabled={timeRemaining < userCancelThreshold * 60}
+          onClick={userCancelCallback}
+        >
+          Cancel
+        </Button>
+      )}
     </div>
   );
 }

@@ -15,8 +15,8 @@ import { Typography, Card } from '@material-ui/core';
 
 const createStyles = makeStyles<typeof SVT_THEME>({
   queueContainer: {
-    maxWidth: 650,
-    margin: '0 auto'
+    maxWidth: 750,
+    margin: '0 auto !important'
   },
   emptyQueueCard: {
     padding: 10,
@@ -72,9 +72,8 @@ export default function DeliveryQueueManagement() {
       </Row>
       <Row className={classes.queueContainer}>
         <AutoRefresh
-          callback={async stuff => {
+          callback={async () => {
             setHasActiveRequest(true);
-            console.log('Refresh count:', stuff.intervalCount);
             setQueue(await getDeliveryQueue());
             setHasActiveRequest(false);
           }}
