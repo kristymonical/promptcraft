@@ -1,0 +1,18 @@
+using System.Linq;
+using SVT.Platform.Data;
+using SVT.Platform.Data.Models;
+
+namespace SVT.Platform.Commands
+{
+    public partial class LocationCommands
+    {
+        public static IQueryable<Location> GetStagedCartLocations(SVTContext context)
+        {
+            return context.Locations
+                .Where(loc => loc.Area.AreaType == "stg")
+                .Where(loc => loc.DeliveryId != null)
+                .Where(loc => loc.Delivery.DeliveryType != "deliver")
+                .Where(loc => loc.Delivery.Completed != null && loc.Delivery.Canceled == null);
+        }
+    }
+}
