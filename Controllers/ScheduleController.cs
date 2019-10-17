@@ -32,22 +32,6 @@ namespace SVT.Platform.Controllers
         [HttpPost("delivery/schedule")]
         public async Task<IActionResult> ScheduleJob()
         {
-            // @TODO: remove between below tags when Aethon adapter/connector call is implemented
-            // @from-here
-            var rnd = new Random((int)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds());
-            var idCache = new List<int>();
-            int _getId()
-            {
-                int newId = rnd.Next();
-                while (idCache.Contains(newId))
-                {
-                    newId = rnd.Next();
-                }
-                idCache.Add(newId);
-                return newId;
-            }
-            // @to-here
-
             // @TODO: implement configurable pool threshold values
             foreach (var pool in _poolThresholds.Keys)
             {
@@ -115,16 +99,8 @@ namespace SVT.Platform.Controllers
                     }
 
                     // @TODO: Write to AethonLog table here
-                    // @TODO: Aethon job status call(s) (for Itineraries) go here
 
-                    currentDelivery.Jobs.Add(new Job
-                    {
-                        AethonJobId = aethonJobId,
-                        Itineraries = new List<Itinerary> {
-                            new Itinerary { AethonRunId = _getId(), Location = startingLocation },
-                            new Itinerary { AethonRunId = _getId(), Location = destinationLocation }
-                        }
-                    });
+                    currentDelivery.Jobs.Add(new Job { AethonJobId = aethonJobId });
 
                     await DeliveryCommands.PopDeliveryQueue(_svtContext, pool);
                     await _svtContext.SaveChangesAsync();
