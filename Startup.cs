@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Aethon;
 using System.Net.Http;
 using System;
+using System.Threading.Tasks;
 
 namespace SVT.Platform
 {
@@ -74,6 +75,13 @@ namespace SVT.Platform
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // run migrations automatically if we're not in dev mode
+            if (!env.IsDevelopment())
+            {
+                var context = app.ApplicationServices.GetService<SVTContext>();
+                context.Database.Migrate();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

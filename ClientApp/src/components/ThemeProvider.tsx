@@ -35,7 +35,6 @@ const baseTheme = createMuiTheme({
     }
   },
   typography: {
-    fontFamily: '"Helvetica Neue"',
     body1: {
       fontSize: 14
     },
