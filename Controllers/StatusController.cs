@@ -43,6 +43,8 @@ namespace SVT.Platform.Controllers
 
                 /*
                 
+                    TODOs
+                    =====
                     1.  iterate through activeJobs
                     2.  lookup corresponding aethon response by aethon job id
                     3.  iterate through aethon itineraries
@@ -65,7 +67,7 @@ namespace SVT.Platform.Controllers
 
                 var responses = jobsDetailsTask.Result
                     .Select(result => result?.FirstOrDefault())
-                    .ToList();
+                    .ToList(); // this is so that the .Remove() method can be used later
 
                 foreach (var job in activeJobs)
                 {
