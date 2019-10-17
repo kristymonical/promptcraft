@@ -14,6 +14,7 @@ namespace SVT.Platform
                 {
                     // configure
                 })
+                .UseSetting("https_port", "5001")
                 .UseStartup<Startup>();
     }
 }
