@@ -30,6 +30,7 @@ namespace SVT.Platform.Controllers
 
             if (activeJobs.Count > 0)
             {
+                Console.WriteLine($"\n\nActive Job Count: {activeJobs.Count}");
                 var unresolvedJobsDetails = activeJobs.Select(job => _aethonApi.GetJob(job.AethonJobId));
                 var jobsDetailsTask = Task.WhenAll(unresolvedJobsDetails);
                 try
@@ -62,6 +63,9 @@ namespace SVT.Platform.Controllers
                 if (jobsDetailsTask.Status != TaskStatus.RanToCompletion)
                 {
                     // @TODO: handle Task status issues here
+                    Console.WriteLine($"\n\nTask Status: {jobsDetailsTask.Status.ToString()}\n\n");
+                    Console.WriteLine($"\n\nTask Result: {jobsDetailsTask.Result}\n\n");
+                    Console.WriteLine($"\n\nTask Exception: {jobsDetailsTask.Exception}\n\n");
                     return Ok(new { success = false, message = $"Job Details Task Not Resolved Correctly" });
                 }
 
@@ -112,7 +116,9 @@ namespace SVT.Platform.Controllers
                             itinerary = new Itinerary
                             {
                                 AethonRunId = responseItinerary.RunId,
-                                LocationId = responseItinerary.DestinationId
+                                Location = job.Delivery.Locations
+                                    .Where(loc => loc.LocationId == responseItinerary.DestinationId)
+                                    .FirstOrDefault()
                             };
 
                             job.Itineraries.Add(itinerary);
@@ -129,6 +135,24 @@ namespace SVT.Platform.Controllers
                             itinerary.Completed = null;
                             itinerary.TimedOut = DateTime.UtcNow;
                         }
+
+                        if (responseItinerary.End != null)
+                        {
+                            if (itinerary.Location.Reserved)
+                            {
+                                itinerary.Location.Reserved = false;
+                            }
+                            else
+                            {
+                                itinerary.Location.DeliveryId = null;
+                            }
+
+                            if (itinerary.Location.AreaId == job.Delivery.DestinationAreaId)
+                            {
+                                job.Delivery.Completed = DateTime.UtcNow;
+                                job.Delivery.Canceled = null;
+                            }
+                        }
                     }
 
                     await _svtContext.SaveChangesAsync();
@@ -141,7 +165,7 @@ namespace SVT.Platform.Controllers
                 if (responses.Count > 0)
                 {
                     // @TODO: handle orphaned responses here
-                    Console.WriteLine($"\n\n{responses.Count} Orphaned Responses Remaining\n\n");
+                    Console.WriteLine($"\n\n{responses.Count} Orphaned Aethon Responses Remaining\n\n");
                 }
             }
 

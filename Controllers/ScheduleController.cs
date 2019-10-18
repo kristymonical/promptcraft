@@ -18,7 +18,7 @@ namespace SVT.Platform.Controllers
         private AethonApi _aethonApi;
         // @TODO: remove once configuration is implemented
         private Dictionary<int, int> _poolThresholds = new Dictionary<int, int>{
-            { 1, 10 },
+            { 1, 2 },
             { 2, 1 },
             { 3, 1 }
         };
