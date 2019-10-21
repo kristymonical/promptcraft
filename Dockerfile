@@ -16,4 +16,4 @@ WORKDIR /app
 COPY --from=build-env /app/out .
 
 # the server.urls parameter allows dotnet to listen to all incoming requests, not just localhost
-ENTRYPOINT ["dotnet", "softbot-cloud-platform.dll", "--server.urls=http://0.0.0.0:5000"]
+ENTRYPOINT ["dotnet", "softbot-cloud-platform.dll"]
