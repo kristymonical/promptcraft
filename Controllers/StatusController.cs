@@ -30,7 +30,6 @@ namespace SVT.Platform.Controllers
 
             if (activeJobs.Count > 0)
             {
-                Console.WriteLine($"\n\nActive Job Count: {activeJobs.Count}");
                 var unresolvedJobsDetails = activeJobs.Select(job => _aethonApi.GetJob(job.AethonJobId));
                 var jobsDetailsTask = Task.WhenAll(unresolvedJobsDetails);
                 try
@@ -46,15 +45,15 @@ namespace SVT.Platform.Controllers
                 
                     TODOs
                     =====
-                    1.  iterate through activeJobs
-                    2.  lookup corresponding aethon response by aethon job id
-                    3.  iterate through aethon itineraries
-                    4.  lookup corresponding activeJob itinerary
-                    5.  upsert itinerary
-                    6.  update if necessary itinerary completed/timedout fields
-                    7.  update if necessary job completed/expired/canceled fields
-                    8.  save changes
-                    9.  remove aethon response from list
+                    1.  Done - iterate through activeJobs
+                    2.  Done - lookup corresponding aethon response by aethon job id
+                    3.  Done - iterate through aethon itineraries
+                    4.  Done - lookup corresponding activeJob itinerary
+                    5.  Done - upsert itinerary
+                    6.  Done - update if necessary itinerary completed/timedout fields
+                    7.  Done - update if necessary job completed/expired/canceled fields
+                    8.  Done - save changes
+                    9.  Done - remove aethon response from list
                     10. write to aethon log table
                     11. after active job iteration, iterate through remaining aethon responses and write to error log table/alert                    
                 
@@ -63,15 +62,12 @@ namespace SVT.Platform.Controllers
                 if (jobsDetailsTask.Status != TaskStatus.RanToCompletion)
                 {
                     // @TODO: handle Task status issues here
-                    Console.WriteLine($"\n\nTask Status: {jobsDetailsTask.Status.ToString()}\n\n");
-                    Console.WriteLine($"\n\nTask Result: {jobsDetailsTask.Result}\n\n");
-                    Console.WriteLine($"\n\nTask Exception: {jobsDetailsTask.Exception}\n\n");
                     return Ok(new { success = false, message = $"Job Details Task Not Resolved Correctly" });
                 }
 
                 var responses = jobsDetailsTask.Result
                     .Select(result => result?.FirstOrDefault())
-                    .ToList(); // this is so that the .Remove() method can be used later
+                    .ToList();
 
                 foreach (var job in activeJobs)
                 {
@@ -86,23 +82,26 @@ namespace SVT.Platform.Controllers
                         continue;
                     }
 
-                    if (response.State == Aethon.JobStates.Completed && job.Completed == null)
+                    if (response.End != null)
                     {
-                        job.Completed = DateTime.UtcNow;
-                        job.Canceled = null;
-                        job.Expired = null;
-                    }
-                    else if (response.State == Aethon.JobStates.Canceled && job.Canceled == null)
-                    {
-                        job.Completed = null;
-                        job.Canceled = DateTime.UtcNow;
-                        job.Expired = null;
-                    }
-                    else if (response.State == Aethon.JobStates.Expired && job.Expired == null)
-                    {
-                        job.Completed = null;
-                        job.Canceled = null;
-                        job.Expired = DateTime.UtcNow;
+                        if (response.State == Aethon.JobStates.Completed && job.Completed == null)
+                        {
+                            job.Completed = DateTime.UtcNow;
+                            job.Canceled = null;
+                            job.Expired = null;
+                        }
+                        else if (response.State == Aethon.JobStates.Canceled && job.Canceled == null)
+                        {
+                            job.Completed = null;
+                            job.Canceled = DateTime.UtcNow;
+                            job.Expired = null;
+                        }
+                        else if (response.State == Aethon.JobStates.Expired && job.Expired == null)
+                        {
+                            job.Completed = null;
+                            job.Canceled = null;
+                            job.Expired = DateTime.UtcNow;
+                        }
                     }
 
                     foreach (var responseItinerary in response.Itinerary)
@@ -124,20 +123,21 @@ namespace SVT.Platform.Controllers
                             job.Itineraries.Add(itinerary);
                         }
 
-                        if (responseItinerary.State == Aethon.ItineraryStates.Completed && itinerary.Completed == null)
-                        {
-                            itinerary.Completed = DateTime.UtcNow;
-                            itinerary.TimedOut = null;
-                        }
-                        // @TODO: change Aethon adapter ItineraryStates enum 'Expired' to 'Timed_Out', then change below line to match
-                        else if (responseItinerary.State == Aethon.ItineraryStates.Expired && itinerary.TimedOut == null)
-                        {
-                            itinerary.Completed = null;
-                            itinerary.TimedOut = DateTime.UtcNow;
-                        }
-
                         if (responseItinerary.End != null)
                         {
+
+                            if (responseItinerary.State == Aethon.ItineraryStates.Completed && itinerary.Completed == null)
+                            {
+                                itinerary.Completed = DateTime.UtcNow;
+                                itinerary.TimedOut = null;
+                            }
+                            // @TODO: change Aethon adapter ItineraryStates enum 'Expired' to 'Timed_Out', then change below line to match
+                            else if (responseItinerary.State == Aethon.ItineraryStates.Expired && itinerary.TimedOut == null)
+                            {
+                                itinerary.Completed = null;
+                                itinerary.TimedOut = DateTime.UtcNow;
+                            }
+
                             if (itinerary.Location.Reserved)
                             {
                                 itinerary.Location.Reserved = false;
