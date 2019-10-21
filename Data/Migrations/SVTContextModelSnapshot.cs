@@ -19,6 +19,34 @@ namespace SVT.Platform.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("SVT.Platform.Data.Models.AethonSendLog", b =>
+                {
+                    b.Property<int>("AethonSendLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("InsertedBy")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(256)")
+                        .HasDefaultValueSql("suser_sname()")
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("InsertedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<string>("_Serialized")
+                        .HasColumnName("Serialized")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AethonSendLogId");
+
+                    b.ToTable("AethonSendLogs");
+                });
+
             modelBuilder.Entity("SVT.Platform.Data.Models.Area", b =>
                 {
                     b.Property<int>("AreaId")
@@ -432,10 +460,6 @@ namespace SVT.Platform.Data.Migrations
 
                     b.Property<DateTime>("InsertedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Serialized")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DevLogId");
 
@@ -1191,16 +1215,6 @@ namespace SVT.Platform.Data.Migrations
 
                     b.Property<DateTime>("InsertedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Serialized")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("vUserId")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(256)")
-                        .HasComputedColumnSql("CONVERT([nvarchar](256),json_value([Serialized],N'$.UserId'))")
-                        .HasMaxLength(256);
 
                     b.HasKey("UserLogId");
 

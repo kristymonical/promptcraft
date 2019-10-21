@@ -15,6 +15,7 @@ namespace SVT.Platform.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            BuildAethonSendLog(modelBuilder);
             BuildAreaType(modelBuilder);
             BuildPool(modelBuilder);
             BuildArea(modelBuilder);
@@ -23,7 +24,7 @@ namespace SVT.Platform.Data
             BuildLocationType(modelBuilder);
             BuildLocation(modelBuilder);
             BuildDeliveryType(modelBuilder);
-            
+
             modelBuilder.Entity<AreaDeliveryType>(areaDeliveryTypeBuilder =>
             {
                 areaDeliveryTypeBuilder
@@ -142,11 +143,6 @@ namespace SVT.Platform.Data
                     .HasForeignKey(scheduledDelivery => scheduledDelivery.DestinationLocationId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
-
-            // Computed Fields
-            modelBuilder.Entity<UserLog>()
-                .Property(log => log.vUserId)
-                .HasComputedColumnSql("CONVERT([nvarchar](256),json_value([Serialized],N'$.UserId'))");
         }
     }
 }

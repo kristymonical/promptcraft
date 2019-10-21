@@ -1,13 +1,16 @@
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Aethon;
+using SVT.Platform.Data;
+using SVT.Platform.Data.Models;
 
 namespace SVT.Platform.Commands
 {
     public partial class JobCommands
     {
-        public static async Task<(bool, int)> ScheduleTug(AethonApi aethonApi, MultiDestinationRequest request)
+        public static async Task<(bool, int)> ScheduleTug(SVTContext context, AethonApi aethonApi, MultiDestinationRequest request)
         {
             var success = false;
             var jobId = -1;
@@ -15,7 +18,6 @@ namespace SVT.Platform.Commands
             var count = 0;
             var multiplierInMillis = 500;
             MultiDestinationResponse response = null;
-
 
             while (!success && count <= maxRetries)
             {
@@ -28,6 +30,12 @@ namespace SVT.Platform.Commands
                 try
                 {
                     response = await aethonApi.SendToMultiDestinations(request);
+                    var log = new AethonSendLog
+                    {
+                        Log = new AethonSendMultiDestination { Response = response, Request = request }
+                    };
+
+                    context.AethonSendLogs.Add(log);
                 }
                 catch
                 {

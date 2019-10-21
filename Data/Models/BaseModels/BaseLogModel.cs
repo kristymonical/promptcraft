@@ -12,7 +12,6 @@ namespace SVT.Platform.Data.Models
         [Required]
         public string InsertedBy { get; set; }
 
-        [Required]
-        public string Serialized { get; set; }
+        internal string _Serialized { get; set; }
     }
 }

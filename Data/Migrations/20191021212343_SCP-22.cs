@@ -8,6 +8,21 @@ namespace SVT.Platform.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AethonSendLogs",
+                columns: table => new
+                {
+                    AethonSendLogId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedBy = table.Column<string>(maxLength: 256, nullable: false, defaultValueSql: "suser_sname()"),
+                    Serialized = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AethonSendLogs", x => x.AethonSendLogId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AreaTypes",
                 columns: table => new
                 {
@@ -38,8 +53,7 @@ namespace SVT.Platform.Data.Migrations
                     DevLogId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InsertedOn = table.Column<DateTime>(nullable: false),
-                    InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
-                    Serialized = table.Column<string>(nullable: false)
+                    InsertedBy = table.Column<string>(maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -78,9 +92,7 @@ namespace SVT.Platform.Data.Migrations
                     UserLogId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InsertedOn = table.Column<DateTime>(nullable: false),
-                    InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
-                    Serialized = table.Column<string>(nullable: false),
-                    vUserId = table.Column<string>(maxLength: 256, nullable: true, computedColumnSql: "CONVERT([nvarchar](256),json_value([Serialized],N'$.UserId'))")
+                    InsertedBy = table.Column<string>(maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -761,6 +773,9 @@ namespace SVT.Platform.Data.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AethonSendLogs");
+
             migrationBuilder.DropTable(
                 name: "AreaDeliveryTypes");
 

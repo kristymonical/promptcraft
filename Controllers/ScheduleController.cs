@@ -80,7 +80,7 @@ namespace SVT.Platform.Controllers
                     currentDelivery.Locations.Add(destinationLocation);
                     await _svtContext.SaveChangesAsync();
 
-                    (bool success, int aethonJobId) = await JobCommands.ScheduleTug(_aethonApi, new MultiDestinationRequest
+                    (bool success, int aethonJobId) = await JobCommands.ScheduleTug(_svtContext, _aethonApi, new MultiDestinationRequest
                     {
                         PoolId = pool,
                         GroupId = 1,

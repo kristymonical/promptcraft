@@ -6,8 +6,5 @@ namespace SVT.Platform.Data.Models
     {
         [Key]
         public int UserLogId { get; set; }
-
-        [StringLength(256)]
-        public string vUserId { get; set; }
     }
 }

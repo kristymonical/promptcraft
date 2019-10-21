@@ -35,7 +35,8 @@ namespace SVT.Platform.Controllers
         {
             var queue = await DeliveryCommands.GetDeliveryQueueInPriorityOrder(_svtContext, queryParams.PoolId);
 
-            return Ok(new {
+            return Ok(new
+            {
                 success = true,
                 message = "",
                 data = queue.Select(d =>
@@ -62,7 +63,7 @@ namespace SVT.Platform.Controllers
 
             if (currentDelivery == null)
             {
-                return NotFound(new { success = false, message = $"Delivery: {route.DeliveryId} Not Found"});
+                return NotFound(new { success = false, message = $"Delivery: {route.DeliveryId} Not Found" });
             }
 
             var newParentDelivery = await DeliveryCommands.GetQueuedDeliveryById(_svtContext, query.NewParentDeliveryId, query.PoolId);
