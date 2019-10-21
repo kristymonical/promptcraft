@@ -1,9 +1,9 @@
 error() {
-    printf "\033[1;31m${1}\033[0m"
+    printf "\033[0;31m${1}\033[0m"
 }
 
 trace() {
-    printf "\033[1;30m${1}\033[0m"
+    printf "\033[0;36m${1}\033[0m"
 }
 
 trace 'dotnet...'
