@@ -2,23 +2,35 @@ version: '3.7'
 services:
   app:
     build: .
-    ports:
-      - '5000:5000'
-      - '5001:5001'
+    expose:
+      - '5000'
+      - '5001'
     environment:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=SupahSecretPassw0rd
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/.aspnet/https/aspnetapp.pfx
       - ASPNETCORE_URLS=http://*:5000;https://*:5001
     depends_on:
       - db
+      - mockaethonapi
     networks:
       - lonza
     volumes:
       - /root/.aspnet:/.aspnet/
+  mockaethonapi:
+    image: 'node:10'
+    user: 'node'
+    working_dir: /home/node/app
+    volumes:
+      - ./AethonMockApi:/home/node/app
+    expose:
+      - '3000'
+    command: 'node index.js'
+    networks:
+      - lonza
   db:
-    ports:
-      - '1433:1433'
     image: 'mcr.microsoft.com/mssql/server'
+    expose:
+      - '1433'
     environment:
       SA_PASSWORD: 'SupahAdmin1'
       ACCEPT_EULA: 'Y'
