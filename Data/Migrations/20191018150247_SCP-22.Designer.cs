@@ -10,7 +10,7 @@ using SVT.Platform.Data;
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    [Migration("20191015153217_SCP-22")]
+    [Migration("20191018150247_SCP-22")]
     partial class SCP22
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

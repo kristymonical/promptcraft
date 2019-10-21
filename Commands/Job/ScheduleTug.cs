@@ -36,6 +36,7 @@ namespace SVT.Platform.Commands
                 finally
                 {
                     count += 1;
+                    // @TODO: change aethon adapter MultiDestinationResponse.JobId data type from string to int
                     success = (response?.Code == true && Int32.TryParse(response?.JobId, out jobId));
                 }
             }
