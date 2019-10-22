@@ -42,6 +42,6 @@ namespace SVT.Platform.Data.Models
         public virtual ICollection<Job> Jobs { get; set; }
         public virtual Delivery PreviousPrioritizedDelivery { get; set; }
         public virtual Delivery NextPrioritizedDelivery { get; set; }
-        public virtual ICollection<ScheduledDelivery> ScheduledDeliveries { get; set; }
+        public virtual ICollection<Log> Logs { get; set; }
     }
 }

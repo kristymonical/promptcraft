@@ -30,12 +30,6 @@ namespace SVT.Platform.Commands
                 try
                 {
                     response = await aethonApi.SendToMultiDestinations(request);
-                    var log = new AethonSendLog
-                    {
-                        Log = new AethonSendMultiDestination { Response = response, Request = request }
-                    };
-
-                    context.AethonSendLogs.Add(log);
                 }
                 catch
                 {

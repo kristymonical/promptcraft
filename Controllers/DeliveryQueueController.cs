@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
-using SVT.Platform.Data.Models;
 
 namespace SVT.Platform.Controllers
 {

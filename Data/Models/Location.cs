@@ -27,6 +27,5 @@ namespace SVT.Platform.Data.Models
         public virtual Area Area { get; set; }
         public virtual Delivery Delivery { get; set; }
         public virtual ICollection<Itinerary> Itineraries { get; set; }
-        public virtual ICollection<ScheduledDelivery> ScheduledDeliveries { get; set; }
     }
 }

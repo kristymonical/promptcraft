@@ -34,7 +34,7 @@ namespace SVT.Platform.Data.Models
         public static List<Area> GetLeafNodes(Area startingNode)
         {
             var accumulator = new List<Area>();
-            
+
             bool _getLeafNodes(Area currentNode)
             {
                 if (currentNode.AreaId != startingNode.AreaId && currentNode.NextAreas.Count == 0)
