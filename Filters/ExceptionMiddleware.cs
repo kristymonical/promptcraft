@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using SVT.Platform.Commands;
 using SVT.Platform.Data;
 
 public class ExceptionMiddleware
@@ -20,7 +21,7 @@ public class ExceptionMiddleware
         _environment = environment;
     }
 
-    public async Task InvokeAsync(HttpContext httpContext, SVTContext context)
+    public async Task InvokeAsync(HttpContext httpContext, SVTContext svtContext)
     {
         try
         {
@@ -28,17 +29,36 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
-            var user = await context.Users
+            var user = await svtContext.Users
                 .Where(u => u.Name == httpContext.User.Identity.Name)
                 .FirstOrDefaultAsync();
 
             if (user == null && _environment.IsDevelopment())
             {
-                // @TODO: assign 'DevUser' to user
+                user = await svtContext.Users
+                    .Where(u => u.Name == "DevAPI")
+                    .FirstOrDefaultAsync();
             }
-            // @TODO: invoke Commands.Log.CreateLog...
-            // @TODO: httpContext...path to trackingId header
-            // @TODO: parameters: serialize '{ message, stack, user.Name, ...}', action: 'Queue Delivery', trackingId
+
+            ex.Data.Add("Application", _environment.ApplicationName);
+            ex.Data.Add("Environment", _environment.EnvironmentName);
+
+            await LogCommands.CreateLog<BaseErrorLog>(svtContext, new DataToLog<BaseErrorLog>
+            {
+                TrackingId = httpContext.Request.Headers["trackingId"],
+                Data = new BaseErrorLog
+                {
+                    User = user.Name,
+                    Error = new ErrorLog
+                    {
+                        Message = ex.Message,
+                        StackTrace = ex.StackTrace,
+                        Source = ex.Source,
+                        Data = ex.Data
+                    }
+                }
+            });
+
             await HandleExceptionAsync(httpContext, ex);
         }
     }
@@ -55,5 +75,10 @@ public class ExceptionMiddleware
         });
 
         return context.Response.WriteAsync(serialized);
+    }
+
+    public class UnhandledExceptionLogData
+    {
+
     }
 }

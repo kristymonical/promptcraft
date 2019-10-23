@@ -32,6 +32,32 @@ namespace SVT.Platform.Data.Migrations
                     b.HasKey("Value");
 
                     b.ToTable("ActionTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Value = "unknown"
+                        },
+                        new
+                        {
+                            Value = "queue"
+                        },
+                        new
+                        {
+                            Value = "schedule"
+                        },
+                        new
+                        {
+                            Value = "status"
+                        },
+                        new
+                        {
+                            Value = "move"
+                        },
+                        new
+                        {
+                            Value = "clean"
+                        });
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Area", b =>
@@ -1092,7 +1118,7 @@ namespace SVT.Platform.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("DeliveryId")
+                    b.Property<int?>("DeliveryId")
                         .HasColumnType("int");
 
                     b.Property<string>("InsertedBy")
@@ -1117,8 +1143,13 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<Guid>("TrackingId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Serialized")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrackingId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("LogId");
 
@@ -1177,6 +1208,28 @@ namespace SVT.Platform.Data.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            Name = "API"
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            Name = "DevAPI"
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            Name = "ScheduleService"
+                        },
+                        new
+                        {
+                            UserId = 4,
+                            Name = "StatusService"
+                        });
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Area", b =>

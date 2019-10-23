@@ -10,15 +10,15 @@ namespace SVT.Platform.Data.Models
         public int LogId { get; set; }
 
         [Required]
-        public Guid TrackingId { get; set; } = new Guid();
+        public string TrackingId { get; set; }
 
-        public int DeliveryId { get; set; }
+        public int? DeliveryId { get; set; }
 
         [Required]
         public string Action { get; set; }
 
         [Required]
-        internal string Serialized { get; set; }
+        public string Serialized { get; set; }
 
         // NAVIGATION MEMBERS
         public virtual Delivery Delivery { get; set; }

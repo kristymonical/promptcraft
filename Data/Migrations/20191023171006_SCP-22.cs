@@ -302,9 +302,10 @@ namespace SVT.Platform.Data.Migrations
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
                     ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
-                    TrackingId = table.Column<Guid>(nullable: false),
-                    DeliveryId = table.Column<int>(nullable: false),
-                    Action = table.Column<string>(nullable: false)
+                    TrackingId = table.Column<string>(nullable: false),
+                    DeliveryId = table.Column<int>(nullable: true),
+                    Action = table.Column<string>(nullable: false),
+                    Serialized = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -357,6 +358,19 @@ namespace SVT.Platform.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "ActionTypes",
+                columns: new[] { "Value", "Description" },
+                values: new object[,]
+                {
+                    { "unknown", null },
+                    { "queue", null },
+                    { "schedule", null },
+                    { "status", null },
+                    { "move", null },
+                    { "clean", null }
+                });
+
+            migrationBuilder.InsertData(
                 table: "AreaTypes",
                 columns: new[] { "Value", "Description" },
                 values: new object[,]
@@ -373,8 +387,8 @@ namespace SVT.Platform.Data.Migrations
                 columns: new[] { "Value", "Description" },
                 values: new object[,]
                 {
-                    { "return", null },
                     { "stage", null },
+                    { "return", null },
                     { "deliver", null },
                     { "manual", null }
                 });
@@ -397,9 +411,20 @@ namespace SVT.Platform.Data.Migrations
                 columns: new[] { "PoolId", "Name" },
                 values: new object[,]
                 {
-                    { 2, "Pool 2" },
                     { 1, "Pool 1" },
+                    { 2, "Pool 2" },
                     { 3, "Pool 3" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "Name" },
+                values: new object[,]
+                {
+                    { 3, "ScheduleService" },
+                    { 1, "API" },
+                    { 2, "DevAPI" },
+                    { 4, "StatusService" }
                 });
 
             migrationBuilder.InsertData(

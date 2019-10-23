@@ -5,8 +5,6 @@ namespace SVT.Platform.Data
 {
     public partial class SVTContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
-
         public SVTContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,11 +17,13 @@ namespace SVT.Platform.Data
             BuildAreaDeliveryType(modelBuilder);
             BuildLocationType(modelBuilder);
             BuildLocation(modelBuilder);
+            BuildActionType(modelBuilder);
             BuildLog(modelBuilder);
             BuildDeliveryType(modelBuilder);
             BuildDelivery(modelBuilder);
             BuildItinerary(modelBuilder);
             BuildJob(modelBuilder);
+            BuildUser(modelBuilder);
         }
     }
 }
