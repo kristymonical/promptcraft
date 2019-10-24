@@ -29,6 +29,8 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
+            RollbackChanges(svtContext);
+
             var user = await svtContext.Users
                 .Where(u => u.Name == httpContext.User.Identity.Name)
                 .FirstOrDefaultAsync();
@@ -49,6 +51,7 @@ public class ExceptionMiddleware
                 Data = new BaseErrorLog
                 {
                     User = user.Name,
+                    Message = "Unhandled Exception",
                     Error = new ErrorLog
                     {
                         Message = ex.Message,
@@ -58,6 +61,7 @@ public class ExceptionMiddleware
                     }
                 }
             });
+            await svtContext.SaveChangesAsync();
 
             await HandleExceptionAsync(httpContext, ex);
         }
@@ -77,8 +81,21 @@ public class ExceptionMiddleware
         return context.Response.WriteAsync(serialized);
     }
 
-    public class UnhandledExceptionLogData
+    private void RollbackChanges(SVTContext svtContext)
     {
-
+        foreach (var entry in svtContext.ChangeTracker.Entries())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Modified:
+                case EntityState.Deleted:
+                    entry.State = EntityState.Modified;
+                    entry.State = EntityState.Unchanged;
+                    break;
+                case EntityState.Added:
+                    entry.State = EntityState.Detached;
+                    break;
+            }
+        }
     }
 }

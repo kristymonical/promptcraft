@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Aethon;
 using Microsoft.AspNetCore.Mvc;
@@ -15,16 +16,35 @@ namespace SVT.Platform.Controllers
     {
         private SVTContext _svtContext;
         private AethonApi _aethonApi;
+        private TimeSpan _timeout;
 
-        public StatusController(SVTContext sVTContext, AethonApi aethonApi)
+        public StatusController(SVTContext sVTContext, AethonApi aethonApi, int timeout = 15)
         {
             _svtContext = sVTContext;
             _aethonApi = aethonApi;
+            _timeout = TimeSpan.FromSeconds(timeout);
         }
 
         [HttpPut("delivery/status")]
         public async Task<IActionResult> UpdateDeliveryStatus()
         {
+            var trackingId = Guid.NewGuid().ToString();
+            // @TODO: do we need to load 'User'/'ActionType' entities?
+            var user = "StatusService";
+            var action = "status";
+
+            await LogCommands.CreateLog(_svtContext, new DataToLog<BaseLogData>
+            {
+                TrackingId = trackingId,
+                Action = action,
+                Data = new BaseLogData
+                {
+                    User = user,
+                    Message = $"Running Job Status Service: {DateTime.UtcNow}"
+                }
+            });
+            await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+
             var activeJobs = await JobCommands.GetActiveJobs(_svtContext)
                 .ToListAsync();
 
@@ -41,24 +61,6 @@ namespace SVT.Platform.Controllers
                     // @TODO: handle unresolved Task errors
                 }
 
-                /*
-                
-                    TODOs
-                    =====
-                    1.  Done - iterate through activeJobs
-                    2.  Done - lookup corresponding aethon response by aethon job id
-                    3.  Done - iterate through aethon itineraries
-                    4.  Done - lookup corresponding activeJob itinerary
-                    5.  Done - upsert itinerary
-                    6.  Done - update if necessary itinerary completed/timedout fields
-                    7.  Done - update if necessary job completed/expired/canceled fields
-                    8.  Done - save changes
-                    9.  Done - remove aethon response from list
-                    10. write to aethon log table
-                    11. after active job iteration, iterate through remaining aethon responses and write to error log table/alert                    
-                
-                */
-
                 if (jobsDetailsTask.Status != TaskStatus.RanToCompletion)
                 {
                     // @TODO: handle Task status issues here
@@ -69,12 +71,26 @@ namespace SVT.Platform.Controllers
                     .Select(result => result?.FirstOrDefault())
                     .ToList();
 
+                await LogCommands.CreateLog(_svtContext, new DataToLog<AethonJobDetailsLog>
+                {
+                    TrackingId = trackingId,
+                    Action = action,
+                    Data = new AethonJobDetailsLog
+                    {
+                        User = user,
+                        Message = $"Aethon Job Details: {DateTime.UtcNow}",
+                        JobDetails = responses
+                    }
+                });
+                await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+
                 foreach (var job in activeJobs)
                 {
                     var response = responses
                         .Where(resp => resp?.JobId == job.AethonJobId)
                         .FirstOrDefault();
 
+                    // @TODO: replace below logic with expected Aethon adapter unsuccessful response
                     if (response == null)
                     {
                         // @TODO: handle no aethon response for current active job here
@@ -156,16 +172,6 @@ namespace SVT.Platform.Controllers
                     }
 
                     await _svtContext.SaveChangesAsync();
-
-                    // @TODO: write serialized response to aethon log table
-
-                    responses.Remove(response);
-                }
-
-                if (responses.Count > 0)
-                {
-                    // @TODO: handle orphaned responses here
-                    Console.WriteLine($"\n\n{responses.Count} Orphaned Aethon Responses Remaining\n\n");
                 }
             }
 

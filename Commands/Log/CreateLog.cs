@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Aethon;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SVT.Platform.Data;
@@ -16,7 +18,6 @@ namespace SVT.Platform.Commands
         {
             // TODO: look at implementing circuit breaker
             var timeout = TimeSpan.FromSeconds(timeoutInSecs);
-            Console.WriteLine($"\n\nTimeout: {timeout.Seconds}\n\n");
             var action = await context.ActionTypes
                 .Where(a => a.Value == logData.Action)
                 .FirstOrDefaultAsync();
@@ -36,7 +37,6 @@ namespace SVT.Platform.Commands
                 Delivery = logData.Delivery
             }, new CancellationTokenSource(timeout).Token);
 
-            await context.SaveChangesAsync(new CancellationTokenSource(timeout).Token);
         }
     }
 
@@ -54,6 +54,10 @@ namespace SVT.Platform.Commands
     public class BaseLogData
     {
         public string User { get; set; }
+
+        public string Message { get; set; }
+
+        public long TimeStamp { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     }
 
     public class BaseErrorLog : BaseLogData
@@ -70,5 +74,38 @@ namespace SVT.Platform.Commands
         public string Source { get; set; }
 
         public IDictionary Data { get; set; }
+    }
+
+    public class NoAvailableLocationsLog : BaseLogData
+    {
+        public string DestinationArea { get; set; }
+    }
+
+    public class InvalidDestinationLog : NoAvailableLocationsLog
+    {
+        public string StartingLocation { get; set; }
+    }
+
+    public class AethonSendLog : BaseLogData
+    {
+        public bool Success { get; set; }
+
+        public int AethonJobId { get; set; }
+    }
+
+    public class AethonJobDetailsLog : BaseLogData
+    {
+        public List<JobDetailsResponse> JobDetails { get; set; }
+    }
+
+    public class WebAppLog : BaseLogData
+    {
+        public string Method { get; set; }
+
+        public string Route { get; set; }
+
+        public int StatusCode { get; set; }
+
+        public bool Success { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace SVT.Platform.Commands
 {
     public partial class JobCommands
     {
-        public static async Task<(bool, int)> ScheduleTug(SVTContext context, AethonApi aethonApi, MultiDestinationRequest request)
+        public static async Task<(bool, int)> ScheduleTug(AethonApi aethonApi, MultiDestinationRequest request)
         {
             var success = false;
             var jobId = -1;
