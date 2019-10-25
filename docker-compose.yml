@@ -1,21 +1,16 @@
 version: '3.7'
 services:
   app:
-    build: .
-    expose:
-      - '5000'
-      - '5001'
+    image: 'anstle:61000/softbot-cloud-platform_app'
+    ports:
+      - '60000:5001'
     environment:
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=SupahSecretPassw0rd
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/.aspnet/https/aspnetapp.pfx
       - ASPNETCORE_URLS=http://*:5000;https://*:5001
     depends_on:
       - db
       - mockaethonapi
     networks:
       - lonza
-    volumes:
-      - /root/.aspnet:/.aspnet/
   mockaethonapi:
     image: 'node:10'
     user: 'node'
