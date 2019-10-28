@@ -10,7 +10,7 @@ using SVT.Platform.Data;
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    [Migration("20191018150247_SCP-22")]
+    [Migration("20191023171006_SCP-22")]
     partial class SCP22
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,47 @@ namespace SVT.Platform.Data.Migrations
                 .HasAnnotation("ProductVersion", "3.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("SVT.Platform.Data.Models.ActionType", b =>
+                {
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
+
+                    b.HasKey("Value");
+
+                    b.ToTable("ActionTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Value = "unknown"
+                        },
+                        new
+                        {
+                            Value = "queue"
+                        },
+                        new
+                        {
+                            Value = "schedule"
+                        },
+                        new
+                        {
+                            Value = "status"
+                        },
+                        new
+                        {
+                            Value = "move"
+                        },
+                        new
+                        {
+                            Value = "clean"
+                        });
+                });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Area", b =>
                 {
@@ -418,30 +459,6 @@ namespace SVT.Platform.Data.Migrations
                         {
                             Value = "stage"
                         });
-                });
-
-            modelBuilder.Entity("SVT.Platform.Data.Models.DevLog", b =>
-                {
-                    b.Property<int>("DevLogId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("InsertedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.Property<DateTime>("InsertedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Serialized")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("DevLogId");
-
-                    b.ToTable("DevLogs");
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Itinerary", b =>
@@ -1092,6 +1109,59 @@ namespace SVT.Platform.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SVT.Platform.Data.Models.Log", b =>
+                {
+                    b.Property<int>("LogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("DeliveryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InsertedBy")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(256)")
+                        .HasDefaultValueSql("suser_sname()")
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("InsertedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<string>("ModifiedBy")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(256)")
+                        .HasDefaultValueSql("suser_sname()")
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<string>("Serialized")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrackingId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LogId");
+
+                    b.HasIndex("Action");
+
+                    b.HasIndex("DeliveryId");
+
+                    b.ToTable("Logs");
+                });
+
             modelBuilder.Entity("SVT.Platform.Data.Models.Pool", b =>
                 {
                     b.Property<int>("PoolId")
@@ -1126,87 +1196,42 @@ namespace SVT.Platform.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.ScheduledDelivery", b =>
+            modelBuilder.Entity("SVT.Platform.Data.Models.User", b =>
                 {
-                    b.Property<int>("ScheduledDeliveryId")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("Canceled")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Completed")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DeliveryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DestinationLocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("InsertedBy")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(256)")
-                        .HasDefaultValueSql("suser_sname()")
-                        .HasMaxLength(256);
-
-                    b.Property<DateTime>("InsertedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
-
-                    b.Property<string>("ModifiedBy")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(256)")
-                        .HasDefaultValueSql("suser_sname()")
-                        .HasMaxLength(256);
-
-                    b.Property<DateTime>("ModifiedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
-
-                    b.Property<DateTime>("TTL")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ScheduledDeliveryId");
-
-                    b.HasIndex("DeliveryId");
-
-                    b.HasIndex("DestinationLocationId");
-
-                    b.ToTable("ScheduledDelivery");
-                });
-
-            modelBuilder.Entity("SVT.Platform.Data.Models.UserLog", b =>
-                {
-                    b.Property<int>("UserLogId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("InsertedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.Property<DateTime>("InsertedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Serialized")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("vUserId")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(256)")
-                        .HasComputedColumnSql("CONVERT([nvarchar](256),json_value([Serialized],N'$.UserId'))")
-                        .HasMaxLength(256);
+                    b.HasKey("UserId");
 
-                    b.HasKey("UserLogId");
+                    b.ToTable("Users");
 
-                    b.ToTable("UserLogs");
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            Name = "API"
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            Name = "DevAPI"
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            Name = "ScheduleService"
+                        },
+                        new
+                        {
+                            UserId = 4,
+                            Name = "StatusService"
+                        });
                 });
 
             modelBuilder.Entity("SVT.Platform.Data.Models.Area", b =>
@@ -1331,19 +1356,17 @@ namespace SVT.Platform.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SVT.Platform.Data.Models.ScheduledDelivery", b =>
+            modelBuilder.Entity("SVT.Platform.Data.Models.Log", b =>
                 {
-                    b.HasOne("SVT.Platform.Data.Models.Delivery", "Delivery")
-                        .WithMany("ScheduledDeliveries")
-                        .HasForeignKey("DeliveryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("SVT.Platform.Data.Models.ActionType", "ActionTypeReference")
+                        .WithMany("Logs")
+                        .HasForeignKey("Action")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SVT.Platform.Data.Models.Location", "DestinationLocation")
-                        .WithMany("ScheduledDeliveries")
-                        .HasForeignKey("DestinationLocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.HasOne("SVT.Platform.Data.Models.Delivery", "Delivery")
+                        .WithMany("Logs")
+                        .HasForeignKey("DeliveryId");
                 });
 #pragma warning restore 612, 618
         }

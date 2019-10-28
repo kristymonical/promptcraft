@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Aethon;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
@@ -23,15 +23,35 @@ namespace SVT.Platform.Controllers
             { 3, 1 }
         };
 
-        public ScheduleController(SVTContext svtContext, AethonApi aethonApi)
+        private TimeSpan _timeout;
+
+        public ScheduleController(SVTContext svtContext, AethonApi aethonApi, int timeout = 15)
         {
             _svtContext = svtContext;
             _aethonApi = aethonApi;
+            _timeout = TimeSpan.FromSeconds(timeout);
         }
 
         [HttpPost("delivery/schedule")]
         public async Task<IActionResult> ScheduleJob()
         {
+            var trackingId = Guid.NewGuid().ToString();
+            // @TODO: do we need to load 'User'/'ActionType' entities?
+            var user = "ScheduleService";
+            var action = "schedule";
+
+            await LogCommands.CreateLog<BaseLogData>(_svtContext, new DataToLog<BaseLogData>
+            {
+                TrackingId = trackingId,
+                Action = action,
+                Data = new BaseLogData
+                {
+                    User = user,
+                    Message = $"Running Delivery Scheduling Service: {DateTime.UtcNow}"
+                }
+            });
+            await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+
             // @TODO: implement configurable pool threshold values
             foreach (var pool in _poolThresholds.Keys)
             {
@@ -43,8 +63,6 @@ namespace SVT.Platform.Controllers
                 var currentCount = activeJobCount;
                 while (!deliveryQueueEmpty && currentCount < threshold)
                 {
-                    Console.WriteLine($"\n\nOffset: {queueOffset}\n\n");
-
                     var currentDelivery = (await DeliveryCommands.GetDeliveryQueueInPriorityOrder(_svtContext, pool))
                         .ElementAtOrDefault(queueOffset);
 
@@ -59,8 +77,23 @@ namespace SVT.Platform.Controllers
 
                     if (startingLocation == null || destinationArea == null)
                     {
-                        // @TODO: write to ErrorLog table here
+                        await LogCommands.CreateLog<InvalidDestinationLog>(_svtContext, new DataToLog<InvalidDestinationLog>
+                        {
+                            TrackingId = trackingId,
+                            Action = action,
+                            Delivery = currentDelivery,
+                            Data = new InvalidDestinationLog
+                            {
+                                User = user,
+                                Message = $"Invalid Data, Delivery: {currentDelivery.DeliveryId}",
+                                StartingLocation = startingLocation.Name,
+                                DestinationArea = destinationArea.Name
+                            }
+                        });
+                        await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+
                         // @TODO: implement possible bad data alerting here
+
                         currentDelivery.Canceled = DateTime.UtcNow;
                         await DeliveryCommands.PopDeliveryQueue(_svtContext, pool);
                         await _svtContext.SaveChangesAsync();
@@ -71,7 +104,22 @@ namespace SVT.Platform.Controllers
 
                     if (destinationLocation == null)
                     {
+                        await LogCommands.CreateLog<NoAvailableLocationsLog>(_svtContext, new DataToLog<NoAvailableLocationsLog>
+                        {
+                            TrackingId = trackingId,
+                            Action = action,
+                            Delivery = currentDelivery,
+                            Data = new NoAvailableLocationsLog
+                            {
+                                User = user,
+                                Message = $"No Available Locations, Delivery: {currentDelivery.DeliveryId}",
+                                DestinationArea = destinationArea.Name
+                            }
+                        });
+                        await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+
                         // @TODO: implement no available destination locations alerting here
+
                         queueOffset += 1;
                         continue;
                     }
@@ -90,15 +138,30 @@ namespace SVT.Platform.Controllers
 
                     if (!success || aethonJobId == -1)
                     {
-                        // @TODO: log unexpected Aethon error to ErrorLog table here
                         destinationLocation.Reserved = false;
                         currentDelivery.Locations.Remove(destinationLocation);
                         await _svtContext.SaveChangesAsync();
+
+                        // @TODO: log unexpected Aethon error to table here (must be AFTER above .SaveChanges())
+
                         queueOffset += 1;
                         continue;
                     }
 
-                    // @TODO: Write to AethonLog table here
+                    await LogCommands.CreateLog(_svtContext, new DataToLog<AethonSendLog>
+                    {
+                        TrackingId = trackingId,
+                        Action = action,
+                        Delivery = currentDelivery,
+                        Data = new AethonSendLog
+                        {
+                            User = user,
+                            Message = $"Aethon Send - From: '{startingLocation.Name}', To: '{destinationLocation.Name}'",
+                            Success = success,
+                            AethonJobId = aethonJobId
+                        }
+                    });
+                    await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
 
                     currentDelivery.Jobs.Add(new Job { AethonJobId = aethonJobId });
 

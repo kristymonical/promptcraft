@@ -8,6 +8,18 @@ namespace SVT.Platform.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "ActionTypes",
+                columns: table => new
+                {
+                    Value = table.Column<string>(maxLength: 50, nullable: false),
+                    Description = table.Column<string>(maxLength: 255, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActionTypes", x => x.Value);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AreaTypes",
                 columns: table => new
                 {
@@ -29,21 +41,6 @@ namespace SVT.Platform.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DeliveryTypes", x => x.Value);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DevLogs",
-                columns: table => new
-                {
-                    DevLogId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false),
-                    InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
-                    Serialized = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DevLogs", x => x.DevLogId);
                 });
 
             migrationBuilder.CreateTable(
@@ -72,19 +69,16 @@ namespace SVT.Platform.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserLogs",
+                name: "Users",
                 columns: table => new
                 {
-                    UserLogId = table.Column<int>(nullable: false)
+                    UserId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false),
-                    InsertedBy = table.Column<string>(maxLength: 256, nullable: false),
-                    Serialized = table.Column<string>(nullable: false),
-                    vUserId = table.Column<string>(maxLength: 256, nullable: true, computedColumnSql: "CONVERT([nvarchar](256),json_value([Serialized],N'$.UserId'))")
+                    Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserLogs", x => x.UserLogId);
+                    table.PrimaryKey("PK_Users", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -299,6 +293,38 @@ namespace SVT.Platform.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Logs",
+                columns: table => new
+                {
+                    LogId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
+                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
+                    TrackingId = table.Column<string>(nullable: false),
+                    DeliveryId = table.Column<int>(nullable: true),
+                    Action = table.Column<string>(nullable: false),
+                    Serialized = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Logs", x => x.LogId);
+                    table.ForeignKey(
+                        name: "FK_Logs_ActionTypes_Action",
+                        column: x => x.Action,
+                        principalTable: "ActionTypes",
+                        principalColumn: "Value",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Logs_Deliveries_DeliveryId",
+                        column: x => x.DeliveryId,
+                        principalTable: "Deliveries",
+                        principalColumn: "DeliveryId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Itineraries",
                 columns: table => new
                 {
@@ -331,37 +357,17 @@ namespace SVT.Platform.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "ScheduledDelivery",
-                columns: table => new
+            migrationBuilder.InsertData(
+                table: "ActionTypes",
+                columns: new[] { "Value", "Description" },
+                values: new object[,]
                 {
-                    ScheduledDeliveryId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
-                    InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
-                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
-                    ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
-                    TTL = table.Column<DateTime>(nullable: false),
-                    Completed = table.Column<DateTime>(nullable: false),
-                    Canceled = table.Column<DateTime>(nullable: false),
-                    DeliveryId = table.Column<int>(nullable: false),
-                    DestinationLocationId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ScheduledDelivery", x => x.ScheduledDeliveryId);
-                    table.ForeignKey(
-                        name: "FK_ScheduledDelivery_Deliveries_DeliveryId",
-                        column: x => x.DeliveryId,
-                        principalTable: "Deliveries",
-                        principalColumn: "DeliveryId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ScheduledDelivery_Locations_DestinationLocationId",
-                        column: x => x.DestinationLocationId,
-                        principalTable: "Locations",
-                        principalColumn: "LocationId",
-                        onDelete: ReferentialAction.Restrict);
+                    { "unknown", null },
+                    { "queue", null },
+                    { "schedule", null },
+                    { "status", null },
+                    { "move", null },
+                    { "clean", null }
                 });
 
             migrationBuilder.InsertData(
@@ -381,8 +387,8 @@ namespace SVT.Platform.Data.Migrations
                 columns: new[] { "Value", "Description" },
                 values: new object[,]
                 {
-                    { "return", null },
                     { "stage", null },
+                    { "return", null },
                     { "deliver", null },
                     { "manual", null }
                 });
@@ -405,9 +411,20 @@ namespace SVT.Platform.Data.Migrations
                 columns: new[] { "PoolId", "Name" },
                 values: new object[,]
                 {
-                    { 2, "Pool 2" },
                     { 1, "Pool 1" },
+                    { 2, "Pool 2" },
                     { 3, "Pool 3" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "Name" },
+                values: new object[,]
+                {
+                    { 3, "ScheduleService" },
+                    { 1, "API" },
+                    { 2, "DevAPI" },
+                    { 4, "StatusService" }
                 });
 
             migrationBuilder.InsertData(
@@ -749,14 +766,14 @@ namespace SVT.Platform.Data.Migrations
                 column: "LocationType");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ScheduledDelivery_DeliveryId",
-                table: "ScheduledDelivery",
-                column: "DeliveryId");
+                name: "IX_Logs_Action",
+                table: "Logs",
+                column: "Action");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ScheduledDelivery_DestinationLocationId",
-                table: "ScheduledDelivery",
-                column: "DestinationLocationId");
+                name: "IX_Logs_DeliveryId",
+                table: "Logs",
+                column: "DeliveryId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -771,22 +788,22 @@ namespace SVT.Platform.Data.Migrations
                 name: "AreaOverflow");
 
             migrationBuilder.DropTable(
-                name: "DevLogs");
-
-            migrationBuilder.DropTable(
                 name: "Itineraries");
 
             migrationBuilder.DropTable(
-                name: "ScheduledDelivery");
+                name: "Logs");
 
             migrationBuilder.DropTable(
-                name: "UserLogs");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Jobs");
 
             migrationBuilder.DropTable(
                 name: "Locations");
+
+            migrationBuilder.DropTable(
+                name: "ActionTypes");
 
             migrationBuilder.DropTable(
                 name: "Deliveries");

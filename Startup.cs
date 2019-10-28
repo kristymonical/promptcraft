@@ -16,18 +16,20 @@ using Microsoft.AspNetCore.Mvc;
 using Aethon;
 using System.Net.Http;
 using System;
-using System.Threading.Tasks;
 
 namespace SVT.Platform
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+
+        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -52,6 +54,7 @@ namespace SVT.Platform
             services.AddTransient<IValidator<DeliveryQueueController.ByPoolRequest>, ByPoolRequestValidator>();
             services.AddTransient<IValidator<DeliveryQueueController.PriorityQuery>, PriorityQueryValidator>();
             services.AddTransient<IValidator<DeliveryQueueController.PriorityRoute>, PriorityRouteValidator>();
+            services.AddTransient<IValidator<LogController.LogRequest<LogController.WebAppLogRequest>>, LogRequestValidator>();
 
             // DI
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -70,26 +73,19 @@ namespace SVT.Platform
             var client = new HttpClient { BaseAddress = new Uri("http://localhost:3000/") };
 
             services.AddSingleton<AethonApi>(new AethonApi(client));
+
+            services.AddSingleton<IWebHostEnvironment>(Environment);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ExceptionMiddleware>();
             // run migrations automatically if we're not in dev mode
             if (!env.IsDevelopment())
             {
                 var context = app.ApplicationServices.GetService<SVTContext>();
                 context.Database.Migrate();
-            }
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Aethon;
+using SVT.Platform.Data;
 
 namespace SVT.Platform.Commands
 {
@@ -15,7 +16,6 @@ namespace SVT.Platform.Commands
             var count = 0;
             var multiplierInMillis = 500;
             MultiDestinationResponse response = null;
-
 
             while (!success && count <= maxRetries)
             {
