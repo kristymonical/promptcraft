@@ -31,15 +31,11 @@ public class ExceptionMiddleware
         {
             RollbackChanges(svtContext);
 
-            var user = await svtContext.Users
-                .Where(u => u.Name == httpContext.User.Identity.Name)
-                .FirstOrDefaultAsync();
+            var userName = httpContext.User.Identity.Name;
 
-            if (user == null && _environment.IsDevelopment())
+            if (userName == null && _environment.EnvironmentName == "Development")
             {
-                user = await svtContext.Users
-                    .Where(u => u.Name == "DevAPI")
-                    .FirstOrDefaultAsync();
+                userName = "DevAPI";
             }
 
             ex.Data.Add("Application", _environment.ApplicationName);
@@ -50,7 +46,7 @@ public class ExceptionMiddleware
                 TrackingId = httpContext.Request.Headers["trackingId"],
                 Data = new BaseErrorLog
                 {
-                    User = user.Name,
+                    User = userName,
                     Message = "Unhandled Exception",
                     Error = new ErrorLog
                     {
