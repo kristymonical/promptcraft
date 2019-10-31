@@ -1,7 +1,8 @@
-version: '3.7'
+version: '3.3'
 services:
   app:
-    image: 'anstle:61000/softbot-cloud-platform_app'
+    image: 'registry.svtrobotics.local:61000/scp-app'
+    container_name: 'scp-app'
     ports:
       - '60000:5001'
     environment:
@@ -10,26 +11,22 @@ services:
       - db
       - mockaethonapi
     networks:
-      - lonza
+      - scp-app
   mockaethonapi:
-    image: 'node:10'
-    user: 'node'
-    working_dir: /home/node/app
-    volumes:
-      - ./AethonMockApi:/home/node/app
-    expose:
-      - '3000'
-    command: 'node index.js'
+    image: 'registry.svtrobotics.local:61000/aethon-mock-api'
+    container_name: 'scp-app.aethon-mock-api'
     networks:
-      - lonza
+      - scp-app
   db:
     image: 'mcr.microsoft.com/mssql/server'
-    expose:
-      - '1433'
+    container_name: 'scp-app.mssql'
+    ports:
+      - '60001:1433'
     environment:
       SA_PASSWORD: 'SupahAdmin1'
       ACCEPT_EULA: 'Y'
+      LD_PRELOAD: /nodirect_open.so
     networks:
-      - lonza
+      - scp-app
 networks:
-  lonza:
+  scp-app:
