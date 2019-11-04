@@ -1,11 +1,9 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
@@ -29,7 +27,7 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
-            RollbackChanges(svtContext);
+            ContextCommands.RollbackChanges(svtContext);
 
             var userName = httpContext.User.Identity.Name;
 
@@ -75,23 +73,5 @@ public class ExceptionMiddleware
         });
 
         return context.Response.WriteAsync(serialized);
-    }
-
-    private void RollbackChanges(SVTContext svtContext)
-    {
-        foreach (var entry in svtContext.ChangeTracker.Entries())
-        {
-            switch (entry.State)
-            {
-                case EntityState.Modified:
-                case EntityState.Deleted:
-                    entry.State = EntityState.Modified;
-                    entry.State = EntityState.Unchanged;
-                    break;
-                case EntityState.Added:
-                    entry.State = EntityState.Detached;
-                    break;
-            }
-        }
     }
 }
