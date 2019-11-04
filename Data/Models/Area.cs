@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace SVT.Platform.Data.Models
 {
@@ -53,6 +54,15 @@ namespace SVT.Platform.Data.Models
             _getLeafNodes(startingNode);
 
             return accumulator;
+        }
+
+        public bool IsOverflowFor(Area primary)
+        {
+            if (primary == null) return false;
+
+            return primary.AreaOverflows
+                .Select(o => o.OverflowAreaId)
+                .Contains(this.AreaId);
         }
     }
 }

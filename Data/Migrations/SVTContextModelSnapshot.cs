@@ -226,18 +226,6 @@ namespace SVT.Platform.Data.Migrations
                         },
                         new
                         {
-                            NextAreaId = 4,
-                            PreviousAreaId = 3,
-                            Active = true
-                        },
-                        new
-                        {
-                            NextAreaId = 5,
-                            PreviousAreaId = 3,
-                            Active = true
-                        },
-                        new
-                        {
                             NextAreaId = 6,
                             PreviousAreaId = 4,
                             Active = true
