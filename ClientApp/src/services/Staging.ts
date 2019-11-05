@@ -1,5 +1,6 @@
 import { toast } from 'react-toastify';
 import ServiceResponse from './ServiceResponse';
+import fetch from './FetchWrapper';
 
 export async function getStagedCarts() {
   try {

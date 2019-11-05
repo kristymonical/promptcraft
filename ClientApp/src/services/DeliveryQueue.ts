@@ -1,5 +1,6 @@
 import ServiceResponse from './ServiceResponse';
 import { toast } from 'react-toastify';
+import fetch from './FetchWrapper';
 
 export async function getDeliveryQueue(
   poolId = 1

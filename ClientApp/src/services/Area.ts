@@ -1,4 +1,5 @@
 import { toast } from 'react-toastify';
+import fetch from './FetchWrapper';
 
 export async function getAreas() {
   try {
