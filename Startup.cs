@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Aethon;
 using System.Net.Http;
 using System;
+using SVT.Platform.Services;
 
 namespace SVT.Platform
 {
@@ -70,11 +71,16 @@ namespace SVT.Platform
 
             services.AddSingleton<IConfiguration>(Configuration);
 
-            var client = new HttpClient { BaseAddress = new Uri("http://localhost:3000/") };
+            var aethonClient = new HttpClient { BaseAddress = new Uri("http://localhost:3000/") };
+            var client = new HttpClient { BaseAddress = new Uri("https://localhost:5001/") };
 
-            services.AddSingleton<AethonApi>(new AethonApi(client));
+            services.AddSingleton<AethonApi>(new AethonApi(aethonClient));
 
             services.AddSingleton<IWebHostEnvironment>(Environment);
+
+            services.AddSingleton<HttpClient>(client);
+
+            services.AddHostedService<SchedulingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
