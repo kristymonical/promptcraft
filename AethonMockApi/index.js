@@ -39,9 +39,6 @@ const init = async () => {
     "101C-CW-003": 8,
     "101C-CW-004": 9,
     "101C-CW-005": 10,
-    "1501-MAL-A-WAIT-001": 22,
-    "1501-MAL-A-WAIT-002": 23,
-    "1501-MAL-A-WAIT-003": 24,
     "1430-STG-001": 11,
     "1430-STG-002": 12,
     "1430-STG-003": 13,
@@ -52,14 +49,38 @@ const init = async () => {
     "1430-STG-008": 18,
     "1430-STG-009": 19,
     "1430-STG-010": 20,
+    "1501-MAL-A-001": 21,
+    "1501-MAL-A-WAIT-001": 22,
+    "1501-MAL-A-WAIT-002": 23,
+    "1501-MAL-A-WAIT-003": 24,
+    "2501-MAL-A-001": 25,
+    "2501-MA-A-WAIT-001": 26,
+    "2501-MA-A-WAIT-002": 27,
+    "2501-MA-A-WAIT-003": 28,
     "1501-MAL-B-001": 29,
+    "1501-MAL-B-WAIT-001": 30,
+    "1501-MAL-B-WAIT-002": 31,
+    "1501-MAL-B-WAIT-003": 32,
+    "2501-MAL-B-001": 33,
+    "2501-MAL-B-WAIT-001": 34,
+    "2501-MAL-B-WAIT-002": 35,
+    "2501-MAL-B-WAIT-003": 36,
+    "1528-MAL-001": 37,
     "1528-MAL-WAIT-001": 38,
     "1528-MAL-WAIT-002": 39,
-    "1528-MAL-WAIT-003": 40
+    "1528-MAL-WAIT-003": 40,
+    "2519-MAL-001": 41,
+    "2519-MAL-WAIT-001": 42,
+    "2519-MAL-WAIT-002": 43,
+    "2519-MAL-WAIT-003": 44
   };
 
-  async function send({ payload: { gid = 1, pid, destinations } }) {
-    // throw Boom.badRequest();
+  async function send({
+    payload: { gid = 1, pid, destinations },
+    query: { errorTest = false }
+  }) {
+    if (errorTest) throw Boom.badRequest();
+
     await wait(1000);
     const jid = getNewId();
     jobs[jid] = {
@@ -76,7 +97,7 @@ const init = async () => {
         state: "SCHEDULED"
       }))
     };
-    console.log("\n\nCurrent Jobs:", JSON.stringify(jobs, null, 2), "\n\n");
+
     return { code: true, jid };
   }
 
@@ -138,10 +159,11 @@ const init = async () => {
     path: "/job/{jid}/cancel/",
     handler: ({ params: { jid } }) => {
       const job = jobs[jid];
-      if (job) {
-        job.state = "CANCELED";
-        job.end = new Date().toISOString();
-      }
+      if (!job) throw Boom.notFound("JobNotFound");
+
+      job.state = "CANCELED";
+      job.end = new Date().toISOString();
+
       return { success: true, message: "" };
     }
   });
