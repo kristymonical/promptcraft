@@ -78,13 +78,13 @@ namespace SVT.Platform
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, SVTContext context)
         {
             app.UseMiddleware<ExceptionMiddleware>();
-            // run migrations automatically if we're not in dev mode
+
+            // run migrations automatically AND use HSTS if we're not in dev mode
             if (!env.IsDevelopment())
             {
-                var context = app.ApplicationServices.GetService<SVTContext>();
                 context.Database.Migrate();
                 app.UseHsts();
             }
