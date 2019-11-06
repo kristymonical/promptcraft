@@ -6,17 +6,22 @@ using Microsoft.Extensions.Hosting;
 
 namespace SVT.Platform.Services
 {
-    public class SchedulingService : IHostedService, IDisposable
+    public class StatusService : IHostedService, IDisposable
     {
         private System.Timers.Timer _timer;
         private HttpClient _client;
 
-        public SchedulingService(HttpClient client)
+        public StatusService(HttpClient client)
         {
             _client = client;
         }
 
-        public Task StartAsync(CancellationToken stoppingToken)
+        public void Dispose()
+        {
+            _timer?.Dispose();
+        }
+
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             _timer = new System.Timers.Timer(5000)
             {
@@ -29,28 +34,23 @@ namespace SVT.Platform.Services
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state, System.Timers.ElapsedEventArgs e)
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            this.Dispose();
+            return Task.CompletedTask;
+        }
+
+        public void DoWork(object state, System.Timers.ElapsedEventArgs e)
         {
             try
             {
-                _client.PostAsync("api/delivery/schedule", new StringContent("")).Wait();
+                _client.PutAsync("api/delivery/status", new StringContent(""));
             }
             catch { }
             finally
             {
                 _timer.Start();
             }
-        }
-
-        public Task StopAsync(CancellationToken stoppingToken)
-        {
-            this.Dispose();
-            return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            _timer?.Dispose();
         }
     }
 }
