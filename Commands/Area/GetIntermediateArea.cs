@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using SVT.Platform.Data.Models;
 
 namespace SVT.Platform.Commands
@@ -7,19 +9,37 @@ namespace SVT.Platform.Commands
         public static Area GetIntermediateArea(Area start, Area end)
         {
             Area intermediate = null;
-            var current = end;
+            // below represents the depth-first dependency graph
+            var nodes = new Stack<AreaMap>(end.PreviousAreas);
+            // below tracks if we've check an areas overflow values already
+            var previouslyChecked = new HashSet<Area>();
 
-            while (intermediate == null && current != null)
+            while (intermediate == null && nodes.Count > 0)
             {
-                foreach (var areaMap in current.PreviousAreas)
-                {
-                    if (areaMap.PreviousAreaId == start.AreaId)
-                    {
-                        intermediate = current;
-                        break;
-                    }
+                var node = nodes.Pop();
 
-                    current = areaMap.PreviousArea;
+                if (node.PreviousAreaId == start.AreaId)
+                {
+                    intermediate = node.NextArea;
+                    continue;
+                }
+                else if (!previouslyChecked.Contains(node.NextArea))
+                {
+                    foreach (var overflow in node.NextArea.AreaOverflows)
+                    {
+                        if (overflow.OverflowAreaId == start.AreaId)
+                        {
+                            intermediate = node.NextArea;
+                            continue;
+                        }
+                    }
+                    previouslyChecked.Add(node.NextArea);
+                }
+
+                // no intermediate found above, so load this area's dependencies in the graph
+                foreach (var areaMap in node.PreviousArea?.PreviousAreas)
+                {
+                    nodes.Push(areaMap);
                 }
             }
 

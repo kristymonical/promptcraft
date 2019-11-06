@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Aethon;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SVT.Platform.Data;
@@ -86,16 +85,13 @@ namespace SVT.Platform.Commands
         public string StartingLocation { get; set; }
     }
 
-    public class AethonSendLog : BaseLogData
+    public class AethonResponse<TContent> : BaseLogData
     {
         public bool Success { get; set; }
 
-        public int AethonJobId { get; set; }
-    }
+        public HttpStatusCode StatusCode { get; set; }
 
-    public class AethonJobDetailsLog : BaseLogData
-    {
-        public List<JobDetailsResponse> JobDetails { get; set; }
+        public TContent Content { get; set; }
     }
 
     public class WebAppLog : BaseLogData

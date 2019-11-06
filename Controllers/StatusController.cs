@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Aethon;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SVT.Platform.Commands;
@@ -17,29 +19,32 @@ namespace SVT.Platform.Controllers
         private SVTContext _svtContext;
         private AethonApi _aethonApi;
         private TimeSpan _timeout;
+        private IWebHostEnvironment _environment;
+        private User _user;
+        private ActionType _action;
 
-        public StatusController(SVTContext sVTContext, AethonApi aethonApi, int timeout = 15)
+        public StatusController(SVTContext sVTContext, AethonApi aethonApi, IWebHostEnvironment environment, int timeout = 15)
         {
             _svtContext = sVTContext;
             _aethonApi = aethonApi;
             _timeout = TimeSpan.FromSeconds(timeout);
+            _environment = environment;
+            _user = UserCommands.GetUserByName(_svtContext, "StatusService");
+            _action = ActionCommands.GetActionByValue(_svtContext, "status");
         }
 
         [HttpPut("delivery/status")]
         public async Task<IActionResult> UpdateDeliveryStatus()
         {
             var trackingId = Guid.NewGuid().ToString();
-            // @TODO: do we need to load 'User'/'ActionType' entities?
-            var user = "StatusService";
-            var action = "status";
 
             await LogCommands.CreateLog(_svtContext, new DataToLog<BaseLogData>
             {
                 TrackingId = trackingId,
-                Action = action,
+                Action = _action.Value,
                 Data = new BaseLogData
                 {
-                    User = user,
+                    User = _user.Name,
                     Message = $"Running Job Status Service: {DateTime.UtcNow}"
                 }
             });
@@ -50,128 +55,177 @@ namespace SVT.Platform.Controllers
 
             if (activeJobs.Count > 0)
             {
-                var unresolvedJobsDetails = activeJobs.Select(job => _aethonApi.GetJob(job.AethonJobId));
-                var jobsDetailsTask = Task.WhenAll(unresolvedJobsDetails);
-                try
-                {
-                    jobsDetailsTask.Wait();
-                }
-                catch
-                {
-                    // @TODO: handle unresolved Task errors
-                }
-
-                if (jobsDetailsTask.Status != TaskStatus.RanToCompletion)
-                {
-                    // @TODO: handle Task status issues here
-                    return Ok(new { success = false, message = $"Job Details Task Not Resolved Correctly" });
-                }
-
-                var responses = jobsDetailsTask.Result
-                    .Select(result => result?.FirstOrDefault())
-                    .ToList();
-
-                await LogCommands.CreateLog(_svtContext, new DataToLog<AethonJobDetailsLog>
-                {
-                    TrackingId = trackingId,
-                    Action = action,
-                    Data = new AethonJobDetailsLog
-                    {
-                        User = user,
-                        Message = $"Aethon Job Details: {DateTime.UtcNow}",
-                        JobDetails = responses
-                    }
-                });
-                await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
-
                 foreach (var job in activeJobs)
                 {
-                    var response = responses
-                        .Where(resp => resp?.JobId == job.AethonJobId)
-                        .FirstOrDefault();
-
-                    // @TODO: replace below logic with expected Aethon adapter unsuccessful response
-                    if (response == null)
+                    try
                     {
-                        // @TODO: handle no aethon response for current active job here
-                        Console.WriteLine($"\n\nNo Aethon Response For Current Job: {job.JobId} With Aethon Job Id: {job.AethonJobId}");
-                        continue;
-                    }
+                        var response = await _aethonApi.GetJob(job.AethonJobId);
 
-                    if (response.End != null)
-                    {
-                        if (response.State == Aethon.JobStates.Completed && job.Completed == null)
+                        if (!response.Success)
                         {
-                            job.Completed = DateTime.UtcNow;
-                            job.Canceled = null;
-                            job.Expired = null;
-                        }
-                        else if (response.State == Aethon.JobStates.Canceled && job.Canceled == null)
-                        {
-                            job.Completed = null;
-                            job.Canceled = DateTime.UtcNow;
-                            job.Expired = null;
-                        }
-                        else if (response.State == Aethon.JobStates.Expired && job.Expired == null)
-                        {
-                            job.Completed = null;
-                            job.Canceled = null;
-                            job.Expired = DateTime.UtcNow;
-                        }
-                    }
+                            var message = !String.IsNullOrEmpty(response.Message) ? response.Message : "Unexpected Aethon Response";
+                            var exception = new Exception(message);
+                            exception.Data.Add(nameof(response.StatusCode), response.StatusCode);
+                            exception.Data.Add(nameof(response.Success), response.Success);
+                            exception.Data.Add(nameof(response.Message), response.Message);
+                            exception.Data.Add(nameof(response.Content), response.Content);
 
-                    foreach (var responseItinerary in response.Itinerary)
-                    {
-                        var itinerary = job.Itineraries
-                            .Where(i => i.AethonRunId == responseItinerary.RunId)
-                            .FirstOrDefault();
+                            throw exception;
+                        }
 
-                        if (itinerary == null)
+                        await LogCommands.CreateLog(_svtContext, new DataToLog<AethonResponse<List<JobDetailsResponse>>>
                         {
-                            itinerary = new Itinerary
+                            TrackingId = trackingId,
+                            Action = _action.Value,
+                            Data = new AethonResponse<List<JobDetailsResponse>>
                             {
-                                AethonRunId = responseItinerary.RunId,
-                                Location = job.Delivery.Locations
-                                    .Where(loc => loc.LocationId == responseItinerary.DestinationId)
-                                    .FirstOrDefault()
-                            };
-
-                            job.Itineraries.Add(itinerary);
-                        }
-
-                        if (responseItinerary.End != null)
-                        {
-
-                            if (responseItinerary.State == Aethon.ItineraryStates.Completed && itinerary.Completed == null)
-                            {
-                                itinerary.Completed = DateTime.UtcNow;
-                                itinerary.TimedOut = null;
+                                User = _user.Name,
+                                StatusCode = response.StatusCode,
+                                Message = response.Message,
+                                Success = response.Success,
+                                Content = response.Content
                             }
-                            // @TODO: change Aethon adapter ItineraryStates enum 'Expired' to 'Timed_Out', then change below line to match
-                            else if (responseItinerary.State == Aethon.ItineraryStates.Expired && itinerary.TimedOut == null)
+                        });
+                        await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+
+                        var aethonJobDetails = response.Content?.FirstOrDefault();
+
+                        if (aethonJobDetails == null)
+                        {
+                            // @TODO: cancel job/itineraries
+
+                            await LogCommands.CreateLog(_svtContext, new DataToLog<BaseLogData>
                             {
-                                itinerary.Completed = null;
-                                itinerary.TimedOut = DateTime.UtcNow;
+                                TrackingId = trackingId,
+                                Action = _action.Value,
+                                Delivery = job.Delivery,
+                                Data = new BaseLogData
+                                {
+                                    User = _user.Name,
+                                    Message = $"No Aethon Job Exists For Toolkit Job: {job.JobId}"
+                                }
+                            });
+                            await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+                            continue;
+                        }
+
+                        if (aethonJobDetails.End != null)
+                        {
+                            if (aethonJobDetails.State == Aethon.JobStates.Completed && job.Completed == null)
+                            {
+                                job.Completed = DateTime.UtcNow;
+                                job.Canceled = null;
+                                job.Expired = null;
+                            }
+                            else if (aethonJobDetails.State == Aethon.JobStates.Canceled && job.Canceled == null)
+                            {
+                                job.Completed = null;
+                                job.Canceled = DateTime.UtcNow;
+                                job.Expired = null;
+                            }
+                            else if (aethonJobDetails.State == Aethon.JobStates.Expired && job.Expired == null)
+                            {
+                                job.Completed = null;
+                                job.Canceled = null;
+                                job.Expired = DateTime.UtcNow;
+                            }
+                        }
+                        await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+
+                        foreach (var aethonJobItinerary in aethonJobDetails.Itinerary)
+                        {
+                            var itinerary = job.Itineraries
+                                .Where(i => i.AethonRunId == aethonJobItinerary.RunId)
+                                .FirstOrDefault();
+
+                            if (itinerary == null)
+                            {
+                                itinerary = new Itinerary
+                                {
+                                    AethonRunId = aethonJobItinerary.RunId,
+                                    Location = job.Delivery.Locations
+                                        .Where(loc => loc.LocationId == aethonJobItinerary.DestinationId)
+                                        .FirstOrDefault()
+                                };
+
+                                job.Itineraries.Add(itinerary);
                             }
 
-                            if (itinerary.Location.Reserved)
+                            if (aethonJobItinerary.End != null)
                             {
+                                if (aethonJobItinerary.State == Aethon.ItineraryStates.Completed && itinerary.Completed == null)
+                                {
+                                    itinerary.Completed = DateTime.UtcNow;
+                                    itinerary.TimedOut = null;
+
+                                    // destination itinerary leg
+                                    if (itinerary.Location.Reserved)
+                                    {
+                                        // mark the delivery complete when at ultimate destination
+                                        if (itinerary.Location.AreaId == job.Delivery.DestinationAreaId)
+                                        {
+                                            job.Delivery.Completed = DateTime.UtcNow;
+                                            job.Delivery.Canceled = null;
+                                        }
+                                        // re-queue the delivery if we're in an overflow area
+                                        else
+                                        {
+                                            var currentArea = itinerary.Location.Area;
+                                            var deliveryDestinationArea = job.Delivery.DestinationArea;
+
+                                            var intermediateArea = AreaCommands.GetIntermediateArea(currentArea, deliveryDestinationArea);
+
+                                            if (currentArea.IsOverflowFor(intermediateArea))
+                                            {
+                                                await DeliveryCommands.PrependDeliveryByPool(_svtContext, job.Delivery, itinerary.Location.Area.PoolId);
+                                            } // @TODO: else => log no intermediate area
+                                        }
+                                    }
+                                    else
+                                    {
+                                        itinerary.Location.DeliveryId = null;
+                                    }
+                                }
+                                else if (aethonJobItinerary.State == Aethon.ItineraryStates.Timed_Out && itinerary.TimedOut == null)
+                                {
+                                    itinerary.Completed = null;
+                                    itinerary.TimedOut = DateTime.UtcNow;
+                                }
+
                                 itinerary.Location.Reserved = false;
                             }
-                            else
-                            {
-                                itinerary.Location.DeliveryId = null;
-                            }
 
-                            if (itinerary.Location.AreaId == job.Delivery.DestinationAreaId)
-                            {
-                                job.Delivery.Completed = DateTime.UtcNow;
-                                job.Delivery.Canceled = null;
-                            }
+                            await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
                         }
                     }
+                    catch (Exception e)
+                    {
+                        ContextCommands.RollbackChanges(_svtContext);
 
-                    await _svtContext.SaveChangesAsync();
+                        e.Data.Add(nameof(_environment.ApplicationName), _environment.ApplicationName);
+                        e.Data.Add(nameof(_environment.EnvironmentName), _environment.EnvironmentName);
+
+                        await LogCommands.CreateLog<BaseErrorLog>(_svtContext, new DataToLog<BaseErrorLog>
+                        {
+                            TrackingId = trackingId,
+                            Action = _action.Value,
+                            Data = new BaseErrorLog
+                            {
+                                User = _user.Name,
+                                Message = e.Message,
+                                Error = new ErrorLog
+                                {
+                                    Message = e.Message,
+                                    StackTrace = e.StackTrace,
+                                    Source = e.Source,
+                                    Data = e.Data
+                                }
+                            }
+                        });
+                        await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+
+                        return Ok(new { success = false, message = $"Status Service Run Unsuccessful: '{e.Message}'" });
+                    }
                 }
             }
 
