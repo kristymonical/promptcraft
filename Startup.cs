@@ -81,6 +81,8 @@ namespace SVT.Platform
             services.AddSingleton<HttpClient>(client);
 
             services.AddHostedService<SchedulingService>();
+
+            services.AddHostedService<StatusService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
