@@ -75,17 +75,7 @@ export default function DeliveryRequest() {
 
       // reset form on success
       if (success) setFormValues(initialFormValues);
-    } catch (err) {
-      console.log(err);
-      // attempt to log on error
-      // createLog({
-      //     action: 'Create Delivery Request',
-      //     deliveryId: -1,
-      //     message: 'Failed to create delivery request',
-      //     method: 'POST',
-      //     route: ''
-      // });
-    }
+    } catch (err) {}
   };
 
   return (
