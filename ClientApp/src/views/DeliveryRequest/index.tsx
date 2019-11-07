@@ -5,7 +5,6 @@ import { Typography, makeStyles } from '@material-ui/core';
 import { ScannableTextField, Select, TitleCol, SubmitButton } from 'components';
 import { createDeliveryRequest } from 'services/Delivery';
 import { getDestinationAreas, GetAreasResult } from 'services/Area';
-import { createLog } from 'services/Log';
 import { useDebounce } from 'hooks';
 import _ from 'lodash';
 
