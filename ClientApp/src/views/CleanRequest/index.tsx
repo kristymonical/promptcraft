@@ -74,6 +74,7 @@ export default function CleanRequest() {
     if (ret !== null) {
       setTableData([ret]);
       setVerified(true);
+      // TODO: move cart to A side of MAL
     }
   };
 
@@ -144,7 +145,7 @@ export default function CleanRequest() {
       <Row>
         <SubmitButton
           disabled={!verified}
-          onClick={() => setModalOpen(true)}
+          onClick={() => setModalOpen(true)} // TODO: move to B side of MAL
           text='Start Cleaning Process'
           variant='secondary'
         />
