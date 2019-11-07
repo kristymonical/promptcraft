@@ -63,8 +63,7 @@ namespace SVT.Platform
             services.AddSingleton<IWebHostEnvironment>(Environment);
 
             // DI - Validators
-            services.AddTransient<IValidator<AreaController.ByLocationName>, ByLocationNameValidator>();
-            // services.AddTransient<IValidator<CartController.ByDeliveryType>, ByDeliveryTypeValidator>();
+            services.AddTransient<IValidator<AreaController.ByLocationDeliveryType>, ByLocationDeliveryTypeValidator>();
             services.AddTransient<IValidator<CartController.MoveCartRequest>, MoveCartRequestValidator>();
             services.AddTransient<IValidator<CartController.CleanInfoRequest>, CleanInfoRequestValidator>();
             services.AddTransient<IValidator<DeliveryController.DeliveryRequests>, DeliveryRequestsValidator>();

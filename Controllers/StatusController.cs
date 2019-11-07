@@ -138,6 +138,7 @@ namespace SVT.Platform.Controllers
                                 .Where(i => i.AethonRunId == aethonJobItinerary.RunId)
                                 .FirstOrDefault();
 
+                            // create itinerary if it doesn't exist
                             if (itinerary == null)
                             {
                                 itinerary = new Itinerary
@@ -151,6 +152,7 @@ namespace SVT.Platform.Controllers
                                 job.Itineraries.Add(itinerary);
                             }
 
+                            // itinerary leg complete
                             if (aethonJobItinerary.End != null)
                             {
                                 if (aethonJobItinerary.State == Aethon.ItineraryStates.Completed && itinerary.Completed == null)
@@ -161,26 +163,32 @@ namespace SVT.Platform.Controllers
                                     // destination itinerary leg
                                     if (itinerary.Location.Reserved)
                                     {
-                                        // mark the delivery complete when at ultimate destination
+                                        // mark the delivery complete when at final destination
                                         if (itinerary.Location.AreaId == job.Delivery.DestinationAreaId)
                                         {
                                             job.Delivery.Completed = DateTime.UtcNow;
                                             job.Delivery.Canceled = null;
                                         }
-                                        // re-queue the delivery if we're in an overflow area
+                                        // re-queue the delivery if current area is overflow for next destination area
                                         else
                                         {
-                                            var currentArea = itinerary.Location.Area;
+                                            var itinerayArea = itinerary.Location.Area;
                                             var deliveryDestinationArea = job.Delivery.DestinationArea;
 
-                                            var intermediateArea = AreaCommands.GetIntermediateArea(currentArea, deliveryDestinationArea);
+                                            var nextDestinationArea = deliveryDestinationArea
+                                                .GetAreasBy(Area.GraphDirection.ancestors, (finalNode, current) =>
+                                                    itinerayArea != current &&
+                                                    (current.GetAncestors().Contains(itinerayArea) || current.GetOverflowAreas().Contains(itinerayArea)) &&
+                                                    current.Pool == itinerayArea.Pool)
+                                                .FirstOrDefault();
 
-                                            if (currentArea.IsOverflowFor(intermediateArea))
+                                            if (itinerayArea.IsOverflowFor(nextDestinationArea))
                                             {
                                                 await DeliveryCommands.PrependDeliveryByPool(_svtContext, job.Delivery, itinerary.Location.Area.PoolId);
-                                            } // @TODO: else => log no intermediate area
+                                            }
                                         }
                                     }
+                                    // pickup itinerary leg
                                     else
                                     {
                                         itinerary.Location.DeliveryId = null;

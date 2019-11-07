@@ -32,30 +32,6 @@ namespace SVT.Platform.Data.Models
         public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual ICollection<Location> Locations { get; set; }
 
-        public static List<Area> GetLeafNodes(Area startingNode)
-        {
-            var accumulator = new List<Area>();
-
-            bool _getLeafNodes(Area currentNode)
-            {
-                if (currentNode.AreaId != startingNode.AreaId && currentNode.NextAreas.Count == 0)
-                {
-                    accumulator.Add(currentNode);
-                }
-
-                foreach (var areaMap in currentNode.NextAreas)
-                {
-                    _getLeafNodes(areaMap.NextArea);
-                }
-
-                return true;
-            }
-
-            _getLeafNodes(startingNode);
-
-            return accumulator;
-        }
-
         public bool IsOverflowFor(Area primary)
         {
             if (primary == null) return false;
@@ -63,6 +39,67 @@ namespace SVT.Platform.Data.Models
             return primary.AreaOverflows
                 .Select(o => o.OverflowAreaId)
                 .Contains(this.AreaId);
+        }
+
+        public List<Area> GetAreasBy(GraphDirection direction, Func<Area, Area, bool> predicate)
+        {
+            var ancestors = new List<Area>();
+            var nodes = new Stack<Area>();
+            var visited = new HashSet<Area> { this };
+
+            foreach (var adj in this.GetAdjacentAreas()) nodes.Push(adj);
+
+            while (nodes.Count > 0)
+            {
+                var node = nodes.Pop();
+
+                if (visited.Contains(node)) continue;
+
+                visited.Add(node);
+
+                List<Area> nextNodes;
+
+                if (direction == GraphDirection.ancestors) nextNodes = node.GetAncestors();
+                else nextNodes = node.GetDescendants();
+
+                foreach (var child in nextNodes)
+                    if (!visited.Contains(child)) nodes.Push(child);
+
+                if (predicate(this, node)) ancestors.Add(node);
+            }
+
+            return ancestors;
+        }
+
+        public enum GraphDirection { none, ancestors, descendants };
+
+        public List<Area> GetAdjacentAreas()
+        {
+            var adjacent = this.GetAncestors();
+            adjacent.AddRange(GetDescendants());
+
+            return adjacent;
+        }
+
+        public List<Area> GetAncestors()
+        {
+            return this.PreviousAreas
+                .Select(a => a.PreviousArea)
+                .ToList();
+        }
+
+        public List<Area> GetDescendants()
+        {
+            return this.NextAreas
+                .Select(a => a.NextArea)
+                .ToList();
+        }
+
+        public List<Area> GetOverflowAreas()
+        {
+            return this.AreaOverflows
+                .Select(o => o.OverflowArea)
+                .ToList();
         }
     }
 }

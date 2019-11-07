@@ -3,9 +3,9 @@ using SVT.Platform.Controllers;
 
 namespace SVT.Platform.Validators
 {
-    public class ByLocationNameValidator : AbstractValidator<AreaController.ByLocationName>
+    public class ByLocationDeliveryTypeValidator : AbstractValidator<AreaController.ByLocationDeliveryType>
     {
-        public ByLocationNameValidator()
+        public ByLocationDeliveryTypeValidator()
         {
             RuleFor(x => x.LocationName)
                 .NotNull()

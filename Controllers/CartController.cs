@@ -126,7 +126,7 @@ namespace SVT.Platform.Controllers
 
         public class ByDeliveryType
         {
-            public string DeliveryType { get; set; }
+            public string DeliveryType { get; set; } = "stage";
         }
 
         public class GetStagedCartsResponse

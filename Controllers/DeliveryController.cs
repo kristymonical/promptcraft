@@ -34,6 +34,8 @@ namespace SVT.Platform.Controllers
         {
             using var transaction = await _svtContext.Database.BeginTransactionAsync();
 
+            var messagePrefix = "Delivery Request NOT Created.";
+
             foreach (var deliveryRequest in request.Deliveries)
             {
                 var destinationArea = await AreaCommands.GetAreaByName(_svtContext, deliveryRequest.DestinationArea);
@@ -41,19 +43,19 @@ namespace SVT.Platform.Controllers
 
                 if (destinationArea == null)
                 {
-                    return NotFound(new { success = false, message = $"Destination: '{deliveryRequest.DestinationArea}' Not Found." });
+                    return NotFound(new { success = false, message = $"{messagePrefix} Destination: '{deliveryRequest.DestinationArea}' Not Found." });
                 }
 
                 if (currentLocation == null)
                 {
-                    return NotFound(new { success = false, message = $"Location: '{deliveryRequest.Location}' Not Found." });
+                    return NotFound(new { success = false, message = $"{messagePrefix} Location: '{deliveryRequest.Location}' Not Found." });
                 }
 
                 (bool isValidCartLocation, string validationErrorMessage) = await DeliveryCommands.ValidateCurrentCartLocation(_svtContext, currentLocation, deliveryRequest.CartId);
 
                 if (!isValidCartLocation)
                 {
-                    return Conflict(new { success = false, message = validationErrorMessage });
+                    return Conflict(new { success = false, message = $"{messagePrefix} {validationErrorMessage}" });
                 }
 
                 var delivery = await DeliveryCommands.CreateNewDelivery(_svtContext, new DeliveryCommands.CreateNewDeliveryRequest
@@ -81,7 +83,7 @@ namespace SVT.Platform.Controllers
 
             await transaction.CommitAsync();
 
-            return Ok(new { success = true, message = "" });
+            return Ok(new { success = true, message = $"{messagePrefix}" });
         }
 
         /// <summary>
