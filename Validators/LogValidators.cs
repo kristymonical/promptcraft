@@ -23,8 +23,9 @@ namespace SVT.Platform.Validators
                 .NotNull().When(x => x.Data != null)
                 .NotEmpty().When(x => x.Data != null);
             RuleFor(x => x.Data.Success)
-                .NotNull().When(x => x.Data != null)
-                .NotEmpty().When(x => x.Data != null);
+                .Must(x => x == true || x == false)
+                .WithMessage("Data.Success must be a boolean")
+                .When(x => x.Data != null);
         }
     }
 }

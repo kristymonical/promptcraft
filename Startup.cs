@@ -38,6 +38,7 @@ namespace SVT.Platform
             // All FE is handled by React. No need for views or pages.
             services.AddControllers();
 
+            // Build and configure MVC services
             services
                 .AddMvc(options =>
                 {
@@ -46,7 +47,22 @@ namespace SVT.Platform
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddFluentValidation();
 
-            // Validators
+            // In production, the React files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
+
+            // Instantiate HTTP clients for DI
+            var aethonClient = new HttpClient { BaseAddress = new Uri("http://localhost:3000/") };
+            var client = new HttpClient { BaseAddress = new Uri("https://localhost:5001/") };
+
+            // DI
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IConfiguration>(Configuration);
+            services.AddSingleton<IWebHostEnvironment>(Environment);
+
+            // DI - Validators
             services.AddTransient<IValidator<AreaController.ByLocationName>, ByLocationNameValidator>();
             // services.AddTransient<IValidator<CartController.ByDeliveryType>, ByDeliveryTypeValidator>();
             services.AddTransient<IValidator<CartController.MoveCartRequest>, MoveCartRequestValidator>();
@@ -57,31 +73,17 @@ namespace SVT.Platform
             services.AddTransient<IValidator<DeliveryQueueController.PriorityRoute>, PriorityRouteValidator>();
             services.AddTransient<IValidator<LogController.LogRequest<LogController.WebAppLogRequest>>, LogRequestValidator>();
 
-            // DI
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            // DI - DbContext
             services.AddDbContext<SVTContext>(options => options
                 .UseLazyLoadingProxies()
                 .UseSqlServer(Configuration.GetConnectionString("PlatformDb")));
 
-            // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
-
-            services.AddSingleton<IConfiguration>(Configuration);
-
-            var aethonClient = new HttpClient { BaseAddress = new Uri("http://localhost:3000/") };
-            var client = new HttpClient { BaseAddress = new Uri("https://localhost:5001/") };
-
+            // DI - Aethon + hosted services
             services.AddSingleton<AethonApi>(new AethonApi(aethonClient));
-
-            services.AddSingleton<IWebHostEnvironment>(Environment);
-
             services.AddSingleton<HttpClient>(client);
 
+            // polling services as hosted services
             services.AddHostedService<SchedulingService>();
-
             services.AddHostedService<StatusService>();
         }
 

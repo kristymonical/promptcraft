@@ -1,6 +1,8 @@
 import { toast } from 'react-toastify';
 
 import ServiceResponse from './ServiceResponse';
+import fetch from './FetchWrapper';
+import { createLog } from './Log';
 
 export async function createDeliveryRequest({
   cartId,
@@ -29,10 +31,22 @@ export async function createDeliveryRequest({
     });
 
     const response: ServiceResponse = await result.json();
+
     if (response.success) {
       toast.success('Created delivery request!');
     } else {
-      toast.error(response.message || 'Unable to create delivery request');
+      const message = response.message || 'Unable to create delivery request';
+      toast.error(message);
+      createLog({
+        action: 'queue',
+        deliveryId: -1,
+        message,
+        method: 'POST',
+        route: result.url,
+        statusCode: result.status,
+        success: false,
+        trackingId: result.headers.get('trackingId') || 'unknown'
+      });
     }
 
     return response.success;
@@ -72,10 +86,24 @@ export async function batchCreateDeliveryRequests(
     });
 
     const response: ServiceResponse = await result.json();
+
     if (response.success) {
       toast.success('Created delivery requests!');
     } else {
-      toast.error(response.message);
+      const message =
+        response.message || 'Unable to batch create delivery requests';
+
+      toast.error(message);
+      createLog({
+        action: 'queue',
+        deliveryId: -1,
+        message,
+        method: 'POST',
+        route: result.url,
+        statusCode: result.status,
+        success: false,
+        trackingId: result.headers.get('trackingId') || 'unknown'
+      });
     }
 
     return response.success;
