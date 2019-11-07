@@ -13,7 +13,8 @@ import {
 import Timer from './Timer';
 import {
   GetOrderAndDestinationResponse,
-  getOrderAndDestination
+  getOrderAndDestination,
+  moveCart
 } from 'services/Cart';
 import { createDeliveryRequest } from 'services/Delivery';
 
@@ -68,13 +69,14 @@ export default function CleanRequest() {
   );
   const [verified, setVerified] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [bSideLocation, setBSideLocation] = useState('');
 
   const verify = async (cartId: string, malLocationName: string) => {
     const ret = await getOrderAndDestination(cartId, malLocationName);
-    if (ret !== null) {
-      setTableData([ret]);
+    if (ret.success) {
+      setTableData([ret.data]);
       setVerified(true);
-      // TODO: move cart to A side of MAL
+      setBSideLocation(ret.data.timerLocation);
     }
   };
 
@@ -91,6 +93,7 @@ export default function CleanRequest() {
       setCartId('');
       setVerified(false);
       setTableData([]);
+      setBSideLocation('');
     } else {
       setModalOpen(false);
     }
@@ -145,7 +148,10 @@ export default function CleanRequest() {
       <Row>
         <SubmitButton
           disabled={!verified}
-          onClick={() => setModalOpen(true)} // TODO: move to B side of MAL
+          onClick={() => {
+            setModalOpen(true);
+            moveCart(cartId, bSideLocation); // move cart to B side of MAL
+          }}
           text='Start Cleaning Process'
           variant='secondary'
         />
@@ -172,7 +178,10 @@ export default function CleanRequest() {
                 thresholdCallback={timerThreshold}
                 userCanCancel
                 userCancelThreshold={1}
-                userCancelCallback={() => setModalOpen(false)}
+                userCancelCallback={() => {
+                  setModalOpen(false);
+                  moveCart(cartId, mal); // if cancelled, move cart back to A side
+                }}
               />
             </Col>
           </Row>

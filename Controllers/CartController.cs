@@ -115,7 +115,14 @@ namespace SVT.Platform.Controllers
 
             await transaction.CommitAsync();
 
-            return Ok(new { success = true, message = "", Data = new { DestinationAreaName = delivery.DestinationArea.Name, OrderId = delivery.OrderId } });
+            // get the B side of the MAL to move the cart to after the user initiates the cleaning process
+            var bSide = destinationLocation.Area.GetDescendants()
+                .Where(a => a.AreaType == "mal" && a.PoolId != destinationLocation.Area.PoolId)
+                .SelectMany(a => a.Locations)
+                .Where(l => l.LocationType == "mal" && !l.Reserved && l.DeliveryId == null)
+                .FirstOrDefault();
+
+            return Ok(new { success = true, message = "", Data = new { DestinationAreaName = delivery.DestinationArea.Name, OrderId = delivery.OrderId, TimerLocation = bSide.Name } });
         }
 
         public class CleanInfoRequest

@@ -1,7 +1,7 @@
-interface ServiceResponse {
+interface ServiceResponse<TData> {
   success: boolean;
   message?: string;
-  data?: any;
+  data: TData;
 }
 
 export default ServiceResponse;

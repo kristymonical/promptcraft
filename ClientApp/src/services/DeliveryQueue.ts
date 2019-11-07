@@ -3,12 +3,12 @@ import { toast } from 'react-toastify';
 import fetch from './FetchWrapper';
 import { createLog } from './Log';
 
-export async function getDeliveryQueue(
-  poolId = 1
-): Promise<GetDeliveryQueueResponse[]> {
+export async function getDeliveryQueue(poolId = 1) {
   try {
     const result = await fetch(`/api/delivery-queue?poolId=${poolId}`);
-    const json: ServiceResponse = await result.json();
+    const json: ServiceResponse<
+      GetDeliveryQueueResponse[]
+    > = await result.json();
     if (!json.success) {
       const message = `Unable to retrieve delivery queue for pool ${poolId}`;
       toast.error(message);
@@ -44,7 +44,7 @@ export async function moveDeliveryInQueue(
       `/api/delivery/${deliveryId}/queue/priority?newParentDeliveryId=${newParentId}&newChildDeliveryId=${newChildId}&poolId=${poolId}`,
       { method: 'PUT' }
     );
-    const response: ServiceResponse = await result.json();
+    const response: ServiceResponse<any> = await result.json();
 
     if (!response.success) {
       const message = response.message || 'Unable to move item in queue';
@@ -75,7 +75,7 @@ export async function moveDeliveryToTop(deliveryId: number, poolId = 1) {
       { method: 'PUT' }
     );
 
-    const response: ServiceResponse = await result.json();
+    const response: ServiceResponse<any> = await result.json();
 
     if (!response.success) {
       const message = response.message || 'Unable to move item to top of queue';
@@ -106,7 +106,7 @@ export async function moveDeliveryToBottom(deliveryId: number, poolId = 1) {
       { method: 'PUT' }
     );
 
-    const response: ServiceResponse = await result.json();
+    const response: ServiceResponse<any> = await result.json();
 
     if (!response.success) {
       const message =

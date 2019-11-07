@@ -9,7 +9,7 @@ export async function getDestinationAreas(locationName: string) {
       `/api/areas/destination?locationName=${locationName}`
     );
 
-    const json: ServiceResponse = await result.json();
+    const json: ServiceResponse<GetAreasResult[]> = await result.json();
 
     if (!json.success) {
       const message = `No valid destination areas for '${locationName}' found.`;
@@ -27,7 +27,7 @@ export async function getDestinationAreas(locationName: string) {
       return [] as GetAreasResult[];
     }
 
-    return json.data as GetAreasResult[];
+    return json.data;
   } catch (err) {
     console.error('[getDestinationAreas]:', err);
     throw err;
