@@ -57,6 +57,9 @@ public class ExceptionMiddleware
             });
             await svtContext.SaveChangesAsync();
 
+            // pass trackingId back to response so client can use it for their own logging
+            httpContext.Response.Headers["trackingId"] = httpContext.Request.Headers["trackingId"];
+
             await HandleExceptionAsync(httpContext, ex);
         }
     }

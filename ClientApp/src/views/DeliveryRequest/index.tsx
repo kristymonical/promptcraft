@@ -5,6 +5,7 @@ import { Typography, makeStyles } from '@material-ui/core';
 import { ScannableTextField, Select, TitleCol, SubmitButton } from 'components';
 import { createDeliveryRequest } from 'services/Delivery';
 import { getDestinationAreas, GetAreasResult } from 'services/Area';
+import { createLog } from 'services/Log';
 import { useDebounce } from 'hooks';
 import _ from 'lodash';
 
@@ -74,7 +75,17 @@ export default function DeliveryRequest() {
 
       // reset form on success
       if (success) setFormValues(initialFormValues);
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+      // attempt to log on error
+      // createLog({
+      //     action: 'Create Delivery Request',
+      //     deliveryId: -1,
+      //     message: 'Failed to create delivery request',
+      //     method: 'POST',
+      //     route: ''
+      // });
+    }
   };
 
   return (

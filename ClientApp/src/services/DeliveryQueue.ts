@@ -1,15 +1,28 @@
 import ServiceResponse from './ServiceResponse';
 import { toast } from 'react-toastify';
 import fetch from './FetchWrapper';
+import { createLog } from './Log';
 
 export async function getDeliveryQueue(
   poolId = 1
 ): Promise<GetDeliveryQueueResponse[]> {
   try {
-    const res = await fetch(`/api/delivery-queue?poolId=${poolId}`);
-    const json: ServiceResponse = await res.json();
+    const result = await fetch(`/api/delivery-queue?poolId=${poolId}`);
+    const json: ServiceResponse = await result.json();
     if (!json.success) {
-      toast.error(`Unable to retrieve delivery queue for pool ${poolId}`);
+      const message = `Unable to retrieve delivery queue for pool ${poolId}`;
+      toast.error(message);
+      createLog({
+        action: 'queue',
+        deliveryId: -1,
+        message,
+        method: 'GET',
+        route: result.url,
+        statusCode: result.status,
+        success: false,
+        trackingId: result.headers.get('trackingId') || 'unknown'
+      });
+
       return [];
     }
 
@@ -34,7 +47,18 @@ export async function moveDeliveryInQueue(
     const response: ServiceResponse = await result.json();
 
     if (!response.success) {
-      toast.error(response.message || 'Unable to move item in queue');
+      const message = response.message || 'Unable to move item in queue';
+      toast.error(message);
+      createLog({
+        action: 'queue',
+        deliveryId,
+        message,
+        method: 'PUT',
+        route: result.url,
+        statusCode: result.status,
+        success: false,
+        trackingId: result.headers.get('trackingId') || 'unknown'
+      });
     } else {
       toast.success('Delivery moved successfully');
     }
@@ -54,7 +78,18 @@ export async function moveDeliveryToTop(deliveryId: number, poolId = 1) {
     const response: ServiceResponse = await result.json();
 
     if (!response.success) {
-      toast.error(response.message || 'Unable to move item to top of queue');
+      const message = response.message || 'Unable to move item to top of queue';
+      toast.error(message);
+      createLog({
+        action: 'queue',
+        deliveryId,
+        message,
+        method: 'PUT',
+        route: result.url,
+        statusCode: result.status,
+        success: false,
+        trackingId: result.headers.get('trackingId') || 'unknown'
+      });
     } else {
       toast.success('Delivery moved successfully');
     }
@@ -74,7 +109,19 @@ export async function moveDeliveryToBottom(deliveryId: number, poolId = 1) {
     const response: ServiceResponse = await result.json();
 
     if (!response.success) {
-      toast.error(response.message || 'Unable to move item to bottom of queue');
+      const message =
+        response.message || 'Unable to move item to bottom of queue';
+      toast.error(message);
+      createLog({
+        action: 'queue',
+        deliveryId,
+        message,
+        method: 'PUT',
+        route: result.url,
+        statusCode: result.status,
+        success: false,
+        trackingId: result.headers.get('trackingId') || 'unknown'
+      });
     } else {
       toast.success('Delivery moved successfully');
     }

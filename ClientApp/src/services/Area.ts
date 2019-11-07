@@ -1,15 +1,7 @@
 import { toast } from 'react-toastify';
 import fetch from './FetchWrapper';
-
-export async function getAreas() {
-  try {
-    const result = await fetch('/api/areas');
-    return (await result.json()) as GetAreasResult[];
-  } catch (err) {
-    console.error('[getAreas]:', err);
-    throw err;
-  }
-}
+import ServiceResponse from './ServiceResponse';
+import { createLog } from './Log';
 
 export async function getDestinationAreas(locationName: string) {
   try {
@@ -17,10 +9,21 @@ export async function getDestinationAreas(locationName: string) {
       `/api/areas/destination?locationName=${locationName}`
     );
 
-    const json = await result.json();
+    const json: ServiceResponse = await result.json();
 
     if (!json.success) {
-      toast.error(`No valid destination areas for '${locationName}' found.`);
+      const message = `No valid destination areas for '${locationName}' found.`;
+      toast.error(message);
+      createLog({
+        action: 'queue',
+        deliveryId: -1,
+        message,
+        method: 'GET',
+        route: result.url,
+        statusCode: result.status,
+        success: false,
+        trackingId: result.headers.get('trackingId') || 'unknown'
+      });
       return [] as GetAreasResult[];
     }
 

@@ -45,6 +45,8 @@ namespace SVT.Platform.Controllers
                 userName = "DevAPI";
             }
 
+            Console.WriteLine(request.Action);
+
             await LogCommands.CreateLog(_svtContext, new DataToLog<WebAppLog>
             {
                 TrackingId = request.TrackingId,
