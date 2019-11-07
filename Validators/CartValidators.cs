@@ -3,16 +3,6 @@ using SVT.Platform.Controllers;
 
 namespace SVT.Platform.Validators
 {
-    // public class ByDeliveryTypeValidator : AbstractValidator<CartController.ByDeliveryType>
-    // {
-    //     public ByDeliveryTypeValidator()
-    //     {
-    //         RuleFor(x => x.DeliveryType)
-    //             .NotNull()
-    //             .NotEmpty();
-    //     }
-    // }
-
     public class MoveCartRequestValidator : AbstractValidator<CartController.MoveCartRequest>
     {
         public MoveCartRequestValidator()

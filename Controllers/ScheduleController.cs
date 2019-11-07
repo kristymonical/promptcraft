@@ -77,7 +77,13 @@ namespace SVT.Platform.Controllers
                     }
 
                     var startingLocation = currentDelivery.Locations.FirstOrDefault();
-                    var destinationArea = AreaCommands.GetIntermediateArea(startingLocation.Area, currentDelivery.DestinationArea);
+
+                    var destinationArea = currentDelivery.DestinationArea
+                        .GetAreasBy(Area.GraphDirection.ancestors, (final, current) =>
+                            startingLocation.Area != current &&
+                            current.GetAncestors().Contains(startingLocation.Area) &&
+                            current.Pool == startingLocation.Area.Pool)
+                        .FirstOrDefault();
 
                     if (startingLocation == null || destinationArea == null)
                     {
