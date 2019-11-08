@@ -9,6 +9,8 @@ using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace SVT.Platform.Controllers
 {
@@ -28,6 +30,8 @@ namespace SVT.Platform.Controllers
         };
 
         private TimeSpan _timeout;
+        // @TODO: add constant value to config
+        private string _scheduleHealthCheckTrackingId = "7ac0fc0d-7176-4b71-ae09-b80f2515a9da";
 
         public ScheduleController(SVTContext svtContext, AethonApi aethonApi, IWebHostEnvironment environment, int timeout = 15)
         {
@@ -42,19 +46,32 @@ namespace SVT.Platform.Controllers
         [HttpPost("delivery/schedule")]
         public async Task<IActionResult> ScheduleJob()
         {
-            var trackingId = Guid.NewGuid().ToString();
+            var healthCheckLog = await _svtContext.Logs
+                .Where(l => l.TrackingId == _scheduleHealthCheckTrackingId)
+                .FirstOrDefaultAsync();
 
-            await LogCommands.CreateLog<BaseLogData>(_svtContext, new DataToLog<BaseLogData>
+            var logDataToSerialize = new BaseLogData
             {
-                TrackingId = trackingId,
-                Action = _action.Value,
-                Data = new BaseLogData
+                User = _user.Name,
+                Message = $"Running Delivery Scheduling Service: {DateTime.UtcNow}"
+            };
+
+            if (healthCheckLog == null)
+            {
+                await LogCommands.CreateLog<BaseLogData>(_svtContext, new DataToLog<BaseLogData>
                 {
-                    User = _user.Name,
-                    Message = $"Running Delivery Scheduling Service: {DateTime.UtcNow}"
-                }
-            });
+                    TrackingId = _scheduleHealthCheckTrackingId,
+                    Action = _action.Value,
+                    Data = logDataToSerialize
+                });
+            }
+            else
+            {
+                healthCheckLog.Serialized = JsonConvert.SerializeObject(logDataToSerialize);
+            }
             await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+
+            var trackingId = Guid.NewGuid().ToString();
 
             // @TODO: implement configurable pool threshold values
             foreach (var pool in _poolThresholds.Keys)
