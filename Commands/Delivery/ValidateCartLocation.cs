@@ -26,7 +26,7 @@ namespace SVT.Platform.Commands
                 if (currentLocation.Delivery.Completed == null && currentLocation.Delivery.Canceled == null)
                 {
                     var status = currentLocation.Delivery.Queued ? "queued" : "active";
-                    
+
                     return (false, $"Location: '{currentLocation.Name}' / Cart: '{cartId}' currently assigned to {status} Delivery:{currentLocation.Delivery.DeliveryId}.");
                 }
             }
@@ -43,7 +43,7 @@ namespace SVT.Platform.Commands
                     return (false, $"Location: '{destinationLocation.Name}' is currently occupied by Cart: '{destinationLocation.Delivery.CartId}'.");
                 }
             }
-            
+
             return (true, null);
         }
 
@@ -56,7 +56,7 @@ namespace SVT.Platform.Commands
                     .Any(i => i.LocationId == currentLocation.LocationId
                               && i.Completed == null
                               && i.TimedOut == null));
-            
+
             if (activeItineraries.HasValue && activeItineraries.Value)
             {
                 return (false, $"Cart: {cartId} / Location: {currentLocation.Name} can't be moved due to an existing Tug Job/Itinerary.");
@@ -65,15 +65,40 @@ namespace SVT.Platform.Commands
             return (true, null);
         }
 
-        public static (bool, string) ValidateCartMove(string cartId, Location destinationLocation, Location currentLocation)
+        public static (bool, string) ValidateActiveJobCart(string cartId, Delivery delivery)
+        {
+            var activeJob = delivery?
+                .Jobs
+                .Where(j => j.Completed == null
+                          && j.Canceled == null
+                          && j.Expired == null)
+                .FirstOrDefault();
+
+            if (activeJob != null)
+            {
+                return (false, $"Cart: {cartId} can't be moved due to active Job: {activeJob.JobId}");
+            }
+
+            return (true, null);
+        }
+
+        public static (bool, string) ValidateCartMove(string cartId, Location destinationLocation, Location currentLocation, Delivery activeDelivery = null)
         {
             (bool isValid, string errorMessage) = DeliveryCommands.ValidateCartLocationItineraries(currentLocation, cartId);
 
-            if (!isValid) {
+            if (!isValid)
+            {
                 return (isValid, errorMessage);
             }
 
             (isValid, errorMessage) = DeliveryCommands.ValidateDestinationCartLocation(destinationLocation, cartId);
+
+            if (!isValid)
+            {
+                return (isValid, errorMessage);
+            }
+
+            (isValid, errorMessage) = DeliveryCommands.ValidateActiveJobCart(cartId, activeDelivery);
 
             if (!isValid)
             {
