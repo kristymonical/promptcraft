@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
@@ -12,13 +11,21 @@ namespace SVT.Platform.Commands
     {
         public static async Task MoveCart(SVTContext context, MoveCartCommand moveCartCommand)
         {
+            // don't do anything if cart is already in the destination location
+            if (moveCartCommand.CurrentLocation == moveCartCommand.DestinationLocation) return;
+
             Delivery delivery;
-            
+
+            // use existing delivery if it exists
             if (moveCartCommand.CurrentLocation?.Delivery != null)
             {
                 delivery = moveCartCommand.CurrentLocation.Delivery;
-            } else {
-                delivery = await DeliveryCommands.CreateNewDelivery(context, new DeliveryCommands.CreateNewDeliveryRequest{
+            }
+            else
+            {
+                // otherwise create a new completed manual delivery
+                delivery = await DeliveryCommands.CreateNewDelivery(context, new DeliveryCommands.CreateNewDeliveryRequest
+                {
                     CartId = moveCartCommand.CartId,
                     DeliveryType = "manual",
                     DestinationAreaId = moveCartCommand.DestinationLocation.AreaId,
@@ -28,15 +35,17 @@ namespace SVT.Platform.Commands
                 delivery.Locations = new List<Location>();
             }
 
+            // move delivery reference to new location
             delivery.Locations.Add(moveCartCommand.DestinationLocation);
             moveCartCommand.DestinationLocation.Reserved = false;
-            
+
+            // remove delivery reference from current location if it exists
             if (moveCartCommand.CurrentLocation != null)
             {
                 delivery.Locations.Remove(moveCartCommand.CurrentLocation);
                 moveCartCommand.CurrentLocation.Reserved = false;
             }
-            
+
             await context.SaveChangesAsync();
         }
     }

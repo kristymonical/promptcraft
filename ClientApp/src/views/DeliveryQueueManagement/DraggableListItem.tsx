@@ -8,6 +8,7 @@ import { Row, Col } from 'react-bootstrap';
 interface DraggableListItemProps {
   index: number;
   item: any;
+  isDragDisabled?: boolean;
 }
 
 const createStyles = makeStyles<
@@ -25,11 +26,16 @@ const createStyles = makeStyles<
 
 export default function DraggableListItem({
   index,
-  item: { deliveryId, cartId, currentLocation, destinationArea }
+  item: { deliveryId, cartId, currentLocation, destinationArea, orderId },
+  isDragDisabled: dragIsDisabled = false
 }: DraggableListItemProps) {
   const classes = createStyles({});
   return (
-    <Draggable draggableId={`${deliveryId}`} index={index}>
+    <Draggable
+      draggableId={`${deliveryId}`}
+      index={index}
+      isDragDisabled={dragIsDisabled}
+    >
       {(provided, snapshot) => (
         <Card
           className={classes.listItem}
@@ -38,6 +44,12 @@ export default function DraggableListItem({
           {...provided.dragHandleProps}
         >
           <Row>
+            <Col>
+              <Typography>{index + 1}</Typography>
+            </Col>
+            <Col>
+              <Typography>{orderId || <i>NONE</i>}</Typography>
+            </Col>
             <Col>
               <Typography>{cartId}</Typography>
             </Col>

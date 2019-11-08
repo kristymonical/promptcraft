@@ -6,7 +6,9 @@ import { createLog } from './Log';
 export async function getStagedCarts() {
   try {
     const result = await fetch('/api/staging');
-    const response: ServiceResponse = await result.json();
+    const response: ServiceResponse<
+      GetStagedCartsResult[]
+    > = await result.json();
     if (!response.success) {
       const message = response.message || 'Failed to get staged carts';
       toast.error(message);
@@ -24,7 +26,7 @@ export async function getStagedCarts() {
       return [] as GetStagedCartsResult[];
     }
 
-    return response.data as GetStagedCartsResult[];
+    return response.data;
   } catch (err) {
     console.error('[getStagedCarts]:', err);
     throw err;

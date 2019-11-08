@@ -11,7 +11,9 @@ export async function getOrderAndDestination(
     const result = await fetch(
       `/api/cleaninfo?MalLocationName=${currentLocationName}&CartId=${cartId}`
     );
-    const json: ServiceResponse = await result.json();
+    const json: ServiceResponse<
+      GetOrderAndDestinationResponse
+    > = await result.json();
 
     if (!json.success) {
       const message = json.message || 'Unable to verify cart';
@@ -26,14 +28,13 @@ export async function getOrderAndDestination(
         success: false,
         trackingId: result.headers.get('trackingId') || 'unknown'
       });
-
-      return null;
+    } else {
+      toast.success(
+        `Verified cart ${cartId} and moved into ${currentLocationName}`
+      );
     }
 
-    toast.success(
-      `Verified cart ${cartId} and moved into ${currentLocationName}`
-    );
-    return json.data as GetOrderAndDestinationResponse;
+    return json;
   } catch (err) {
     console.error('[getOrderAndDestination]:', err);
     throw err;
@@ -53,7 +54,7 @@ export async function moveCart(cartId: string, locationName: string) {
       }
     });
 
-    const json: ServiceResponse = await result.json();
+    const json: ServiceResponse<any> = await result.json();
 
     if (!json.success) {
       const message = json.message || 'Unable to move cart.';
@@ -69,6 +70,8 @@ export async function moveCart(cartId: string, locationName: string) {
         trackingId: result.headers.get('trackingId') || 'unknown'
       });
     } else toast.success(`Cart ${cartId} moved to location ${locationName}`);
+
+    return json.success;
   } catch (err) {
     console.error('[moveCart]:', err);
     throw err;
@@ -78,4 +81,5 @@ export async function moveCart(cartId: string, locationName: string) {
 export interface GetOrderAndDestinationResponse {
   destinationAreaName: string;
   orderId: string;
+  timerLocation: string;
 }

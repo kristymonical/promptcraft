@@ -30,7 +30,7 @@ export async function createDeliveryRequest({
       }
     });
 
-    const response: ServiceResponse = await result.json();
+    const response: ServiceResponse<any> = await result.json();
 
     if (response.success) {
       toast.success('Created delivery request!');
@@ -85,7 +85,7 @@ export async function batchCreateDeliveryRequests(
       }
     });
 
-    const response: ServiceResponse = await result.json();
+    const response: ServiceResponse<any> = await result.json();
 
     if (response.success) {
       toast.success('Created delivery requests!');

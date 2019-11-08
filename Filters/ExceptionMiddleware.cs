@@ -71,8 +71,8 @@ public class ExceptionMiddleware
 
         var serialized = JsonConvert.SerializeObject(new
         {
-            Success = false,
-            Message = exception.Message
+            success = false,
+            message = exception.Message
         });
 
         return context.Response.WriteAsync(serialized);
