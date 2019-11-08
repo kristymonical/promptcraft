@@ -21,6 +21,9 @@ public class ExceptionMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext, SVTContext svtContext)
     {
+        // pass trackingId back to response so client can use it for their own logging
+        httpContext.Response.Headers["trackingId"] = httpContext.Request.Headers["trackingId"];
+
         try
         {
             await _next(httpContext);
@@ -56,9 +59,6 @@ public class ExceptionMiddleware
                 }
             });
             await svtContext.SaveChangesAsync();
-
-            // pass trackingId back to response so client can use it for their own logging
-            httpContext.Response.Headers["trackingId"] = httpContext.Request.Headers["trackingId"];
 
             await HandleExceptionAsync(httpContext, ex);
         }

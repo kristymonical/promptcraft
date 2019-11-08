@@ -4,6 +4,7 @@ import DeliveryRequest from './DeliveryRequest';
 import Menu from './Menu';
 import StagingManagement from './StagingManagement';
 import DeliveryQueueManagement from './DeliveryQueueManagement';
+import StageRequest from './StageRequest';
 
 export {
   CartHandling,
@@ -11,5 +12,6 @@ export {
   DeliveryQueueManagement,
   DeliveryRequest,
   Menu,
-  StagingManagement
+  StagingManagement,
+  StageRequest
 };

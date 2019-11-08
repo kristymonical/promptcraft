@@ -43,7 +43,7 @@ export default function DeliveryRequest() {
   // get data on debounced value change
   useEffect(() => {
     if (!debouncedCartLocation || debouncedCartLocation.length === 0) return;
-    getDestinationAreas(debouncedCartLocation).then(returnedAreas => {
+    getDestinationAreas(debouncedCartLocation, 'stage').then(returnedAreas => {
       setAreas(_.uniqBy(returnedAreas, 'areaName'));
       handleChange('area')('');
     });
@@ -68,6 +68,7 @@ export default function DeliveryRequest() {
       const success = await createDeliveryRequest({
         cartId: formValues.cartId,
         cartLocation: formValues.cartLocation,
+        deliveryType: 'stage',
         destinationArea: formValues.area,
         orderNumber: formValues.orderNumber
       });
@@ -80,15 +81,13 @@ export default function DeliveryRequest() {
   return (
     <>
       <Row>
-        <TitleCol title='Delivery Request'>
+        <TitleCol title='Stage Request'>
           <Typography>
-            Use this screen to create delivery requests for loaded and unloaded
-            carts
+            Use this screen to create stage requests for loaded carts
           </Typography>
           <Typography>
             Enter Cart Id, Cart's current location, and optional Order Number.
-            Choose a destination in the resulting dropdown to create Delivery
-            Request.
+            Choose a staging destination in the resulting dropdown.
           </Typography>
         </TitleCol>
       </Row>
@@ -136,7 +135,7 @@ export default function DeliveryRequest() {
         <SubmitButton
           disabled={submitDisabled}
           onClick={onSubmit}
-          text='Create Delivery Request'
+          text='Create Stage Request'
           variant='secondary'
         />
       </Row>

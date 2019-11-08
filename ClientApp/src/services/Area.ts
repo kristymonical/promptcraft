@@ -3,10 +3,13 @@ import fetch from './FetchWrapper';
 import ServiceResponse from './ServiceResponse';
 import { createLog } from './Log';
 
-export async function getDestinationAreas(locationName: string) {
+export async function getDestinationAreas(
+  locationName: string,
+  type: 'deliver' | 'stage' = 'deliver'
+) {
   try {
     const result = await fetch(
-      `/api/areas/destination?locationName=${locationName}`
+      `/api/areas/destination?locationName=${locationName}&deliveryType=${type}`
     );
 
     const json: ServiceResponse<GetAreasResult[]> = await result.json();

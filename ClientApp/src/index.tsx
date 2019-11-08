@@ -16,7 +16,8 @@ import {
   DeliveryRequest,
   CartHandling,
   StagingManagement,
-  DeliveryQueueManagement
+  DeliveryQueueManagement,
+  StageRequest
 } from 'views';
 
 const baseUrl =
@@ -50,6 +51,7 @@ const AppRoot = () => {
         <Route exact path='/' component={Menu} />
         <Route exact path='/request/cart' component={CartHandling} />
         <Route exact path='/request/delivery' component={DeliveryRequest} />
+        <Route exact path='/request/stage' component={StageRequest} />
         <Route exact path='/request/clean' component={CleanRequest} />
         <Route exact path='/manage/staging' component={StagingManagement} />
         <Route exact path='/manage/queue' component={DeliveryQueueManagement} />

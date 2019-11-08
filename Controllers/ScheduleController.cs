@@ -102,6 +102,8 @@ namespace SVT.Platform.Controllers
                             current.Pool == startingLocation.Area.Pool)
                         .FirstOrDefault();
 
+                    Console.WriteLine($"\n\n{destinationArea.Name}\n\n");
+
                     if (startingLocation == null || destinationArea == null)
                     {
                         await LogCommands.CreateLog<InvalidDestinationLog>(_svtContext, new DataToLog<InvalidDestinationLog>

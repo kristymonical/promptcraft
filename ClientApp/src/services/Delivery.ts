@@ -33,7 +33,7 @@ export async function createDeliveryRequest({
     const response: ServiceResponse<any> = await result.json();
 
     if (response.success) {
-      toast.success('Created delivery request!');
+      toast.success(response.message || 'Created delivery request!');
     } else {
       const message = response.message || 'Unable to create delivery request';
       toast.error(message);

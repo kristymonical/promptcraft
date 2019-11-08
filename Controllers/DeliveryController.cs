@@ -83,7 +83,7 @@ namespace SVT.Platform.Controllers
 
             await transaction.CommitAsync();
 
-            return Ok(new { success = true, message = $"{messagePrefix}" });
+            return Ok(new { success = true, message = "Delivery Request Created." });
         }
 
         /// <summary>
