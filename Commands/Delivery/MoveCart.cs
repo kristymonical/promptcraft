@@ -35,9 +35,11 @@ namespace SVT.Platform.Commands
                 delivery.Locations = new List<Location>();
             }
 
+            // move delivery reference to new location
             delivery.Locations.Add(moveCartCommand.DestinationLocation);
             moveCartCommand.DestinationLocation.Reserved = false;
 
+            // remove delivery reference from current location if it exists
             if (moveCartCommand.CurrentLocation != null)
             {
                 delivery.Locations.Remove(moveCartCommand.CurrentLocation);
