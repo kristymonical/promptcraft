@@ -59,6 +59,7 @@ namespace SVT.Platform.Controllers
             }
 
             var currentCartLocation = await LocationCommands.GetCartCurrentLocation(_svtContext, request.CartId);
+
             (bool isValidLocation, string errorMessage) = DeliveryCommands.ValidateCartMove(request.CartId, destinationLocation, currentCartLocation);
 
             if (!isValidLocation)

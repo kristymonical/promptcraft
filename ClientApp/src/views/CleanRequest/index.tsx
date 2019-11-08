@@ -172,7 +172,7 @@ export default function CleanRequest() {
           <Row>
             <Col>
               <Timer
-                minutes={1.05}
+                minutes={10}
                 onTimerEnd={() => setModalOpen(false)}
                 threshold={1}
                 thresholdCallback={timerThreshold}
