@@ -48,10 +48,11 @@ export default function CartHandling() {
             disabled={cartId && floorLocation ? false : true}
             text='Confirm Move'
             variant='secondary'
-            onClick={() => {
-              moveCart(cartId, floorLocation);
-              setCartId('');
-              setFloorLocation('');
+            onClick={async () => {
+              if (await moveCart(cartId, floorLocation)) {
+                setCartId('');
+                setFloorLocation('');
+              }
             }}
           />
         </Col>

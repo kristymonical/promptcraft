@@ -70,6 +70,8 @@ export async function moveCart(cartId: string, locationName: string) {
         trackingId: result.headers.get('trackingId') || 'unknown'
       });
     } else toast.success(`Cart ${cartId} moved to location ${locationName}`);
+
+    return json.success;
   } catch (err) {
     console.error('[moveCart]:', err);
     throw err;
