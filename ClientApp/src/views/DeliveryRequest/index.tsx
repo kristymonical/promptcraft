@@ -86,14 +86,9 @@ export default function DeliveryRequest() {
             carts
           </Typography>
           <Typography>
-            <b>Loaded Carts:</b> Enter Cart ID, Cart's current location, Order
-            Number, and Destination of Suite MAL or Staging to create Delivery
+            Enter Cart Id, Cart's current location, and optional Order Number.
+            Choose a destination in the resulting dropdown to create Delivery
             Request.
-          </Typography>
-          <Typography>
-            <b>Unloaded Carts:</b> Enter Cart ID, Cart's current floor location
-            and destination of FPA or CARWASH to create delivery request to
-            return a cart.
           </Typography>
         </TitleCol>
       </Row>

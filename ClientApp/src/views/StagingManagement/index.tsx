@@ -125,11 +125,7 @@ export default function StagingManagement() {
     <>
       <Row>
         <TitleCol title='Staging Management'>
-          <Typography>
-            Use this screen to add or modify the Destination Area for staged
-            carts and create new Delivery Requests for loaded and unloaded
-            carts.
-          </Typography>
+          <Typography>Use this screen to deliver staged carts.</Typography>
           <Typography>
             <b>Suite MAL delivery requests:</b> Filter list of staged carts by
             Delivery Request Type and/or Order ID and select new Suite MAL

@@ -38,9 +38,12 @@ export default function DeliveryQueueManagement() {
   const classes = createStyles({});
 
   const refreshQueue = useCallback(() => {
+    setHasActiveRequest(true);
+
     if (pool !== 'all') {
-      getDeliveryQueue(pool).then(setQueue);
-      setHasActiveRequest(false);
+      getDeliveryQueue(pool)
+        .then(setQueue)
+        .then(() => setHasActiveRequest(false));
       return;
     }
 
@@ -67,9 +70,9 @@ export default function DeliveryQueueManagement() {
     setHasActiveRequest(true);
 
     if (result.destination.index === 0) {
-      await moveDeliveryToTop(movedItem.deliveryId);
+      await moveDeliveryToTop(movedItem.deliveryId, pool);
     } else if (result.destination.index === queue.length - 1) {
-      await moveDeliveryToBottom(movedItem.deliveryId);
+      await moveDeliveryToBottom(movedItem.deliveryId, pool);
     } else {
       const newIdx = newQueue.findIndex(
         delivery => delivery.deliveryId === movedItem.deliveryId
@@ -78,7 +81,8 @@ export default function DeliveryQueueManagement() {
       await moveDeliveryInQueue(
         movedItem.deliveryId,
         newQueue[newIdx - 1].deliveryId,
-        newQueue[newIdx + 1].deliveryId
+        newQueue[newIdx + 1].deliveryId,
+        pool
       );
     }
 
@@ -88,7 +92,21 @@ export default function DeliveryQueueManagement() {
   return (
     <>
       <Row>
-        <TitleCol title='Delivery Queue Management' />
+        <TitleCol title='Delivery Queue Management'>
+          <Typography>Use this screen to manage the Delivery Queue.</Typography>
+          <Typography>
+            Deliveries on this screen are waiting for an available Tug. When a
+            Tug becomes available, the top prioritized delivery from the Tug's
+            pool will be assigned to that Tug.
+          </Typography>
+          <Typography>
+            Drag and drop deliveries to reprioritize them in the queue.
+          </Typography>
+          <Typography>
+            You cannot reprioritize the queue while showing deliveries from
+            'all' pools.
+          </Typography>
+        </TitleCol>
       </Row>
       <Row className={classes.queueContainer}>
         <AutoRefresh callback={refreshQueue}>
@@ -96,14 +114,14 @@ export default function DeliveryQueueManagement() {
             className={classes.poolSelectLabel}
             direction='row'
             handleChange={newPool => setPool(newPool)}
-            items={['all', '1', '2', '3']}
+            items={['1', '2', '3', 'all']}
             label={<Typography>Pool</Typography>}
             value={pool}
           />
         </AutoRefresh>
         {queue.length > 0 ? (
           <DraggableList
-            isDragDisabled={pool == 'all'}
+            isDragDisabled={pool === 'all'}
             items={queue}
             itemIdKey='deliveryId'
             locked={hasActiveRequest}

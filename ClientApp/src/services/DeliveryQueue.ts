@@ -37,7 +37,7 @@ export async function moveDeliveryInQueue(
   deliveryId: number,
   newParentId: number,
   newChildId: number,
-  poolId = 1
+  poolId = '1'
 ) {
   try {
     const result = await fetch(
@@ -68,7 +68,7 @@ export async function moveDeliveryInQueue(
   }
 }
 
-export async function moveDeliveryToTop(deliveryId: number, poolId = 1) {
+export async function moveDeliveryToTop(deliveryId: number, poolId = '1') {
   try {
     const result = await fetch(
       `/api/delivery/${deliveryId}/queue/priority/top?poolId=${poolId}`,
@@ -99,7 +99,7 @@ export async function moveDeliveryToTop(deliveryId: number, poolId = 1) {
   }
 }
 
-export async function moveDeliveryToBottom(deliveryId: number, poolId = 1) {
+export async function moveDeliveryToBottom(deliveryId: number, poolId = '1') {
   try {
     const result = await fetch(
       `/api/delivery/${deliveryId}/queue/priority/bottom?poolId=${poolId}`,

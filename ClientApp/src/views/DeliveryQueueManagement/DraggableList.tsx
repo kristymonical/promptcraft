@@ -40,7 +40,7 @@ const createStyles = makeStyles<typeof SVT_THEME, Partial<DraggableListProps>>({
 });
 
 export default function DraggableList({
-  isDragDisabled: dragIsDisabled = false,
+  isDragDisabled = false,
   items,
   itemIdKey,
   locked = false,
@@ -75,9 +75,10 @@ export default function DraggableList({
             </Row>
             {items.map((item, idx) => (
               <DraggableListItem
-                key={`drag-delivery-${item[itemIdKey]}`}
-                item={item}
                 index={idx}
+                isDragDisabled={isDragDisabled}
+                item={item}
+                key={`drag-delivery-${item[itemIdKey]}`}
               />
             ))}
             {provided.placeholder}
