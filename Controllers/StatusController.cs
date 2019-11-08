@@ -7,6 +7,7 @@ using Aethon;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
@@ -22,6 +23,8 @@ namespace SVT.Platform.Controllers
         private IWebHostEnvironment _environment;
         private User _user;
         private ActionType _action;
+        // @TODO: add constant value to cofig
+        private string _statusHealthCheckTrackingId = "6d6ac3eb-969c-4e59-8716-d12a1204f52e";
 
         public StatusController(SVTContext sVTContext, AethonApi aethonApi, IWebHostEnvironment environment, int timeout = 15)
         {
@@ -36,19 +39,32 @@ namespace SVT.Platform.Controllers
         [HttpPut("delivery/status")]
         public async Task<IActionResult> UpdateDeliveryStatus()
         {
-            var trackingId = Guid.NewGuid().ToString();
+            var healthCheckLog = await _svtContext.Logs
+                .Where(l => l.TrackingId == _statusHealthCheckTrackingId)
+                .FirstOrDefaultAsync();
 
-            await LogCommands.CreateLog(_svtContext, new DataToLog<BaseLogData>
+            var logDataToSerialize = new BaseLogData
             {
-                TrackingId = trackingId,
-                Action = _action.Value,
-                Data = new BaseLogData
+                User = _user.Name,
+                Message = $"Running Job Status Service: {DateTime.UtcNow}"
+            };
+
+            if (healthCheckLog == null)
+            {
+                await LogCommands.CreateLog(_svtContext, new DataToLog<BaseLogData>
                 {
-                    User = _user.Name,
-                    Message = $"Running Job Status Service: {DateTime.UtcNow}"
-                }
-            });
+                    TrackingId = _statusHealthCheckTrackingId,
+                    Action = _action.Value,
+                    Data = logDataToSerialize
+                });
+            }
+            else
+            {
+                healthCheckLog.Serialized = JsonConvert.SerializeObject(logDataToSerialize);
+            }
             await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
+
+            var trackingId = Guid.NewGuid().ToString();
 
             var activeJobs = await JobCommands.GetActiveJobs(_svtContext)
                 .ToListAsync();
