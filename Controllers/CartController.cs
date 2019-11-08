@@ -59,12 +59,13 @@ namespace SVT.Platform.Controllers
             }
 
             var currentCartLocation = await LocationCommands.GetCartCurrentLocation(_svtContext, request.CartId);
+            var activeDelivery = await DeliveryCommands.GetActiveDeliveryByCartId(_svtContext, request.CartId);
 
-            (bool isValidLocation, string errorMessage) = DeliveryCommands.ValidateCartMove(request.CartId, destinationLocation, currentCartLocation);
+            (bool isValidLocation, string errorMessage) = DeliveryCommands.ValidateCartMove(request.CartId, destinationLocation, currentCartLocation, activeDelivery);
 
             if (!isValidLocation)
             {
-                return Conflict(new { success = false, message = errorMessage });
+                return Conflict(new { success = false, message = $"Cart NOT Moved - {errorMessage}" });
             }
 
             await DeliveryCommands.MoveCart(_svtContext, new MoveCartCommand
