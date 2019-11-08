@@ -45,9 +45,9 @@ namespace SVT.Platform.Data.Models
         {
             var ancestors = new List<Area>();
             var nodes = new Stack<Area>();
-            var visited = new HashSet<Area> { this };
+            var visited = new HashSet<Area>();
 
-            foreach (var adj in this.GetAdjacentAreas()) nodes.Push(adj);
+            nodes.Push(this);
 
             while (nodes.Count > 0)
             {
