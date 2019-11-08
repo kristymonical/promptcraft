@@ -1,16 +1,21 @@
 import React from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import {
+  DragDropContext,
+  Droppable,
+  DragDropContextProps
+} from 'react-beautiful-dnd';
 
 import { SVT_THEME, Overlay } from 'components';
 import DraggableListItem from './DraggableListItem';
 import { Row, Col } from 'react-bootstrap';
 
 interface DraggableListProps {
+  isDragDisabled?: boolean;
   items: any[];
   itemIdKey: string;
   locked?: boolean;
-  onDragEnd: (result: any) => void;
+  onDragEnd: DragDropContextProps['onDragEnd'];
 }
 
 const createStyles = makeStyles<typeof SVT_THEME, Partial<DraggableListProps>>({
@@ -35,6 +40,7 @@ const createStyles = makeStyles<typeof SVT_THEME, Partial<DraggableListProps>>({
 });
 
 export default function DraggableList({
+  isDragDisabled: dragIsDisabled = false,
   items,
   itemIdKey,
   locked = false,
@@ -51,6 +57,12 @@ export default function DraggableList({
             ref={provided.innerRef}
           >
             <Row className={classes.headerRow}>
+              <Col>
+                <Typography>Priority</Typography>
+              </Col>
+              <Col>
+                <Typography>Order Id</Typography>
+              </Col>
               <Col>
                 <Typography>Cart Id</Typography>
               </Col>

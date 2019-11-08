@@ -4,6 +4,8 @@ import { Typography, makeStyles, MenuItem, TextField } from '@material-ui/core';
 import { SVT_THEME } from 'components';
 
 interface SelectProps {
+  className?: string;
+  direction?: 'column' | 'row';
   handleChange: (value: string) => void;
   items: string[];
   label: string | ReactNode;
@@ -12,11 +14,11 @@ interface SelectProps {
   value: string;
 }
 
-const useStyles = makeStyles(({ secondary }: typeof SVT_THEME) => ({
+const useStyles = makeStyles<typeof SVT_THEME, Partial<SelectProps>>(() => ({
   selectRoot: {
     display: 'flex',
-    flexDirection: 'column',
-    maxWidth: ({ maxWidth }: SelectProps) => maxWidth,
+    flexDirection: ({ direction }) => direction || 'column',
+    maxWidth: ({ maxWidth }) => maxWidth,
     '& > *': {
       marginBottom: 10
     }
@@ -26,12 +28,20 @@ const useStyles = makeStyles(({ secondary }: typeof SVT_THEME) => ({
   }
 }));
 
-export default function Select(props: SelectProps) {
-  const classes = useStyles(props);
-  const { handleChange, items, label, required, value } = props;
+export default function Select({
+  className,
+  direction,
+  handleChange,
+  items,
+  label,
+  maxWidth,
+  required,
+  value
+}: SelectProps) {
+  const classes = useStyles({ maxWidth, direction });
 
   return (
-    <div className={classes.selectRoot}>
+    <div className={`${classes.selectRoot} ${className}`}>
       <Typography component='span'>
         {label}{' '}
         {required && (

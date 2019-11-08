@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Row } from 'react-bootstrap';
 import { makeStyles } from '@material-ui/styles';
 
-import { TitleCol, AutoRefresh, SVT_THEME } from 'components';
+import { TitleCol, AutoRefresh, SVT_THEME, Select } from 'components';
 import {
   getDeliveryQueue,
   GetDeliveryQueueResponse,
@@ -15,24 +15,44 @@ import { Typography, Card } from '@material-ui/core';
 
 const createStyles = makeStyles<typeof SVT_THEME>({
   queueContainer: {
-    maxWidth: 750,
+    maxWidth: 850,
     margin: '0 auto !important'
   },
   emptyQueueCard: {
     padding: 10,
     width: '100%',
     textAlign: 'center'
+  },
+  poolSelectLabel: {
+    alignItems: 'center',
+    '& > span': {
+      marginRight: 15
+    }
   }
 });
 
 export default function DeliveryQueueManagement() {
   const [queue, setQueue] = useState<GetDeliveryQueueResponse[]>([]);
   const [hasActiveRequest, setHasActiveRequest] = useState(false);
+  const [pool, setPool] = useState('1');
   const classes = createStyles({});
 
-  useEffect(() => {
-    getDeliveryQueue().then(setQueue);
-  }, []);
+  const refreshQueue = useCallback(() => {
+    if (pool !== 'all') {
+      getDeliveryQueue(pool).then(setQueue);
+      setHasActiveRequest(false);
+      return;
+    }
+
+    const promises = ['1', '2', '3'].map(p => getDeliveryQueue(p));
+
+    Promise.all(promises)
+      .then(results => results.reduce((acc, cur) => acc.concat(cur), []))
+      .then(setQueue)
+      .then(() => setHasActiveRequest(false));
+  }, [pool]);
+
+  useEffect(refreshQueue, [pool]);
 
   const onDragEnd = async (result: any) => {
     if (!result.destination) return; // attempted to drop outside of droppable area
@@ -71,15 +91,19 @@ export default function DeliveryQueueManagement() {
         <TitleCol title='Delivery Queue Management' />
       </Row>
       <Row className={classes.queueContainer}>
-        <AutoRefresh
-          callback={async () => {
-            setHasActiveRequest(true);
-            setQueue(await getDeliveryQueue());
-            setHasActiveRequest(false);
-          }}
-        />
+        <AutoRefresh callback={refreshQueue}>
+          <Select
+            className={classes.poolSelectLabel}
+            direction='row'
+            handleChange={newPool => setPool(newPool)}
+            items={['all', '1', '2', '3']}
+            label={<Typography>Pool</Typography>}
+            value={pool}
+          />
+        </AutoRefresh>
         {queue.length > 0 ? (
           <DraggableList
+            isDragDisabled={pool == 'all'}
             items={queue}
             itemIdKey='deliveryId'
             locked={hasActiveRequest}

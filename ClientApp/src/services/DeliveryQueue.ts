@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import fetch from './FetchWrapper';
 import { createLog } from './Log';
 
-export async function getDeliveryQueue(poolId = 1) {
+export async function getDeliveryQueue(poolId = '1') {
   try {
     const result = await fetch(`/api/delivery-queue?poolId=${poolId}`);
     const json: ServiceResponse<
