@@ -11,6 +11,7 @@ using SVT.Platform.Data.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using static SVT.Platform.Data.Models.Area;
 
 namespace SVT.Platform.Controllers
 {
@@ -95,10 +96,15 @@ namespace SVT.Platform.Controllers
 
                     var startingLocation = currentDelivery.Locations.FirstOrDefault();
 
+                    GraphDirection direction;
+
+                    if (currentDelivery.DeliveryType == "return") direction = GraphDirection.descendants;
+                    else direction = GraphDirection.ancestors;
+
                     var destinationArea = currentDelivery.DestinationArea
-                        .GetAreasBy(Area.GraphDirection.ancestors, (final, current) =>
+                        .GetAreasBy(direction, (final, current) =>
                             startingLocation.Area != current &&
-                            current.GetAncestors().Contains(startingLocation.Area) &&
+                            current.IsAdjacentTo(direction, startingLocation.Area) &&
                             current.Pool == startingLocation.Area.Pool)
                         .FirstOrDefault();
 
@@ -119,7 +125,7 @@ namespace SVT.Platform.Controllers
                         });
                         await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
 
-                        // @TODO: create command to remove pending delivery reservations and call here
+                        // @TODO: create command to remove pending delivery reservations and replace below
                         currentDelivery.Canceled = DateTime.UtcNow;
                         DeliveryCommands.RemoveFromDeliveryQueue(_svtContext, currentDelivery);
                         await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
