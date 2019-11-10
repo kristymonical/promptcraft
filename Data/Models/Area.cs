@@ -112,11 +112,7 @@ namespace SVT.Platform.Data.Models
 
         public bool IsOverflowFor(Area primary)
         {
-            if (primary == null) return false;
-
-            return primary.AreaOverflows
-                .Select(o => o.OverflowAreaId)
-                .Contains(this.AreaId);
+            return primary != null && primary.GetOverflowAreas().Contains(this);
         }
     }
 }
