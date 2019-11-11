@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Row } from 'react-bootstrap';
-import { Typography, makeStyles } from '@material-ui/core';
+import {
+  Typography,
+  makeStyles,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  Radio
+} from '@material-ui/core';
 
 import { ScannableTextField, Select, TitleCol, SubmitButton } from 'components';
 import { createDeliveryRequest } from 'services/Delivery';
@@ -24,13 +32,15 @@ const initialFormValues = {
   orderNumber: ''
 };
 
+type DeliveryType = 'deliver' | 'return' | 'stage';
+
 export default function DeliveryRequest() {
   const classes = useStyles({});
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [debouncedCartLocation] = useDebounce(formValues.cartLocation, 1.5e3); // 1.5 second debounce for cart location
-
   const [areas, setAreas] = useState<GetAreasResult[]>([]);
+  const [deliveryType, setDeliveryType] = useState<DeliveryType>('deliver');
 
   // "reducer" for form value state
   const handleChange = useCallback(
@@ -40,14 +50,16 @@ export default function DeliveryRequest() {
     []
   );
 
-  // get data on debounced value change
+  // get data on debounced value change or delivery type change
   useEffect(() => {
     if (!debouncedCartLocation || debouncedCartLocation.length === 0) return;
-    getDestinationAreas(debouncedCartLocation).then(returnedAreas => {
-      setAreas(_.uniqBy(returnedAreas, 'areaName'));
-      handleChange('area')('');
-    });
-  }, [debouncedCartLocation, handleChange]);
+    getDestinationAreas(debouncedCartLocation, deliveryType).then(
+      returnedAreas => {
+        setAreas(_.sortBy(_.uniqBy(returnedAreas, 'areaName'), 'areaName'));
+        handleChange('area')('');
+      }
+    );
+  }, [debouncedCartLocation, deliveryType, handleChange]);
 
   // determine if create button should be disabled
   useEffect(() => {
@@ -68,6 +80,7 @@ export default function DeliveryRequest() {
       const success = await createDeliveryRequest({
         cartId: formValues.cartId,
         cartLocation: formValues.cartLocation,
+        deliveryType,
         destinationArea: formValues.area,
         orderNumber: formValues.orderNumber
       });
@@ -91,6 +104,44 @@ export default function DeliveryRequest() {
             Request.
           </Typography>
         </TitleCol>
+      </Row>
+      <Row>
+        <Typography variant='h5'>Delivery Type</Typography>
+      </Row>
+      <Row>
+        <RadioGroup
+          value={deliveryType}
+          onChange={evt => setDeliveryType(evt.target.value as DeliveryType)}
+        >
+          <FormControlLabel
+            value='deliver'
+            control={<Radio />}
+            label={
+              <span>
+                <b>Delivery</b> - <i>Deliver a cart to another area</i>
+              </span>
+            }
+          />
+          <FormControlLabel
+            value='stage'
+            control={<Radio />}
+            label={
+              <span>
+                <b>Staging</b> -{' '}
+                <i>Stage a cart in another area for future use</i>
+              </span>
+            }
+          />
+          <FormControlLabel
+            value='return'
+            control={<Radio />}
+            label={
+              <span>
+                <b>Cart Return</b> - <i>Send an empty cart to another area</i>
+              </span>
+            }
+          />
+        </RadioGroup>
       </Row>
       <Row>
         <Typography variant='h5'>Cart Information</Typography>

@@ -5,7 +5,7 @@ import { createLog } from './Log';
 
 export async function getDestinationAreas(
   locationName: string,
-  type: 'deliver' | 'stage' = 'deliver'
+  type: 'deliver' | 'stage' | 'return' = 'deliver'
 ) {
   try {
     const result = await fetch(
