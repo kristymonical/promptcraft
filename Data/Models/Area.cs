@@ -32,22 +32,13 @@ namespace SVT.Platform.Data.Models
         public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual ICollection<Location> Locations { get; set; }
 
-        public bool IsOverflowFor(Area primary)
-        {
-            if (primary == null) return false;
-
-            return primary.AreaOverflows
-                .Select(o => o.OverflowAreaId)
-                .Contains(this.AreaId);
-        }
-
         public List<Area> GetAreasBy(GraphDirection direction, Func<Area, Area, bool> predicate)
         {
             var ancestors = new List<Area>();
             var nodes = new Stack<Area>();
-            var visited = new HashSet<Area> { this };
+            var visited = new HashSet<Area>();
 
-            foreach (var adj in this.GetAdjacentAreas()) nodes.Push(adj);
+            nodes.Push(this);
 
             while (nodes.Count > 0)
             {
@@ -100,6 +91,28 @@ namespace SVT.Platform.Data.Models
             return this.AreaOverflows
                 .Select(o => o.OverflowArea)
                 .ToList();
+        }
+
+        public bool IsAdjacentTo(GraphDirection direction, Area area)
+        {
+            if (direction == GraphDirection.ancestors) return this.IsDescendantOf(area);
+
+            return this.IsAncestorOf(area);
+        }
+
+        public bool IsAncestorOf(Area area)
+        {
+            return this.GetDescendants().Contains(area);
+        }
+
+        public bool IsDescendantOf(Area area)
+        {
+            return this.GetAncestors().Contains(area);
+        }
+
+        public bool IsOverflowFor(Area primary)
+        {
+            return primary != null && primary.GetOverflowAreas().Contains(this);
         }
     }
 }

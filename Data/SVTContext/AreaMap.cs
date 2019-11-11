@@ -29,6 +29,8 @@ namespace SVT.Platform.Data
                         new AreaMap { PreviousAreaId = 2, NextAreaId = 3, Active = true },
                         new AreaMap { PreviousAreaId = 2, NextAreaId = 4, Active = true },
                         new AreaMap { PreviousAreaId = 2, NextAreaId = 5, Active = true },
+                        new AreaMap { PreviousAreaId = 3, NextAreaId = 4, Active = true },
+                        new AreaMap { PreviousAreaId = 3, NextAreaId = 5, Active = true },
                         new AreaMap { PreviousAreaId = 4, NextAreaId = 3, Active = true },
                         new AreaMap { PreviousAreaId = 4, NextAreaId = 6, Active = true },
                         new AreaMap { PreviousAreaId = 5, NextAreaId = 3, Active = true },

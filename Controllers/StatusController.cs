@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
+using static SVT.Platform.Data.Models.Area;
 
 namespace SVT.Platform.Controllers
 {
@@ -191,10 +192,15 @@ namespace SVT.Platform.Controllers
                                             var itinerayArea = itinerary.Location.Area;
                                             var deliveryDestinationArea = job.Delivery.DestinationArea;
 
+                                            GraphDirection direction;
+
+                                            if (job.Delivery.DeliveryType == "return") direction = GraphDirection.descendants;
+                                            else direction = GraphDirection.ancestors;
+
                                             var nextDestinationArea = deliveryDestinationArea
-                                                .GetAreasBy(Area.GraphDirection.ancestors, (finalNode, current) =>
+                                                .GetAreasBy(direction, (finalNode, current) =>
                                                     itinerayArea != current &&
-                                                    (current.GetAncestors().Contains(itinerayArea) || current.GetOverflowAreas().Contains(itinerayArea)) &&
+                                                    current.IsAdjacentTo(direction, itinerayArea) &&
                                                     current.Pool == itinerayArea.Pool)
                                                 .FirstOrDefault();
 

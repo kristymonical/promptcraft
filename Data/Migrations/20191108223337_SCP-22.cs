@@ -448,18 +448,20 @@ namespace SVT.Platform.Data.Migrations
                 columns: new[] { "NextAreaId", "PreviousAreaId", "Active" },
                 values: new object[,]
                 {
-                    { 8, 6, true },
-                    { 5, 1, true },
-                    { 3, 4, true },
-                    { 4, 2, true },
+                    { 3, 5, true },
                     { 4, 1, true },
-                    { 6, 4, true },
-                    { 5, 2, true },
+                    { 5, 3, true },
+                    { 8, 6, true },
+                    { 4, 2, true },
+                    { 4, 3, true },
+                    { 3, 4, true },
                     { 3, 2, true },
                     { 3, 1, true },
-                    { 3, 5, true },
+                    { 9, 7, true },
+                    { 5, 1, true },
+                    { 5, 2, true },
                     { 7, 5, true },
-                    { 9, 7, true }
+                    { 6, 4, true }
                 });
 
             migrationBuilder.InsertData(
@@ -467,41 +469,11 @@ namespace SVT.Platform.Data.Migrations
                 columns: new[] { "DestinationAreaId", "OverflowAreaId", "Active", "Priority" },
                 values: new object[,]
                 {
+                    { 4, 3, true, 1 },
                     { 1, 3, true, 1 },
                     { 2, 3, true, 1 },
-                    { 5, 3, true, 1 },
-                    { 4, 3, true, 1 }
+                    { 5, 3, true, 1 }
                 });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 42, 9, null, "wait", "2519-MAL-WAIT-001" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 25, 5, null, "mal", "2501-MAL-A-001" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 26, 5, null, "wait", "2501-MA-A-WAIT-001" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 27, 5, null, "wait", "2501-MA-A-WAIT-002" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 41, 9, null, "smal", "2519-MAL-001" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 36, 7, null, "wait", "2501-MAL-B-WAIT-003" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
@@ -511,12 +483,22 @@ namespace SVT.Platform.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 35, 7, null, "wait", "2501-MAL-B-WAIT-002" });
+                values: new object[] { 27, 5, null, "wait", "2501-MA-A-WAIT-002" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 29, 6, null, "mal", "1501-MAL-B-001" });
+                values: new object[] { 26, 5, null, "wait", "2501-MA-A-WAIT-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 25, 5, null, "mal", "2501-MAL-A-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 32, 6, null, "wait", "1501-MAL-B-WAIT-003" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
@@ -527,16 +509,6 @@ namespace SVT.Platform.Data.Migrations
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
                 values: new object[] { 31, 6, null, "wait", "1501-MAL-B-WAIT-002" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 32, 6, null, "wait", "1501-MAL-B-WAIT-003" });
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 34, 7, null, "wait", "2501-MAL-B-WAIT-001" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
@@ -556,12 +528,42 @@ namespace SVT.Platform.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 40, 8, null, "wait", "1528-MAL-WAIT-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
                 values: new object[] { 33, 7, null, "mal", "2501-MAL-B-001" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 40, 8, null, "wait", "1528-MAL-WAIT-003" });
+                values: new object[] { 34, 7, null, "wait", "2501-MAL-B-WAIT-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 35, 7, null, "wait", "2501-MAL-B-WAIT-002" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 36, 7, null, "wait", "2501-MAL-B-WAIT-003" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 41, 9, null, "smal", "2519-MAL-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 42, 9, null, "wait", "2519-MAL-WAIT-001" });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
+                values: new object[] { 29, 6, null, "mal", "1501-MAL-B-001" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
