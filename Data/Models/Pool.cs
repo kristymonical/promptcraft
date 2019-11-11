@@ -12,6 +12,9 @@ namespace SVT.Platform.Data.Models
         [Required]
         public string Name { get; set; }
 
+        [Required]
+        public int Threshold { get; set; }
+
         // NAVIGATION MEMBERS
         public virtual ICollection<Area> Areas { get; set; }
     }

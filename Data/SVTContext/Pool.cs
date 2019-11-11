@@ -13,9 +13,9 @@ namespace SVT.Platform.Data
             {
                 poolBuilder
                     .HasData(
-                        new Pool{ PoolId = 1, Name = "Pool 1" },
-                        new Pool { PoolId = 2, Name = "Pool 2" },
-                        new Pool { PoolId = 3, Name = "Pool 3" }
+                        new Pool { PoolId = 1, Name = "Pool 1", Threshold = 2 },
+                        new Pool { PoolId = 2, Name = "Pool 2", Threshold = 1 },
+                        new Pool { PoolId = 3, Name = "Pool 3", Threshold = 1 }
                     );
             });
         }

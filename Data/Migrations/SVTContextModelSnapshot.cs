@@ -893,7 +893,7 @@ namespace SVT.Platform.Data.Migrations
                             InsertedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LocationType = "wait",
                             ModifiedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "2501-MA-A-WAIT-001",
+                            Name = "2501-MAL-A-WAIT-001",
                             Reserved = false
                         },
                         new
@@ -903,7 +903,7 @@ namespace SVT.Platform.Data.Migrations
                             InsertedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LocationType = "wait",
                             ModifiedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "2501-MA-A-WAIT-002",
+                            Name = "2501-MAL-A-WAIT-002",
                             Reserved = false
                         },
                         new
@@ -913,7 +913,7 @@ namespace SVT.Platform.Data.Migrations
                             InsertedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LocationType = "wait",
                             ModifiedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "2501-MA-A-WAIT-003",
+                            Name = "2501-MAL-A-WAIT-003",
                             Reserved = false
                         },
                         new
@@ -1184,6 +1184,9 @@ namespace SVT.Platform.Data.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
+                    b.Property<int>("Threshold")
+                        .HasColumnType("int");
+
                     b.HasKey("PoolId");
 
                     b.ToTable("Pools");
@@ -1192,17 +1195,20 @@ namespace SVT.Platform.Data.Migrations
                         new
                         {
                             PoolId = 1,
-                            Name = "Pool 1"
+                            Name = "Pool 1",
+                            Threshold = 2
                         },
                         new
                         {
                             PoolId = 2,
-                            Name = "Pool 2"
+                            Name = "Pool 2",
+                            Threshold = 1
                         },
                         new
                         {
                             PoolId = 3,
-                            Name = "Pool 3"
+                            Name = "Pool 3",
+                            Threshold = 1
                         });
                 });
 

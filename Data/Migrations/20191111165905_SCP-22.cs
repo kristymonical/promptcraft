@@ -61,7 +61,8 @@ namespace SVT.Platform.Data.Migrations
                 {
                     PoolId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 50, nullable: false)
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    Threshold = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -408,12 +409,12 @@ namespace SVT.Platform.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Pools",
-                columns: new[] { "PoolId", "Name" },
+                columns: new[] { "PoolId", "Name", "Threshold" },
                 values: new object[,]
                 {
-                    { 1, "Pool 1" },
-                    { 2, "Pool 2" },
-                    { 3, "Pool 3" }
+                    { 1, "Pool 1", 2 },
+                    { 2, "Pool 2", 1 },
+                    { 3, "Pool 3", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -478,17 +479,17 @@ namespace SVT.Platform.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 28, 5, null, "wait", "2501-MA-A-WAIT-003" });
+                values: new object[] { 28, 5, null, "wait", "2501-MAL-A-WAIT-003" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 27, 5, null, "wait", "2501-MA-A-WAIT-002" });
+                values: new object[] { 27, 5, null, "wait", "2501-MAL-A-WAIT-002" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
                 columns: new[] { "LocationId", "AreaId", "DeliveryId", "LocationType", "Name" },
-                values: new object[] { 26, 5, null, "wait", "2501-MA-A-WAIT-001" });
+                values: new object[] { 26, 5, null, "wait", "2501-MAL-A-WAIT-001" });
 
             migrationBuilder.InsertData(
                 table: "Locations",
