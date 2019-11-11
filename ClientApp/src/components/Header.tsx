@@ -32,7 +32,6 @@ const useStyles = makeStyles<typeof SVT_THEME>(({ primary }) => ({
 
 const navItems = [
   { route: '/request/delivery', label: 'Delivery Request' },
-  { route: '/request/stage', label: 'Stage Request' },
   { route: '/request/cart', label: 'Cart Handling' },
   { route: '/request/clean', label: 'Clean Request' },
   { route: '/manage/staging', label: 'Staging Management' },

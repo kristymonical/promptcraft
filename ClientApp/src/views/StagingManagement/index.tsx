@@ -80,15 +80,16 @@ export default function StagingManagement() {
 
       try {
         const results = _.flatten(await Promise.all(promises));
-        const destinationAreas = _.unionBy(_.flatten(results), 'areaId').map(
-          area => area.areaName
+        const destinationAreas = _.sortBy(
+          _.unionBy(_.flatten(results), 'areaId').map(area => area.areaName)
         );
 
         if (destinationAreas.length === 0) {
           toast.error('No common destination area found for selection.');
+          setAvailableFinalDestinations([]);
+        } else {
+          setAvailableFinalDestinations(destinationAreas);
         }
-
-        setAvailableFinalDestinations(destinationAreas);
       } catch {
         setAvailableFinalDestinations([]);
       }
@@ -107,7 +108,7 @@ export default function StagingManagement() {
       selectedRows.map(row => ({
         cartId: row.cartId,
         cartLocation: row.stagingLocationId,
-        deliveryType: 'stage',
+        deliveryType: 'deliver',
         destinationArea: finalDestination,
         orderNumber: row.orderId
       }))
@@ -140,7 +141,9 @@ export default function StagingManagement() {
         </TitleCol>
       </Row>
       <Row>
-        <AutoRefresh callback={refreshStagedCarts} />
+        <AutoRefresh
+          callback={() => selectedRows.length === 0 && refreshStagedCarts()}
+        />
       </Row>
       {stagingTableData.length > 0 ? (
         <>

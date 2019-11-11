@@ -5,8 +5,6 @@ import {
   makeStyles,
   RadioGroup,
   FormControlLabel,
-  FormControl,
-  FormLabel,
   Radio
 } from '@material-ui/core';
 

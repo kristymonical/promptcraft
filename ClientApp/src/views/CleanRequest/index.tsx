@@ -16,7 +16,7 @@ import {
   getOrderAndDestination,
   moveCart
 } from 'services/Cart';
-import { createDeliveryRequest } from 'services/Delivery';
+import { queueDelivery } from 'services/DeliveryQueue';
 
 const createStyles = makeStyles(
   ({ flex: { horizontalSpacing }, primary }: typeof SVT_THEME) => ({
@@ -70,6 +70,7 @@ export default function CleanRequest() {
   const [verified, setVerified] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [bSideLocation, setBSideLocation] = useState('');
+  const [deliveryId, setDeliveryId] = useState(0);
 
   const verify = async (cartId: string, malLocationName: string) => {
     const ret = await getOrderAndDestination(cartId, malLocationName);
@@ -77,27 +78,23 @@ export default function CleanRequest() {
       setTableData([ret.data]);
       setVerified(true);
       setBSideLocation(ret.data.timerLocation);
+      setDeliveryId(ret.data.deliveryId);
     }
   };
 
   const timerThreshold = useCallback(async () => {
-    const success = await createDeliveryRequest({
-      cartId,
-      cartLocation: mal,
-      deliveryType: 'deliver',
-      destinationArea: tableData[0].destinationAreaName,
-      orderNumber: tableData[0].orderId
-    });
+    const success = await queueDelivery(deliveryId);
 
     if (success) {
       setCartId('');
       setVerified(false);
       setTableData([]);
       setBSideLocation('');
+      setDeliveryId(0);
     } else {
       setModalOpen(false);
     }
-  }, [cartId, mal, tableData]);
+  }, [deliveryId]);
 
   return (
     <>
@@ -172,9 +169,9 @@ export default function CleanRequest() {
           <Row>
             <Col>
               <Timer
-                minutes={10}
+                minutes={0.1}
                 onTimerEnd={() => setModalOpen(false)}
-                threshold={1}
+                threshold={0.05}
                 thresholdCallback={timerThreshold}
                 userCanCancel
                 userCancelThreshold={1}

@@ -79,6 +79,7 @@ export async function moveCart(cartId: string, locationName: string) {
 }
 
 export interface GetOrderAndDestinationResponse {
+  deliveryId: number;
   destinationAreaName: string;
   orderId: string;
   timerLocation: string;
