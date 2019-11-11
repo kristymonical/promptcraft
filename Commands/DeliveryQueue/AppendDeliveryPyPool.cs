@@ -6,7 +6,7 @@ namespace SVT.Platform.Commands
 {
     public partial class DeliveryCommands
     {
-        public static async Task<bool> AppendDeliveryByPool(SVTContext context, Delivery delivery, int poolId)
+        public static async Task AppendDeliveryByPool(SVTContext context, Delivery delivery, int poolId)
         {
             var lastInQueue = await DeliveryCommands.GetLowestPriorityDelivery(context, poolId);
 
@@ -16,8 +16,6 @@ namespace SVT.Platform.Commands
             {
                 delivery.PreviousPrioritizedDeliveryId = lastInQueue.DeliveryId;
             }
-
-            return true;
         }
     }
 }

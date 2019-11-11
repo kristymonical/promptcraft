@@ -67,14 +67,7 @@ namespace SVT.Platform.Controllers
                     DeliveryType = deliveryRequest.DeliveryType
                 });
 
-                delivery.Queued = true;
-
-                var lowestPriorityDelivery = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, currentLocation.Area.PoolId);
-
-                if (lowestPriorityDelivery != null)
-                {
-                    delivery.PreviousPrioritizedDeliveryId = lowestPriorityDelivery.DeliveryId;
-                }
+                await DeliveryCommands.AppendDeliveryByPool(_svtContext, delivery, currentLocation.Area.PoolId);
 
                 delivery.Locations = new List<Location> { currentLocation };
 
