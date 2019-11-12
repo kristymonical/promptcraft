@@ -76,6 +76,13 @@ namespace SVT.Platform.Controllers
                 User = HttpContext.User.Identity.Name
             });
 
+            // queue active return deliveries after moving if they are not already queued
+            if (activeDelivery?.Queued == false && activeDelivery?.DeliveryType == "return")
+            {
+                await DeliveryCommands.AppendDeliveryByPool(_svtContext, activeDelivery, destinationLocation.Area.PoolId);
+                await _svtContext.SaveChangesAsync();
+            }
+
             await transaction.CommitAsync();
             return Ok(new { success = true, message = "" });
         }
@@ -124,7 +131,18 @@ namespace SVT.Platform.Controllers
                 .Where(l => l.LocationType == "mal" && !l.Reserved && l.DeliveryId == null)
                 .FirstOrDefault();
 
-            return Ok(new { success = true, message = "", Data = new { DestinationAreaName = delivery.DestinationArea.Name, OrderId = delivery.OrderId, TimerLocation = bSide.Name } });
+            return Ok(new
+            {
+                success = true,
+                message = "",
+                Data = new
+                {
+                    DeliveryId = delivery.DeliveryId,
+                    DestinationAreaName = delivery.DestinationArea.Name,
+                    OrderId = delivery.OrderId,
+                    TimerLocation = bSide.Name
+                }
+            });
         }
 
         public class CleanInfoRequest

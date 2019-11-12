@@ -179,18 +179,12 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpPut("delivery/{deliveryId}/queue/append")]
-        public async Task<IActionResult> AppendDeliveryToQueue([FromRoute]PriorityRoute route, [FromQuery]ByPoolRequest query)
+        public async Task<IActionResult> AppendDeliveryToQueue([FromRoute]PriorityRoute route)
         {
             var delivery = await DeliveryCommands.GetDeliveryById(_svtContext, route.DeliveryId);
+            var currentLocation = await LocationCommands.GetCartCurrentLocation(_svtContext, delivery.CartId);
 
-            var lastInQueue = await DeliveryCommands.GetLowestPriorityDelivery(_svtContext, query.PoolId);
-
-            delivery.Queued = true;
-
-            if (lastInQueue != null)
-            {
-                delivery.PreviousPrioritizedDeliveryId = lastInQueue.DeliveryId;
-            }
+            await DeliveryCommands.AppendDeliveryByPool(_svtContext, delivery, currentLocation.Area.PoolId);
 
             await _svtContext.SaveChangesAsync();
 

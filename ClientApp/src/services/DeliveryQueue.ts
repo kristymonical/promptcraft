@@ -131,6 +131,38 @@ export async function moveDeliveryToBottom(deliveryId: number, poolId = '1') {
   }
 }
 
+export async function queueDelivery(deliveryId: number) {
+  try {
+    const result = await fetch(`/api/delivery/${deliveryId}/queue/append`, {
+      method: 'PUT'
+    });
+
+    const response: ServiceResponse<any> = await result.json();
+
+    if (!response.success) {
+      const message = response.message || 'Unable to queue delivery';
+      toast.error(message);
+      createLog({
+        action: 'queue',
+        deliveryId,
+        message,
+        method: 'PUT',
+        route: result.url,
+        statusCode: result.status,
+        success: false,
+        trackingId: result.headers.get('trackingId') || 'unknown'
+      });
+    } else {
+      toast.success('Delivery queued successfully');
+    }
+
+    return response.success;
+  } catch (err) {
+    console.error('[queueDelivery]:', err);
+    throw err;
+  }
+}
+
 export interface GetDeliveryQueueResponse {
   deliveryId: number;
   userId: string;
