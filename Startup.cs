@@ -71,6 +71,7 @@ namespace SVT.Platform
             services.AddTransient<IValidator<CartController.MoveCartRequest>, MoveCartRequestValidator>();
             services.AddTransient<IValidator<CartController.CleanInfoRequest>, CleanInfoRequestValidator>();
             services.AddTransient<IValidator<DeliveryController.DeliveryRequests>, DeliveryRequestsValidator>();
+            services.AddTransient<IValidator<DeliveryController.ByDestinationArea>, ByDestinationAreaValidator>();
             services.AddTransient<IValidator<DeliveryQueueController.ByPoolRequest>, ByPoolRequestValidator>();
             services.AddTransient<IValidator<DeliveryQueueController.PriorityQuery>, PriorityQueryValidator>();
             services.AddTransient<IValidator<DeliveryQueueController.PriorityRoute>, PriorityRouteValidator>();
