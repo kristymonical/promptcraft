@@ -7,6 +7,7 @@ using Aethon;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using SVT.Platform.Commands;
 using SVT.Platform.Data;
@@ -25,9 +26,9 @@ namespace SVT.Platform.Controllers
         private User _user;
         private ActionType _action;
         // @TODO: add constant value to cofig
-        private string _statusHealthCheckTrackingId = "6d6ac3eb-969c-4e59-8716-d12a1204f52e";
+        private string _statusHealthCheckTrackingId;
 
-        public StatusController(SVTContext sVTContext, AethonApi aethonApi, IWebHostEnvironment environment, int timeout = 15)
+        public StatusController(SVTContext sVTContext, AethonApi aethonApi, IWebHostEnvironment environment, IConfigurationRoot Configuration, int timeout = 15)
         {
             _svtContext = sVTContext;
             _aethonApi = aethonApi;
@@ -35,6 +36,7 @@ namespace SVT.Platform.Controllers
             _environment = environment;
             _user = UserCommands.GetUserByName(_svtContext, "StatusService");
             _action = ActionCommands.GetActionByValue(_svtContext, "status");
+            _statusHealthCheckTrackingId = Configuration.GetValue<string>("Status:TrackingId");
         }
 
         [HttpPut("delivery/status")]

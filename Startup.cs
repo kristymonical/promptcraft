@@ -22,16 +22,20 @@ namespace SVT.Platform
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
-        {
-            Configuration = configuration;
-            Environment = environment;
-        }
-
-        public IConfiguration Configuration { get; }
+        public IConfigurationRoot Configuration { get; }
 
         public IWebHostEnvironment Environment { get; }
 
+        public Startup(IWebHostEnvironment environment)
+        {
+            Environment = environment;
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(environment.ContentRootPath)
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.development.json")
+                .AddEnvironmentVariables()
+                .Build();
+        }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -54,12 +58,12 @@ namespace SVT.Platform
             });
 
             // Instantiate HTTP clients for DI
-            var aethonClient = new HttpClient { BaseAddress = new Uri("http://localhost:3000/") };
-            var client = new HttpClient { BaseAddress = new Uri("https://localhost:5001/") };
+            var aethonClient = new HttpClient { BaseAddress = new Uri(Configuration.GetValue<string>("AethonClient:Uri")) };
+            var client = new HttpClient { BaseAddress = new Uri(Configuration.GetValue<string>("Client:Uri")) };
 
             // DI
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IConfiguration>(Configuration);
+            services.AddSingleton<IConfigurationRoot>(Configuration);
             services.AddSingleton<IWebHostEnvironment>(Environment);
 
             // DI - Validators

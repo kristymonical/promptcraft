@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using static SVT.Platform.Data.Models.Area;
+using Microsoft.Extensions.Configuration;
 
 namespace SVT.Platform.Controllers
 {
@@ -26,9 +27,9 @@ namespace SVT.Platform.Controllers
         private Dictionary<int, int> _poolThresholds;
         private TimeSpan _timeout;
         // @TODO: add constant value to config
-        private string _scheduleHealthCheckTrackingId = "7ac0fc0d-7176-4b71-ae09-b80f2515a9da";
+        private string _scheduleHealthCheckTrackingId;
 
-        public ScheduleController(SVTContext svtContext, AethonApi aethonApi, IWebHostEnvironment environment, int timeout = 15)
+        public ScheduleController(SVTContext svtContext, AethonApi aethonApi, IWebHostEnvironment environment, IConfigurationRoot Configuration, int timeout = 15)
         {
             _svtContext = svtContext;
             _aethonApi = aethonApi;
@@ -39,6 +40,7 @@ namespace SVT.Platform.Controllers
             _poolThresholds = PoolCommands
                 .GetPoolThresholds(_svtContext)
                 .ToDictionary(k => k.PoolId, v => v.Threshold);
+            _scheduleHealthCheckTrackingId = Configuration.GetValue<string>("Schedule:TrackingId");
         }
 
         [HttpPost("delivery/schedule")]
