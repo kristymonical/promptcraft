@@ -32,9 +32,8 @@ namespace SVT.Platform.Data.Models
         public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual ICollection<Location> Locations { get; set; }
 
-        public List<Area> GetAreasBy(GraphDirection direction, Func<Area, Area, bool> predicate)
+        public IEnumerable<Area> GetAreasBy(GraphDirection direction, Func<Area, Area, bool> predicate)
         {
-            var ancestors = new List<Area>();
             var nodes = new Stack<Area>();
             var visited = new HashSet<Area>();
 
@@ -44,9 +43,7 @@ namespace SVT.Platform.Data.Models
             {
                 var node = nodes.Pop();
 
-                if (visited.Contains(node)) continue;
-
-                visited.Add(node);
+                if (!visited.Add(node)) continue;
 
                 List<Area> nextNodes;
 
@@ -56,10 +53,8 @@ namespace SVT.Platform.Data.Models
                 foreach (var child in nextNodes)
                     if (!visited.Contains(child)) nodes.Push(child);
 
-                if (predicate(this, node)) ancestors.Add(node);
+                if (predicate(this, node)) yield return node;
             }
-
-            return ancestors;
         }
 
         public enum GraphDirection { none, ancestors, descendants };

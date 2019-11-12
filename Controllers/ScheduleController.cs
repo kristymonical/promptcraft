@@ -23,13 +23,7 @@ namespace SVT.Platform.Controllers
         private IWebHostEnvironment _environment;
         private User _user;
         private ActionType _action;
-        // @TODO: remove once configuration is implemented
-        private Dictionary<int, int> _poolThresholds = new Dictionary<int, int>{
-            { 1, 2 },
-            { 2, 1 },
-            { 3, 1 }
-        };
-
+        private Dictionary<int, int> _poolThresholds;
         private TimeSpan _timeout;
         // @TODO: add constant value to config
         private string _scheduleHealthCheckTrackingId = "7ac0fc0d-7176-4b71-ae09-b80f2515a9da";
@@ -42,6 +36,9 @@ namespace SVT.Platform.Controllers
             _environment = environment;
             _user = UserCommands.GetUserByName(_svtContext, "ScheduleService");
             _action = ActionCommands.GetActionByValue(_svtContext, "schedule");
+            _poolThresholds = PoolCommands
+                .GetPoolThresholds(_svtContext)
+                .ToDictionary(k => k.PoolId, v => v.Threshold);
         }
 
         [HttpPost("delivery/schedule")]
@@ -74,7 +71,6 @@ namespace SVT.Platform.Controllers
 
             var trackingId = Guid.NewGuid().ToString();
 
-            // @TODO: implement configurable pool threshold values
             foreach (var pool in _poolThresholds.Keys)
             {
                 var threshold = _poolThresholds.GetValueOrDefault(pool);
@@ -125,7 +121,6 @@ namespace SVT.Platform.Controllers
                         });
                         await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
 
-                        // @TODO: create command to remove pending delivery reservations and replace below
                         currentDelivery.Canceled = DateTime.UtcNow;
                         DeliveryCommands.RemoveFromDeliveryQueue(_svtContext, currentDelivery);
                         await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
