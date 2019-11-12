@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace SVT.Platform.Data.Models
 {
@@ -43,5 +44,17 @@ namespace SVT.Platform.Data.Models
         public virtual Delivery PreviousPrioritizedDelivery { get; set; }
         public virtual Delivery NextPrioritizedDelivery { get; set; }
         public virtual ICollection<Log> Logs { get; set; }
+
+        public bool HasActiveJobs()
+        {
+            if (this.Jobs == null) return false;
+
+            return this
+                .Jobs
+                .ToList()
+                .TrueForAll(j => j.Completed == null
+                    && j.Canceled == null
+                    && j.Expired == null);
+        }
     }
 }

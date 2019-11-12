@@ -4,6 +4,9 @@ using SVT.Platform.Commands;
 using SVT.Platform.Data;
 using SVT.Platform.Data.Models;
 using System.Threading.Tasks;
+using static SVT.Platform.Controllers.DeliveryQueueController;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace SVT.Platform.Controllers
 {
@@ -79,6 +82,28 @@ namespace SVT.Platform.Controllers
             return Ok(new { success = true, message = "" });
         }
 
+        [HttpPatch("delivery/{deliveryId}/destination")]
+        public async Task<IActionResult> PatchDeliveryDestinationArea([FromRoute]PriorityRoute route, [FromBody]ByDestinationArea request)
+        {
+            var delivery = await DeliveryCommands.GetDeliveryById(_svtContext, route.DeliveryId);
+
+            if (delivery == null) return NotFound(new { success = false, message = $"Delivery: {delivery.DeliveryId}, Not Found" });
+
+            if (delivery.HasActiveJobs()) return Conflict(new { success = false, message = $"Delivery: {delivery.DeliveryId} Has 1 or more active Jobs" });
+
+            var area = await AreaCommands.GetAreaByName(_svtContext, request.DestinationArea);
+
+            if (area == null) return NotFound(new { success = false, message = $"Destination Area: {area.AreaId}, Not Found" });
+
+            if (delivery.DestinationArea != area)
+            {
+                delivery.DestinationArea = area;
+                await _svtContext.SaveChangesAsync();
+            }
+
+            return Ok(new { success = true, message = "" });
+        }
+
         /// <summary>
         /// Delivery to be created/queued
         /// </summary>
@@ -125,6 +150,11 @@ namespace SVT.Platform.Controllers
             /// </summary>
             /// <value>N number of DeliveryRequest instances to create/queue</value>
             public List<DeliveryRequest> Deliveries { get; set; }
+        }
+
+        public class ByDestinationArea
+        {
+            public string DestinationArea { get; set; }
         }
     }
 }

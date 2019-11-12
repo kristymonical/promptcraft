@@ -28,12 +28,22 @@ namespace SVT.Platform.Validators
                 .NotEmpty();
         }
     }
-    
+
     public class ByPoolRequestValidator : AbstractValidator<DeliveryQueueController.ByPoolRequest>
     {
         public ByPoolRequestValidator()
         {
             RuleFor(x => x.PoolId)
+                .NotNull()
+                .NotEmpty();
+        }
+    }
+
+    public class ByDestinationAreaValidator : AbstractValidator<DeliveryController.ByDestinationArea>
+    {
+        public ByDestinationAreaValidator()
+        {
+            RuleFor(x => x.DestinationArea)
                 .NotNull()
                 .NotEmpty();
         }
