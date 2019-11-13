@@ -10,8 +10,8 @@ using SVT.Platform.Data;
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    [Migration("20191111165905_SCP-22")]
-    partial class SCP22
+    [Migration("20191113172141_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -399,7 +399,7 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<DateTime>("InsertedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("ModifiedBy")
                         .ValueGeneratedOnAdd()
@@ -410,7 +410,7 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<DateTime>("ModifiedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("OrderId")
                         .HasColumnType("nvarchar(50)")
@@ -495,7 +495,7 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<DateTime>("InsertedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<int>("JobId")
                         .HasColumnType("int");
@@ -512,7 +512,7 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<DateTime>("ModifiedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<DateTime?>("TimedOut")
                         .HasColumnType("datetime2");
@@ -557,7 +557,7 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<DateTime>("InsertedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("ModifiedBy")
                         .ValueGeneratedOnAdd()
@@ -568,7 +568,7 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<DateTime>("ModifiedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.HasKey("JobId");
 
@@ -599,7 +599,7 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<DateTime>("InsertedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("LocationType")
                         .IsRequired()
@@ -615,7 +615,7 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<DateTime>("ModifiedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1144,7 +1144,7 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<DateTime>("InsertedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("ModifiedBy")
                         .ValueGeneratedOnAdd()
@@ -1155,7 +1155,7 @@ namespace SVT.Platform.Data.Migrations
                     b.Property<DateTime>("ModifiedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Serialized")
                         .IsRequired()

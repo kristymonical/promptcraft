@@ -16,13 +16,13 @@ namespace SVT.Platform.Data
                     .HasDefaultValueSql("suser_sname()");
                 deliveryBuilder
                     .Property(d => d.InsertedOn)
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("getutcdate()");
                 deliveryBuilder
                     .Property(d => d.ModifiedBy)
                     .HasDefaultValueSql("suser_sname()");
                 deliveryBuilder
                     .Property(d => d.ModifiedOn)
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("getutcdate()");
                 deliveryBuilder
                     .HasOne(delivery => delivery.DeliveryTypeReference)
                     .WithMany(deliveryType => deliveryType.Deliveries)
