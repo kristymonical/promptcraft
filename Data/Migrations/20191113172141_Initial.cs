@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SVT.Platform.Data.Migrations
 {
-    public partial class SCP22 : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -190,9 +190,9 @@ namespace SVT.Platform.Data.Migrations
                 {
                     DeliveryId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getutcdate()"),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
-                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getutcdate()"),
                     ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     CartId = table.Column<string>(maxLength: 50, nullable: false),
                     OrderId = table.Column<string>(maxLength: 50, nullable: true),
@@ -233,9 +233,9 @@ namespace SVT.Platform.Data.Migrations
                 {
                     JobId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getutcdate()"),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
-                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getutcdate()"),
                     ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     AethonJobId = table.Column<int>(nullable: false),
                     DeliveryId = table.Column<int>(nullable: false),
@@ -260,9 +260,9 @@ namespace SVT.Platform.Data.Migrations
                 {
                     LocationId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getutcdate()"),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
-                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getutcdate()"),
                     ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     Name = table.Column<string>(maxLength: 50, nullable: false),
                     DeliveryId = table.Column<int>(nullable: true),
@@ -299,9 +299,9 @@ namespace SVT.Platform.Data.Migrations
                 {
                     LogId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getutcdate()"),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
-                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getutcdate()"),
                     ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     TrackingId = table.Column<string>(nullable: false),
                     DeliveryId = table.Column<int>(nullable: true),
@@ -331,9 +331,9 @@ namespace SVT.Platform.Data.Migrations
                 {
                     ItineraryId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    InsertedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getutcdate()"),
                     InsertedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
-                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedOn = table.Column<DateTime>(nullable: false, defaultValueSql: "getutcdate()"),
                     ModifiedBy = table.Column<string>(maxLength: 256, nullable: true, defaultValueSql: "suser_sname()"),
                     AethonRunId = table.Column<int>(nullable: false),
                     Completed = table.Column<DateTime>(nullable: true),

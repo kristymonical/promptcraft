@@ -16,13 +16,13 @@ namespace SVT.Platform.Data
                     .HasDefaultValueSql("suser_sname()");
                 locationBuilder
                     .Property(d => d.InsertedOn)
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("getutcdate()");
                 locationBuilder
                     .Property(d => d.ModifiedBy)
                     .HasDefaultValueSql("suser_sname()");
                 locationBuilder
                     .Property(d => d.ModifiedOn)
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("getutcdate()");
                 locationBuilder
                     .Property(d => d.Reserved)
                     .HasDefaultValue(0);

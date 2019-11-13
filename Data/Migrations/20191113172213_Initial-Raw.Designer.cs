@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SVT.Platform.Data;
 
 namespace SVT.Platform.Data.Migrations
 {
     [DbContext(typeof(SVTContext))]
-    partial class SVTContextModelSnapshot : ModelSnapshot
+    [Migration("20191113172213_Initial-Raw")]
+    partial class InitialRaw
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -16,13 +16,13 @@ namespace SVT.Platform.Data
                     .HasDefaultValueSql("suser_sname()");
                 itineraryBuilder
                     .Property(d => d.InsertedOn)
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("getutcdate()");
                 itineraryBuilder
                     .Property(d => d.ModifiedBy)
                     .HasDefaultValueSql("suser_sname()");
                 itineraryBuilder
                     .Property(d => d.ModifiedOn)
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("getutcdate()");
                 itineraryBuilder
                     .HasOne(itinerary => itinerary.Location)
                     .WithMany(location => location.Itineraries)
