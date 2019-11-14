@@ -81,7 +81,14 @@ export default function StagingManagement() {
       try {
         const promises: Promise<GetAreasResult[]>[] = [];
         rows.forEach(row => {
-          promises.push(getDestinationAreas(row.stagingLocationId));
+          promises.push(
+            getDestinationAreas(
+              row.stagingLocationId,
+              row.deliveryRequestType === 'stage'
+                ? 'deliver'
+                : row.deliveryRequestType
+            )
+          );
         });
 
         const results = _.flatten(await Promise.all(promises));
