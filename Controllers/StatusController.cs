@@ -92,21 +92,6 @@ namespace SVT.Platform.Controllers
                             throw exception;
                         }
 
-                        await LogCommands.CreateLog(_svtContext, new DataToLog<AethonResponse<List<JobDetailsResponse>>>
-                        {
-                            TrackingId = trackingId,
-                            Action = _action.Value,
-                            Data = new AethonResponse<List<JobDetailsResponse>>
-                            {
-                                User = _user.Name,
-                                StatusCode = response.StatusCode,
-                                Message = response.Message,
-                                Success = response.Success,
-                                Content = response.Content
-                            }
-                        });
-                        await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
-
                         var aethonJobDetails = response.Content?.FirstOrDefault();
 
                         if (aethonJobDetails == null)
@@ -149,7 +134,6 @@ namespace SVT.Platform.Controllers
                                 job.Expired = DateTime.UtcNow;
                             }
                         }
-                        await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
 
                         foreach (var aethonJobItinerary in aethonJobDetails.Itinerary)
                         {
@@ -226,6 +210,24 @@ namespace SVT.Platform.Controllers
 
                                 itinerary.Location.Reserved = false;
                             }
+                        }
+
+                        if (_svtContext.ChangeTracker.HasChanges())
+                        {
+                            await LogCommands.CreateLog(_svtContext, new DataToLog<AethonResponse<List<JobDetailsResponse>>>
+                            {
+                                TrackingId = trackingId,
+                                Action = _action.Value,
+                                Delivery = job.Delivery,
+                                Data = new AethonResponse<List<JobDetailsResponse>>
+                                {
+                                    User = _user.Name,
+                                    StatusCode = response.StatusCode,
+                                    Message = response.Message,
+                                    Success = response.Success,
+                                    Content = response.Content
+                                }
+                            });
 
                             await _svtContext.SaveChangesAsync(new CancellationTokenSource(_timeout).Token);
                         }
