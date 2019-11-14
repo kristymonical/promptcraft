@@ -16,13 +16,13 @@ namespace SVT.Platform.Data
                     .HasDefaultValueSql("suser_sname()");
                 jobBuilder
                     .Property(d => d.InsertedOn)
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("getutcdate()");
                 jobBuilder
                     .Property(d => d.ModifiedBy)
                     .HasDefaultValueSql("suser_sname()");
                 jobBuilder
                     .Property(d => d.ModifiedOn)
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("getutcdate()");
                 jobBuilder
                     .HasOne(job => job.Delivery)
                     .WithMany(delivery => delivery.Jobs)

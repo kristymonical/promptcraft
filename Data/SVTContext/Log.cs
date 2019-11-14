@@ -16,13 +16,13 @@ namespace SVT.Platform.Data
                     .HasDefaultValueSql("suser_sname()");
                 logBuilder
                     .Property(d => d.InsertedOn)
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("getutcdate()");
                 logBuilder
                     .Property(d => d.ModifiedBy)
                     .HasDefaultValueSql("suser_sname()");
                 logBuilder
                     .Property(d => d.ModifiedOn)
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("getutcdate()");
                 logBuilder
                     .HasOne(log => log.Delivery)
                     .WithMany(delivery => delivery.Logs)
