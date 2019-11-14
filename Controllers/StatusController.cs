@@ -168,7 +168,6 @@ namespace SVT.Platform.Controllers
                                         .FirstOrDefault()
                                 };
 
-
                                 job.Itineraries.Add(itinerary);
                             }
 
