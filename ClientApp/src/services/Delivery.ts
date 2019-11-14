@@ -118,12 +118,11 @@ export async function updateDeliveryDestinationArea(
   newDestination: string
 ) {
   try {
-    const result = await fetch(
-      `/api/delivery/${deliveryId}/destination?destinationArea=${newDestination}`,
-      {
-        method: 'PATCH'
-      }
-    );
+    const result = await fetch(`/api/delivery/${deliveryId}/destination`, {
+      body: JSON.stringify({ destinationArea: newDestination }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH'
+    });
 
     const response: ServiceResponse<any> = await result.json();
 
