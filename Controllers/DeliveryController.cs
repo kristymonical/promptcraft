@@ -83,7 +83,7 @@ namespace SVT.Platform.Controllers
         }
 
         [HttpPatch("delivery/{deliveryId}/destination")]
-        public async Task<IActionResult> PatchDeliveryDestinationArea([FromRoute]PriorityRoute route, [FromBody]ByDestinationArea request)
+        public async Task<IActionResult> PatchDeliveryDestinationArea([FromRoute]PriorityRoute route, [FromQuery]ByDestinationArea request)
         {
             var delivery = await DeliveryCommands.GetDeliveryById(_svtContext, route.DeliveryId);
 

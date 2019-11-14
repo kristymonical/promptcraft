@@ -40,6 +40,7 @@ namespace SVT.Platform.Controllers
                         OrderId = loc.Delivery.OrderId,
                         CartId = loc.Delivery.CartId,
                         StagingLocationId = loc.Name,
+                        DeliveryId = loc.DeliveryId,
                         DeliveryRequestType = loc.Delivery.DeliveryType,
                         DestinationArea = loc.Delivery.DestinationArea.Name
                     })
@@ -153,7 +154,7 @@ namespace SVT.Platform.Controllers
 
         public class ByDeliveryType
         {
-            public string DeliveryType { get; set; } = "stage";
+            public string DeliveryType { get; set; }
         }
 
         public class GetStagedCartsResponse
@@ -161,6 +162,7 @@ namespace SVT.Platform.Controllers
             public string OrderId { get; set; }
             public string CartId { get; set; }
             public string StagingLocationId { get; set; }
+            public int? DeliveryId { get; set; }
             public string DeliveryRequestType { get; set; }
             public string DestinationArea { get; set; }
         }

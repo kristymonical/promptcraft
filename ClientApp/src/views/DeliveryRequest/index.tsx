@@ -84,7 +84,10 @@ export default function DeliveryRequest() {
       });
 
       // reset form on success
-      if (success) setFormValues(initialFormValues);
+      if (success) {
+        setFormValues(initialFormValues);
+        setAreas([]);
+      }
     } catch (err) {}
   };
 
@@ -163,7 +166,7 @@ export default function DeliveryRequest() {
           value={formValues.orderNumber}
         />
       </Row>
-      {areas && areas.length > 0 && formValues.cartId.length > 0 && (
+      {areas.length > 0 && (
         <>
           <Row>
             <Typography variant='h5'>Destination</Typography>

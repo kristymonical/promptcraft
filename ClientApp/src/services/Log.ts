@@ -30,7 +30,7 @@ export interface LogRequest {
   action: 'clean' | 'move' | 'queue' | 'schedule' | 'status' | 'unknown';
   deliveryId: number;
   message: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   route: string;
   statusCode: number;
   success: boolean;
