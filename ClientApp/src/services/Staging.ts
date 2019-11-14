@@ -37,7 +37,7 @@ export async function getStagedCarts() {
 export interface GetStagedCartsResult {
   cartId: string;
   deliveryId: number;
-  deliveryRequestType: string;
+  deliveryRequestType: 'deliver' | 'stage' | 'return';
   destinationArea: string;
   orderId: string;
   stagingLocationId: string;

@@ -47,7 +47,7 @@ namespace SVT.Platform.Data.Models
 
         public bool HasActiveJobs()
         {
-            if (this.Jobs == null) return false;
+            if (this.Jobs == null || this.Jobs.Count == 0) return false;
 
             return this
                 .Jobs

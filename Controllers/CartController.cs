@@ -23,18 +23,18 @@ namespace SVT.Platform.Controllers
         [HttpGet("staging")]
         public async Task<IActionResult> GetStagedCarts([FromQuery]ByDeliveryType query)
         {
-            var stagedCartLocationsQueryable = LocationCommands.GetStagedCartLocations(_svtContext);
+            var stagedCartLocations = await LocationCommands.GetStagedCartLocations(_svtContext);
 
             if (!string.IsNullOrWhiteSpace(query.DeliveryType))
             {
-                stagedCartLocationsQueryable = stagedCartLocationsQueryable.Where(loc => loc.Delivery.DeliveryType == query.DeliveryType);
+                stagedCartLocations = stagedCartLocations.Where(loc => loc.Delivery.DeliveryType == query.DeliveryType);
             }
 
             return Ok(new
             {
                 success = true,
                 message = "",
-                data = (await stagedCartLocationsQueryable.ToListAsync())
+                data = stagedCartLocations
                     .Select(loc => new GetStagedCartsResponse()
                     {
                         OrderId = loc.Delivery.OrderId,
