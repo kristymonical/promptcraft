@@ -160,18 +160,12 @@ namespace SVT.Platform.Controllers
                             // create itinerary if it doesn't exist
                             if (itinerary == null)
                             {
-                                var itineraryLocation = job.Delivery.Locations
-                                        .Where(loc => loc.LocationId == aethonJobItinerary.DestinationId)
-                                        .FirstOrDefault();
-                                Console.WriteLine($@"
-                                    Aethon Job Id: {aethonJobDetails.JobId}
-                                    Itinerary Destination Id: {aethonJobItinerary.DestinationId}
-                                    Itinerary Location Id: {itineraryLocation?.LocationId}
-                                ");
                                 itinerary = new Itinerary
                                 {
                                     AethonRunId = aethonJobItinerary.RunId,
-                                    Location = itineraryLocation
+                                    Location = job.Delivery.Locations
+                                        .Where(loc => loc.LocationId == aethonJobItinerary.DestinationId)
+                                        .FirstOrDefault()
                                 };
 
 
