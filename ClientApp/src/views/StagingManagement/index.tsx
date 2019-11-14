@@ -15,7 +15,10 @@ import {
 } from 'components';
 import { getDestinationAreas, GetAreasResult } from 'services/Area';
 import { toast } from 'react-toastify';
-import { batchCreateDeliveryRequests } from 'services/Delivery';
+import {
+  batchCreateDeliveryRequests,
+  updateDeliveryDestinationArea
+} from 'services/Delivery';
 
 const cartsTableShape = [
   { label: 'Current Location', key: 'stagingLocationId' },
@@ -73,12 +76,14 @@ export default function StagingManagement() {
 
   const getValidDestinationAreas = useCallback(
     async (rows: GetStagedCartsResult[]) => {
-      const promises: Promise<GetAreasResult[]>[] = [];
-      rows.forEach(row => {
-        promises.push(getDestinationAreas(row.stagingLocationId));
-      });
+      setLocked(true);
 
       try {
+        const promises: Promise<GetAreasResult[]>[] = [];
+        rows.forEach(row => {
+          promises.push(getDestinationAreas(row.stagingLocationId));
+        });
+
         const results = _.flatten(await Promise.all(promises));
         const destinationAreas = _.sortBy(
           _.unionBy(_.flatten(results), 'areaId').map(area => area.areaName)
@@ -92,34 +97,50 @@ export default function StagingManagement() {
         }
       } catch {
         setAvailableFinalDestinations([]);
+      } finally {
+        setLocked(false);
       }
     },
     []
   );
 
-  // get data on mount
+  // get data on mount and if callback updates
   useEffect(() => {
     refreshStagedCarts();
   }, [refreshStagedCarts]);
 
   // submit batch delivery queue request and reset UI values
   const onSubmit = useCallback(async () => {
-    const success = await batchCreateDeliveryRequests(
-      selectedRows.map(row => ({
-        cartId: row.cartId,
-        cartLocation: row.stagingLocationId,
-        deliveryType: 'deliver',
-        destinationArea: finalDestination,
-        orderNumber: row.orderId
-      }))
-    );
+    setLocked(true);
+    try {
+      const batchDeliveriesPromise = batchCreateDeliveryRequests(
+        selectedRows
+          .filter(row => row.deliveryRequestType === 'stage')
+          .map(row => ({
+            cartId: row.cartId,
+            cartLocation: row.stagingLocationId,
+            deliveryType: 'deliver',
+            destinationArea: finalDestination,
+            orderNumber: row.orderId
+          }))
+      );
 
-    if (!success) return;
+      const updateDestinationPromises = selectedRows
+        .filter(row => row.deliveryRequestType !== 'stage')
+        .map(row =>
+          updateDeliveryDestinationArea(row.deliveryId, finalDestination)
+        );
 
-    refreshStagedCarts();
-    setFinalDestination('');
-    setSelectedRows([]);
-    setAvailableFinalDestinations([]);
+      await Promise.all([...updateDestinationPromises, batchDeliveriesPromise]);
+
+      refreshStagedCarts();
+      setFinalDestination('');
+      setSelectedRows([]);
+      setAvailableFinalDestinations([]);
+    } catch {
+    } finally {
+      setLocked(false);
+    }
   }, [finalDestination, selectedRows, refreshStagedCarts]);
 
   return (
@@ -153,7 +174,11 @@ export default function StagingManagement() {
               data={stagingTableData}
               dataIdField='cartId'
               noMargins
-              onSelectRow={selected => setSelectedRows(selected)}
+              onSelectRow={selected => {
+                setSelectedRows(selected);
+                setFinalDestination('');
+                setAvailableFinalDestinations([]);
+              }}
               selectable
               selectedRows={selectedRows}
               shape={cartsTableShape}

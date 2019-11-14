@@ -59,6 +59,8 @@ export async function createDeliveryRequest({
 export async function batchCreateDeliveryRequests(
   requests: CreateDeliveryRequest[]
 ) {
+  if (requests.length === 0) return;
+
   try {
     const deliveries = requests.map(
       ({
@@ -105,10 +107,47 @@ export async function batchCreateDeliveryRequests(
         trackingId: result.headers.get('trackingId') || 'unknown'
       });
     }
-
-    return response.success;
   } catch (err) {
     console.error('[batchCreateDeliveryRequests]:', err);
+    throw err;
+  }
+}
+
+export async function updateDeliveryDestinationArea(
+  deliveryId: number,
+  newDestination: string
+) {
+  try {
+    const result = await fetch(`/api/delivery/${deliveryId}/destination`, {
+      body: JSON.stringify({ destinationArea: newDestination }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH'
+    });
+
+    const response: ServiceResponse<any> = await result.json();
+
+    if (response.success) {
+      toast.success(
+        `Updated delivery ${deliveryId}'s destination area to ${newDestination}`
+      );
+    } else {
+      const message =
+        response.message || "Unable to update delivery's destination area";
+
+      toast.error(message);
+      createLog({
+        action: 'queue',
+        deliveryId: -1,
+        message,
+        method: 'PATCH',
+        route: result.url,
+        statusCode: result.status,
+        success: false,
+        trackingId: result.headers.get('trackingId') || 'unknown'
+      });
+    }
+  } catch (err) {
+    console.error('[updateDeliveryDestinationArea]:', err);
     throw err;
   }
 }
