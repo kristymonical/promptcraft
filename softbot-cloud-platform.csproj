@@ -25,9 +25,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="$(SpaRoot)**"/>
-    <Content Include="deploy\*.ps1">
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
     <None Remove="$(SpaRoot)**"/>
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**"/>
   </ItemGroup>

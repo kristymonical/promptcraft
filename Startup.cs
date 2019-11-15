@@ -29,12 +29,15 @@ namespace SVT.Platform
         public Startup(IWebHostEnvironment environment)
         {
             Environment = environment;
-            Configuration = new ConfigurationBuilder()
+            var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(environment.ContentRootPath)
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile("appsettings.development.json")
-                .AddEnvironmentVariables()
-                .Build();
+                .AddJsonFile("appsettings.json");
+
+            if (Environment.IsDevelopment()) configBuilder.AddJsonFile("appsettings.development.json");
+
+            configBuilder.AddEnvironmentVariables();
+
+            Configuration = configBuilder.Build();
         }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
