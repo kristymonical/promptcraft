@@ -51,8 +51,7 @@ namespace SVT.Platform.Data.Models
 
             return this
                 .Jobs
-                .ToList()
-                .TrueForAll(j => j.Completed == null
+                .Any(j => j.Completed == null
                     && j.Canceled == null
                     && j.Expired == null);
         }
