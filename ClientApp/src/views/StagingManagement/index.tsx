@@ -68,7 +68,7 @@ export default function StagingManagement() {
 
       const cartsData = await getStagedCarts();
       setStagingTableData(cartsData);
-    } catch {
+    } catch (err) {
     } finally {
       setLocked(false);
     }
@@ -102,7 +102,7 @@ export default function StagingManagement() {
         } else {
           setAvailableFinalDestinations(destinationAreas);
         }
-      } catch {
+      } catch (err) {
         setAvailableFinalDestinations([]);
       } finally {
         setLocked(false);
@@ -144,7 +144,7 @@ export default function StagingManagement() {
       setFinalDestination('');
       setSelectedRows([]);
       setAvailableFinalDestinations([]);
-    } catch {
+    } catch (err) {
     } finally {
       setLocked(false);
     }
