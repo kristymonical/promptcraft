@@ -1,1 +1,1 @@
-# Softbot Cloud Platform Monorepo
+# Softbot Cloud Platform
