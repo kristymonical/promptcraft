@@ -30,7 +30,7 @@ ReactDOM.render(
     <NavBar />
     <Switch>
       {routes.map(({ path, component }) => (
-        <Route path={path} component={component} />
+        <Route key={`route-${path}`} path={path} component={component} />
       ))}
       <Redirect to='/dashboard' />
     </Switch>
