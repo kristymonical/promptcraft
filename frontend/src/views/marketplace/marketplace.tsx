@@ -1,5 +1,5 @@
 import React from 'react';
-import 'marketplace.scss';
+import './marketplace.scss';
 
 export interface MarketplaceProps {}
 

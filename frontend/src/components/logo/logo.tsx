@@ -9,7 +9,7 @@ export interface LogoProps {
 }
 
 const Logo: React.FC<LogoProps> = ({ variant = 'sm' }) => {
-  return <Image src={variant === 'sm' ? logoImage : logoBigImage}></Image>;
+  return <Image src={variant === 'sm' ? logoImage : logoBigImage} />;
 };
 
 export default Logo;

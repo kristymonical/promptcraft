@@ -1,5 +1,5 @@
 import React from 'react';
-import 'lab.scss';
+import './lab.scss';
 
 export interface LabProps {}
 

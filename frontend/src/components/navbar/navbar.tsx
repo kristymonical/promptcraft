@@ -3,13 +3,13 @@ import './navbar.scss';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import { Link, NavLink } from 'react-router-dom';
-import Logo from 'components/logo';
+import Logo from 'components/logo/logo';
 
 export interface NavBarProps {}
 
 const navItems = [
   { label: 'dashboard', link: '/dashboard' },
-  { label: 'store', link: '/store' },
+  { label: 'store', link: '/marketplace' },
   { label: 'tools', link: '/tools' },
   { label: 'metrics', link: '/metrics' },
   { label: 'notifications', link: '/notifications' },
@@ -24,7 +24,12 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
       </Navbar.Brand>
       <Nav>
         {navItems.map(({ label, link }) => (
-          <Nav.Link className='nav-item' as={NavLink} to={link}>
+          <Nav.Link
+            key={`link-${label}`}
+            className='nav-item'
+            as={NavLink}
+            to={link}
+          >
             {label}
           </Nav.Link>
         ))}
