@@ -1,11 +1,11 @@
-import Dashboard from './dashboard/dashboard';
-import Lab from './lab/lab';
-import Login from './login/login';
-import Marketplace from './marketplace/marketplace';
-import Metrics from './metrics/metrics';
-import Notifications from './notifications/notifications';
-import Help from './help/help';
-import Tools from './tools/tools';
+import Dashboard from './dashboard/Dashboard';
+import Lab from './lab/Lab';
+import Login from './login/Login';
+import Marketplace from './marketplace/Marketplace';
+import Metrics from './metrics/Metrics';
+import Notifications from './notifications/Notifications';
+import Help from './help/Help';
+import Tools from './tools/Tools';
 
 export {
   Dashboard,

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import NavBar from 'components/navbar/navbar';
+import NavBar from 'components/navbar/Navbar';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import './index.scss';

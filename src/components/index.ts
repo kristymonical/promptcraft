@@ -1,4 +1,5 @@
-import Logo from './logo/logo';
-import Navbar from './navbar/navbar';
+import Logo from './logo/Logo';
+import Navbar from './navbar/Navbar';
+import Widget from './widget/Widget';
 
-export { Logo, Navbar };
+export { Logo, Navbar, Widget };

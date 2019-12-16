@@ -3,7 +3,8 @@ import './navbar.scss';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import { Link, NavLink } from 'react-router-dom';
-import Logo from 'components/logo/logo';
+import Logo from 'components/logo/Logo';
+import ChevronDown from 'icons/ChevronDown';
 
 export interface NavBarProps {}
 
@@ -34,6 +35,14 @@ const NavBar: React.FC<NavBarProps> = ({}) => {
           </Nav.Link>
         ))}
       </Nav>
+      <Navbar.Collapse>
+        {/* <Navbar.Text>Hello, {NAME}</Navbar.Text> */}
+        {/* <ChevronDown size={7} /> */}
+        {/* Avatar */}
+        {/* Person w/ headphones icon thing */}
+        {/* Notifications Bell */}
+        {/* Settings Cog */}
+      </Navbar.Collapse>
     </Navbar>
   );
 };
