@@ -728,19 +728,216 @@
         const { h, render } = preact;
         const { useState, useEffect, useRef } = preactHooks;
 
+        // ===== MODULES =====
+        
+        // Search Module
+        const SearchModule = {
+            searchQuery: '',
+            
+            init: function(handlers) {
+                this.handlers = handlers;
+                return this;
+            },
+            
+            handleSearchChange: function(query) {
+                this.searchQuery = query;
+                this.handlers.onSearchChange(query);
+            },
+            
+            filterPromptsLocally: function(promptsList, searchTerm, category, currentTab, favorites) {
+                let filtered = promptsList;
+                
+                // Filter by category/tab
+                if (currentTab && currentTab !== 'All') {
+                    if (currentTab === 'My Library') {
+                        filtered = filtered.filter(function(prompt) { 
+                            return favorites.includes(prompt.id); 
+                        });
+                    } else {
+                        filtered = filtered.filter(function(prompt) { 
+                            return prompt.category === currentTab; 
+                        });
+                    }
+                }
+                
+                // Filter by search term
+                if (searchTerm && searchTerm.trim()) {
+                    const lowerSearchTerm = searchTerm.toLowerCase();
+                    filtered = filtered.filter(function(prompt) {
+                        const title = (prompt.title || '').toLowerCase();
+                        const description = (prompt.description || '').toLowerCase();
+                        const tags = (prompt.tags || []).join(' ').toLowerCase();
+                        return title.includes(lowerSearchTerm) || 
+                               description.includes(lowerSearchTerm) || 
+                               tags.includes(lowerSearchTerm);
+                    });
+                }
+                
+                return filtered;
+            },
+            
+            getState: function() {
+                return {
+                    searchQuery: this.searchQuery
+                };
+            }
+        };
+
+        // Categories Module
+        const CategoriesModule = {
+            activeTab: 'All',
+            categories: ['All', 'My Library', 'Prototype Review & UX Feedback', 'Collaboration & Handoff', 'Accessibility & QA', 'Experimentation & Iteration', 'Design Ops & Governance'],
+            
+            init: function(handlers) {
+                this.handlers = handlers;
+                return this;
+            },
+            
+            handleTabChange: function(newTab) {
+                this.activeTab = newTab;
+                this.handlers.onTabChange(newTab);
+            },
+            
+            getCategories: function() {
+                return this.categories;
+            },
+            
+            getActiveTab: function() {
+                return this.activeTab;
+            },
+            
+            isActive: function(category) {
+                return this.activeTab === category;
+            }
+        };
+
+        // Favorites Module
+        const FavoritesModule = {
+            favorites: [],
+            
+            init: function(handlers) {
+                this.handlers = handlers;
+                return this;
+            },
+            
+            loadFavorites: function() {
+                this.handlers.onLoadFavorites();
+            },
+            
+            toggleFavorite: function(promptId, event) {
+                if (event) {
+                    event.stopPropagation();
+                }
+                
+                const index = this.favorites.indexOf(promptId);
+                if (index > -1) {
+                    this.favorites.splice(index, 1);
+                } else {
+                    this.favorites.push(promptId);
+                }
+                
+                this.handlers.onFavoritesChange(this.favorites);
+            },
+            
+            isFavorited: function(promptId) {
+                return this.favorites.includes(promptId);
+            },
+            
+            getFavorites: function() {
+                return this.favorites;
+            },
+            
+            setFavorites: function(favorites) {
+                this.favorites = Array.isArray(favorites) ? favorites : [];
+            }
+        };
+
+        // Lazy Load Module
+        const LazyLoadModule = {
+            isLoadingMore: false,
+            hasMore: true,
+            currentOffset: 0,
+            batchSize: 5,
+            intersectionObserver: null,
+            
+            init: function(handlers) {
+                this.handlers = handlers;
+                return this;
+            },
+            
+            setupIntersectionObserver: function(lastItemRef, callback) {
+                if (this.intersectionObserver) {
+                    this.intersectionObserver.disconnect();
+                }
+                
+                this.intersectionObserver = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting && !this.isLoadingMore && this.hasMore) {
+                            this.loadMore();
+                        }
+                    }.bind(this));
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '20px'
+                });
+                
+                if (lastItemRef && lastItemRef.current) {
+                    this.intersectionObserver.observe(lastItemRef.current);
+                }
+            },
+            
+            loadMore: function() {
+                if (this.isLoadingMore || !this.hasMore) return;
+                
+                this.isLoadingMore = true;
+                this.handlers.onLoadMore(this.currentOffset, this.batchSize);
+            },
+            
+            handleMorePromptsLoaded: function(prompts, hasMore) {
+                this.isLoadingMore = false;
+                this.hasMore = hasMore;
+                this.currentOffset += this.batchSize;
+                this.handlers.onMorePromptsLoaded(prompts, hasMore);
+            },
+            
+            reset: function() {
+                this.currentOffset = 0;
+                this.hasMore = true;
+                this.isLoadingMore = false;
+            },
+            
+            cleanup: function() {
+                if (this.intersectionObserver) {
+                    this.intersectionObserver.disconnect();
+                    this.intersectionObserver = null;
+                }
+            }
+        };
+
+        // Module Manager
+        const ModuleManager = {
+            modules: {},
+            
+            init: function(handlers) {
+                this.modules.search = SearchModule.init(handlers);
+                this.modules.categories = CategoriesModule.init(handlers);
+                this.modules.favorites = FavoritesModule.init(handlers);
+                this.modules.lazyLoad = LazyLoadModule.init(handlers);
+                return this;
+            },
+            
+            getModule: function(name) {
+                return this.modules[name];
+            }
+        };
+
         function PromptCraft() {
+            // Core state (not handled by modules)
             const [prompts, setPrompts] = useState([]);
             const [filteredPrompts, setFilteredPrompts] = useState([]);
-            const [activeTab, setActiveTab] = useState('All');
-            const [categories, setCategories] = useState(['All', 'My Library', 'Prototype Review & UX Feedback', 'Collaboration & Handoff', 'Accessibility & QA', 'Experimentation & Iteration', 'Design Ops & Governance']);
-            const [searchQuery, setSearchQuery] = useState('');
-            const [filterCategory, setFilterCategory] = useState('All');
-            const [favorites, setFavorites] = useState([]);
-            const [formData, setFormData] = useState({
-                title: '',
-                description: '',
-                category: 'Prototype Review & UX Feedback'
-            });
+            const [isLoading, setIsLoading] = useState(false);
+            const [totalCount, setTotalCount] = useState(0);
+            const [hasMore, setHasMore] = useState(true);
             const [selectedPrompt, setSelectedPrompt] = useState(null);
             const [editingPrompt, setEditingPrompt] = useState(null);
             const [editData, setEditData] = useState({
@@ -749,42 +946,103 @@
                 category: ''
             });
             const [showCreatePrompt, setShowCreatePrompt] = useState(false);
-            const [createMode, setCreateMode] = useState('manual'); // 'manual' or 'ai'
+            const [createMode, setCreateMode] = useState('manual');
             const [aiInput, setAiInput] = useState('');
             const [aiModel, setAiModel] = useState('Claude');
             const [generatedPrompt, setGeneratedPrompt] = useState(null);
-            const [totalCount, setTotalCount] = useState(0);
-            const [isLoading, setIsLoading] = useState(false);
+            const [formData, setFormData] = useState({
+                title: '',
+                description: '',
+                category: 'Prototype Review & UX Feedback'
+            });
+            
+            // Module state (synced with modules)
+            const [searchQuery, setSearchQuery] = useState('');
+            const [activeTab, setActiveTab] = useState('All');
+            const [favorites, setFavorites] = useState([]);
+            const [categories] = useState(['All', 'My Library', 'Prototype Review & UX Feedback', 'Collaboration & Handoff', 'Accessibility & QA', 'Experimentation & Iteration', 'Design Ops & Governance']);
             const [isLoadingMore, setIsLoadingMore] = useState(false);
-            const [hasMore, setHasMore] = useState(true);
-            const observerRef = useRef(null);
+            
+            // Refs
             const lastItemRef = useRef(null);
-
-            // Local search and filter function
-            const filterPromptsLocally = (promptsList, searchTerm, category, currentTab) => {
-                let filtered = promptsList;
-                
-                // Filter by category/tab
-                if (currentTab && currentTab !== 'All') {
-                    if (currentTab === 'My Library') {
-                        // Show only favorited prompts
-                        filtered = filtered.filter(prompt => favorites.includes(prompt.id));
-                    } else {
-                        filtered = filtered.filter(prompt => prompt.category === currentTab);
+            const observerRef = useRef(null);
+            const modulesRef = useRef(null);
+            
+            // Initialize modules once
+            if (!modulesRef.current) {
+                modulesRef.current = ModuleManager.init({
+                    // Search handlers
+                    onSearchChange: function(query) {
+                        setSearchQuery(query);
+                    },
+                    
+                    // Tab handlers
+                    onTabChange: function(newTab) {
+                        setActiveTab(newTab);
+                    },
+                    
+                    // Lazy load handlers
+                    onLoadMore: function(offset, batchSize) {
+                        setIsLoadingMore(true);
+                        parent.postMessage({
+                            pluginMessage: {
+                                type: 'load-more',
+                                offset: offset,
+                                limit: batchSize
+                            }
+                        }, '*');
+                    },
+                    
+                    onMorePromptsLoaded: function(newPrompts, hasMore) {
+                        setIsLoadingMore(false);
+                        setFilteredPrompts(function(prev) { return prev.concat(newPrompts); });
+                        setHasMore(hasMore);
+                    },
+                    
+                    // Favorites handlers
+                    onLoadFavorites: function() {
+                        parent.postMessage({
+                            pluginMessage: { type: 'load-favorites' }
+                        }, '*');
+                    },
+                    
+                    onFavoritesChange: function(newFavorites) {
+                        setFavorites(newFavorites);
+                        parent.postMessage({
+                            pluginMessage: {
+                                type: 'save-favorites',
+                                favorites: newFavorites
+                            }
+                        }, '*');
                     }
+                });
+            }
+            
+            const modules = modulesRef.current;
+
+            // Helper functions using modules
+            const handleSearchChange = function(e) {
+                modules.getModule('search').handleSearchChange(e.target.value);
+            };
+            
+            const handleTabChange = function(tab) {
+                modules.getModule('categories').handleTabChange(tab);
+            };
+            
+            const handleToggleFavorite = function(promptId, event) {
+                if (event) {
+                    event.stopPropagation();
                 }
                 
-                // Filter by search term
-                if (searchTerm && searchTerm.trim()) {
-                    const query = searchTerm.toLowerCase().trim();
-                    filtered = filtered.filter(prompt => 
-                        prompt.title.toLowerCase().includes(query) ||
-                        prompt.description.toLowerCase().includes(query) ||
-                        prompt.tags.some(tag => tag.toLowerCase().includes(query))
-                    );
-                }
+                const isFavorited = favorites.includes(promptId);
+                modules.getModule('favorites').toggleFavorite(promptId, event);
                 
-                return filtered;
+                // Show toast
+                if (isFavorited) {
+                    showToast('Removed from My Library');
+                } else {
+                    showToast('Added to My Library');
+                }
             };
 
             // Toast notification function
@@ -799,54 +1057,35 @@
                 }, 3000);
             };
 
-            // Handle favorite toggle
-            const handleToggleFavorite = async (promptId, e) => {
-                e.stopPropagation(); // Prevent card selection
-                
-                const isFavorited = favorites.includes(promptId);
-                let newFavorites;
-                
-                if (isFavorited) {
-                    newFavorites = favorites.filter(id => id !== promptId);
-                    showToast('Removed from My Library');
-                } else {
-                    newFavorites = [...favorites, promptId];
-                    showToast('Added to My Library');
-                }
-                
-                setFavorites(newFavorites);
-                
-                // Save to figma.clientStorage
-                parent.postMessage({
-                    pluginMessage: {
-                        type: 'save-favorites',
-                        favorites: newFavorites
-                    }
-                }, '*');
-            };
 
             // Load favorites from storage on mount
+            // Initialize modules on mount
             useEffect(() => {
-                parent.postMessage({
-                    pluginMessage: {
-                        type: 'load-favorites'
-                    }
-                }, '*');
+                modules.getModule('favorites').loadFavorites();
             }, []);
 
-            // Handle search and filter changes
+            // Handle search and filter changes using modules
             useEffect(() => {
                 if (prompts.length > 0) {
-                    const filtered = filterPromptsLocally(prompts, searchQuery, 'All', activeTab);
+                    const searchModule = modules.getModule('search');
+                    
+                    const filtered = searchModule.filterPromptsLocally(
+                        prompts, 
+                        searchQuery, 
+                        'All', 
+                        activeTab, 
+                        favorites
+                    );
+                    
                     setFilteredPrompts(filtered);
                     setTotalCount(filtered.length);
                     setHasMore(false); // Disable lazy loading for filtered results
                 }
-            }, [prompts, searchQuery, filterCategory, favorites, activeTab]);
+            }, [prompts, searchQuery, activeTab, favorites]);
 
             // Load all prompts when search becomes active or when switching to My Library
             useEffect(() => {
-                if (searchQuery.trim() || filterCategory !== 'All' || activeTab === 'My Library') {
+                if (searchQuery.trim() || activeTab === 'My Library') {
                     // Request all prompts for search functionality or My Library
                     parent.postMessage({ 
                         pluginMessage: { 
@@ -855,7 +1094,7 @@
                     }, '*');
                     setIsLoading(true);
                 }
-            }, [searchQuery, filterCategory, activeTab]);
+            }, [searchQuery, activeTab]);
 
             // Handle category changes - request prompts from backend
             useEffect(() => {
@@ -889,8 +1128,9 @@
                 case 'prompts-loaded':
                     setPrompts(msg.prompts || []);
                     // Apply local filtering if search/filter is active
-                    if (searchQuery.trim() || filterCategory !== 'All' || activeTab === 'My Library') {
-                        const filtered = filterPromptsLocally(msg.prompts || [], searchQuery, 'All', activeTab);
+                    if (searchQuery.trim() || activeTab === 'My Library') {
+                        const searchModule = modules.getModule('search');
+                        const filtered = searchModule.filterPromptsLocally(msg.prompts || [], searchQuery, 'All', activeTab, favorites);
                         setFilteredPrompts(filtered);
                         setTotalCount(filtered.length);
                         setHasMore(false);
@@ -935,6 +1175,7 @@
 
                         case 'favorites-loaded':
                             setFavorites(msg.favorites || []);
+                            modules.getModule('favorites').setFavorites(msg.favorites || []);
                             break;
                     }
                 };
@@ -1249,7 +1490,7 @@
                             className: 'input search-input',
                             placeholder: 'Search prompts...',
                             value: searchQuery,
-                            onChange: (e) => setSearchQuery(e.target.value)
+                            onChange: handleSearchChange
                         })
                     ])
                 ]),
@@ -1390,7 +1631,7 @@
                         h('button', {
                             key: cat,
                             className: `tab ${activeTab === cat ? 'active' : ''}`,
-                            onClick: () => setActiveTab(cat)
+                            onClick: () => handleTabChange(cat)
                         }, cat)
                     )
                 ),
@@ -1466,7 +1707,7 @@
                     ])
                 ]) : h('div', { className: 'prompts-section' }, [
                     h('h2', { className: 'section-title' }, 
-                        (searchQuery.trim() || filterCategory !== 'All') 
+                        searchQuery.trim()
                             ? `Search Results (${filteredPrompts.length})`
                             : activeTab === 'My Library'
                                 ? `My Library (${favorites.length})`
@@ -1494,14 +1735,14 @@
                                         ? 'No more prompts in your library.' 
                                         : 'More prompts coming soon.') : null
                                 ].filter(Boolean)
-                                : (searchQuery.trim() || filterCategory !== 'All' || activeTab === 'My Library') 
+                                : (searchQuery.trim() || activeTab === 'My Library') 
                                     ? h('div', { className: 'no-results' }, [
                                         h('h3', {}, 'No results found'),
                                         h('p', {}, searchQuery.trim() 
-                                            ? `No prompts match "${searchQuery}"${filterCategory !== 'All' ? ` in ${filterCategory}` : ''}.`
+                                            ? `No prompts match "${searchQuery}".`
                                             : activeTab === 'My Library'
                                                 ? 'No prompts in your library yet. Star some prompts to add them here!'
-                                                : `No prompts found in ${filterCategory}.`
+                                                : `No prompts found in ${activeTab}.`
                                         )
                                     ])
                                     : h('div', { className: 'empty-state' }, `No ${activeTab.toLowerCase()} prompts yet.`)
