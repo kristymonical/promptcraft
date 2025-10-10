@@ -308,6 +308,45 @@ figma.ui.onmessage = async (msg) => {
       }
       break;
 
+    case 'delete-prompt':
+      try {
+        const promptId = msg.data.id;
+        const promptIndex = ALL_PROMPTS.findIndex(p => p.id === promptId);
+        
+        if (promptIndex !== -1) {
+          const deletedPrompt = ALL_PROMPTS[promptIndex];
+          ALL_PROMPTS.splice(promptIndex, 1);
+          
+          // Save updated prompts to storage
+          await figma.clientStorage.setAsync('prompts', ALL_PROMPTS);
+          
+          console.log('Prompt deleted:', deletedPrompt.title);
+          figma.notify(`Deleted "${deletedPrompt.title}"`);
+          
+          // Reload prompts for the current active category
+          currentOffset = 0;
+          const updatedData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
+          figma.ui.postMessage({
+            type: 'prompts-loaded',
+            prompts: updatedData.prompts,
+            totalCount: updatedData.totalCount,
+            hasMore: updatedData.hasMore,
+            offset: updatedData.offset,
+            limit: updatedData.limit,
+            category: updatedData.category
+          });
+          
+          currentOffset = BATCH_SIZE;
+        } else {
+          console.warn('Prompt not found for deletion:', promptId);
+          figma.notify('Prompt not found');
+        }
+      } catch (error) {
+        console.error('Failed to delete prompt:', error);
+        figma.notify('Failed to delete prompt');
+      }
+      break;
+
     case 'close-plugin':
       figma.closePlugin();
       break;

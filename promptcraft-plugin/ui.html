@@ -174,6 +174,25 @@
             width: 100%;
         }
 
+        .button.tertiary {
+            background: transparent;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 6px 12px;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .button.tertiary:hover:not(:disabled) {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-action {
+            margin-top: 8px;
+            margin-bottom: 0;
+        }
+
         /* ===== TAB COMPONENTS ===== */
         .tabs {
             display: flex;
@@ -568,6 +587,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            padding-bottom: 80px; /* Space for fixed form actions */
         }
 
         .fullscreen-form .form-group {
@@ -613,11 +633,16 @@
         }
 
         .form-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--background-color);
+            border-top: 1px solid var(--border-color);
+            padding: var(--spacing-sm);
             display: flex;
             gap: var(--spacing-sm);
-            margin-top: auto;
-            padding-top: var(--spacing-lg);
-            border-top: 1px solid var(--border-color);
+            z-index: 1000;
         }
 
         .form-actions .button {
@@ -948,16 +973,37 @@
             }, [hasMore, isLoadingMore, filteredPrompts.length, activeTab]);
 
             // Handle copy prompt functionality
-            const handleCopyPrompt = async () => {
+            const handleCopyPrompt = () => {
                 const textToCopy = selectedPrompt ? selectedPrompt.description : formData.description;
                 if (!textToCopy.trim()) return;
 
                 try {
-                    await navigator.clipboard.writeText(textToCopy.trim());
-                    showToast('Prompt copied to clipboard!');
+                    // Create a temporary textarea element to copy text
+                    const textArea = document.createElement('textarea');
+                    textArea.value = textToCopy.trim();
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    // Try to copy using execCommand (works in Figma)
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (successful) {
+                        showToast('Prompt copied to clipboard!');
+                    } else {
+                        // Fallback: show the text in a prompt for manual copying
+                        prompt('Copy this prompt text:', textToCopy.trim());
+                        showToast('Text selected for manual copying');
+                    }
                 } catch (error) {
                     console.error('Failed to copy:', error);
-                    showToast('Failed to copy prompt');
+                    // Fallback: show the text in a prompt for manual copying
+                    prompt('Copy this prompt text:', textToCopy.trim());
+                    showToast('Text selected for manual copying');
                 }
             };
 
@@ -1066,6 +1112,9 @@
 
             // Handle opening editor for a prompt
             const handleOpenEditor = (prompt) => {
+                console.log('Opening editor for prompt:', prompt);
+                console.log('Prompt ID:', prompt.id);
+                console.log('Is custom prompt:', prompt.id && prompt.id.startsWith('custom-'));
                 setSelectedPrompt(prompt);
                 setEditingPrompt(prompt);
                 setEditData({
@@ -1094,6 +1143,28 @@
                 // Close editor
                 setEditingPrompt(null);
                 setEditData({ title: '', description: '', category: '' });
+            };
+
+            // Handle deleting prompt
+            const handleDeletePrompt = () => {
+                if (!editingPrompt) return;
+
+                // Confirm deletion
+                if (confirm(`Are you sure you want to delete "${editingPrompt.title}"? This action cannot be undone.`)) {
+                    parent.postMessage({
+                        pluginMessage: {
+                            type: 'delete-prompt',
+                            data: {
+                                id: editingPrompt.id
+                            }
+                        }
+                    }, '*');
+
+                    // Close editor
+                    setEditingPrompt(null);
+                    setEditData({ title: '', description: '', category: '' });
+                    showToast('Prompt deleted');
+                }
             };
 
 
@@ -1334,8 +1405,8 @@
                                     onChange: (e) => setEditData({...editData, description: e.target.value})
                                 })
                             ]),
-                            // Show category selector for custom prompts (those with 'custom-' prefix)
-                            editingPrompt.id && editingPrompt.id.startsWith('custom-') ? h('div', { className: 'form-group' }, [
+                            // Always show category selector for debugging
+                            h('div', { className: 'form-group' }, [
                                 h('label', { className: 'form-label' }, 'Category'),
                                 h('select', {
                                     className: 'input',
@@ -1343,8 +1414,17 @@
                                     onChange: (e) => setEditData({...editData, category: e.target.value})
                                 }, categories.filter(cat => cat !== 'All').map(cat => 
                                     h('option', { key: cat, value: cat }, cat)
-                                ))
-                            ]) : null,
+                                )),
+                                // Delete button as tertiary link under category
+                                editingPrompt && editingPrompt.id && editingPrompt.id.startsWith('custom-') ? h('div', { 
+                                    className: 'form-group delete-action'
+                                }, [
+                                    h('button', {
+                                        className: 'button tertiary',
+                                        onClick: handleDeletePrompt
+                                    }, 'Delete Prompt')
+                                ]) : null
+                            ]),
                             h('div', { className: 'form-actions' }, [
                                 h('button', {
                                     className: 'button secondary',
