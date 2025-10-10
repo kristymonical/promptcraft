@@ -1,0 +1,479 @@
+{
+  "prompts": [
+    {
+      "id": "uxr-001",
+      "title": "Persona Builder",
+      "description": "Generate a user persona for a fintech app, export as JSON for React handoff. Include demographics, tech proficiency, goals, pain points, and preferred interaction patterns. Format output as TypeScript interface for developer integration.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "id": "uxr-002",
+      "title": "Interview Script Generator",
+      "description": "Create a comprehensive user interview script for a SaaS dashboard. Include warm-up questions, task-based scenarios, follow-up probes, and closing questions. Export as Markdown with time allocations for 45-minute sessions.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T09:45:00.000Z"
+    },
+    {
+      "id": "uxr-003",
+      "title": "Competitive Analysis Matrix",
+      "description": "Design a competitive analysis comparing 5 project management tools. Include feature comparison, UX patterns, pricing models, and tech stack (React vs Vue). Output as CSV for data visualization in Tableau or D3.js.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T09:30:00.000Z"
+    },
+    {
+      "id": "uxr-004",
+      "title": "Journey Map Framework",
+      "description": "Create a customer journey map for an e-commerce checkout flow. Map touchpoints, emotions, pain points, and opportunities. Include API endpoints and state management considerations for React/Redux implementation.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T09:15:00.000Z"
+    },
+    {
+      "id": "uxr-005",
+      "title": "Survey Design Template",
+      "description": "Design a UX research survey for mobile app satisfaction. Include Likert scales, NPS questions, and open-ended feedback. Export as JSON schema for integration with Typeform or Google Forms API.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T09:00:00.000Z"
+    },
+    {
+      "id": "uxr-006",
+      "title": "Card Sorting Analysis",
+      "description": "Analyze card sorting results for IA optimization. Process 50+ participant responses, identify patterns using clustering algorithms, and output navigation structure as JSON tree for React Router implementation.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T08:45:00.000Z"
+    },
+    {
+      "id": "uxr-007",
+      "title": "Heuristic Evaluation Checklist",
+      "description": "Create a Nielsen's 10 heuristics evaluation checklist for a web app. Include severity ratings, component-level annotations, and export findings as GitHub issues with dev-ready descriptions and Figma links.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T08:30:00.000Z"
+    },
+    {
+      "id": "uxr-008",
+      "title": "Analytics Dashboard Requirements",
+      "description": "Define analytics tracking requirements for a React app. Specify event names, properties, user flows, and integration points for Google Analytics 4 or Mixpanel. Output as TypeScript event schema.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T08:15:00.000Z"
+    },
+    {
+      "id": "uxr-009",
+      "title": "Empathy Map Workshop",
+      "description": "Facilitate an empathy mapping session for healthcare app users. Document what users say, think, do, and feel. Structure output as Miro board JSON export or FigJam-compatible format.",
+      "category": "UX Research",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-15T08:00:00.000Z"
+    },
+    {
+      "id": "uxr-010",
+      "title": "Research Repository Setup",
+      "description": "Structure a UX research repository using Notion or Airtable. Define schemas for storing insights, tagging methodologies, participant data, and linking to Figma prototypes. Export as API-ready JSON structure.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T07:45:00.000Z"
+    },
+    {
+      "id": "acc-001",
+      "title": "WCAG AA Compliance Audit",
+      "description": "Conduct WCAG 2.1 AA audit for a React component library. Check color contrast ratios (4.5:1 minimum), test keyboard navigation, verify ARIA labels. Output as accessibility.json with component-level fixes and Tailwind utility suggestions.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T16:00:00.000Z"
+    },
+    {
+      "id": "acc-002",
+      "title": "ARIA Pattern Implementation",
+      "description": "Implement ARIA roles, states, and properties for a custom dropdown component. Include aria-expanded, aria-labelledby, and keyboard handlers (Enter, Space, Escape). Export as React hook with TypeScript types.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T15:45:00.000Z"
+    },
+    {
+      "id": "acc-003",
+      "title": "Color Contrast Calculator",
+      "description": "Calculate WCAG-compliant color palettes for a design system. Test primary, secondary, and accent colors against white/black backgrounds. Output as Tailwind config with contrast ratios and hex values.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T15:30:00.000Z"
+    },
+    {
+      "id": "acc-004",
+      "title": "Keyboard Navigation Guide",
+      "description": "Design comprehensive keyboard navigation for a SaaS app. Map Tab order, focus indicators, skip links, and shortcuts (Cmd+K for search). Document as React Context implementation with useKeyboard hook.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T15:15:00.000Z"
+    },
+    {
+      "id": "acc-005",
+      "title": "Screen Reader Testing Protocol",
+      "description": "Create testing protocol for NVDA, JAWS, and VoiceOver. Include test scripts, expected announcements, and failure criteria. Export results as JSON for CI/CD integration with axe-core and Pa11y.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T15:00:00.000Z"
+    },
+    {
+      "id": "acc-006",
+      "title": "Alt Text Generator",
+      "description": "Generate context-aware alt text for UI images, icons, and infographics. Distinguish decorative (alt='') vs informative images. Output as JSON mapping for React components with i18n support.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T14:45:00.000Z"
+    },
+    {
+      "id": "acc-007",
+      "title": "Form Accessibility Audit",
+      "description": "Audit form accessibility with proper labels, error messaging, and validation. Implement aria-invalid, aria-describedby, and live regions. Export as React Hook Form schema with Zod validation.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T14:30:00.000Z"
+    },
+    {
+      "id": "acc-008",
+      "title": "Motion Reduction Support",
+      "description": "Implement prefers-reduced-motion for animations. Replace transitions with instant state changes, pause autoplay videos. Export as CSS-in-JS with Tailwind variants and Framer Motion configs.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T14:15:00.000Z"
+    },
+    {
+      "id": "acc-009",
+      "title": "Touch Target Optimization",
+      "description": "Optimize touch targets for mobile (44x44px minimum). Audit buttons, links, and interactive elements. Output as Tailwind spacing utilities with responsive breakpoints for iOS and Android.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T14:00:00.000Z"
+    },
+    {
+      "id": "acc-010",
+      "title": "A11y Component Library",
+      "description": "Build accessible component library documentation. Include ARIA patterns, keyboard shortcuts, and screen reader behavior. Export as Storybook with a11y addon integration and automated testing.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T13:45:00.000Z"
+    },
+    {
+      "id": "proto-001",
+      "title": "Interactive Prototype Export",
+      "description": "Create high-fidelity Figma prototype with micro-interactions. Export to React components using Figma API, maintain auto-layout constraints as flexbox, and generate Tailwind classes from styles.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T12:00:00.000Z"
+    },
+    {
+      "id": "proto-002",
+      "title": "Component Variants System",
+      "description": "Design component variants (primary, secondary, ghost) with Figma variants. Auto-generate TypeScript types and React props interface. Export as design tokens JSON for Style Dictionary processing.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T11:45:00.000Z"
+    },
+    {
+      "id": "proto-003",
+      "title": "Animation Specifications",
+      "description": "Define animation library with easing curves, durations, and delays. Map to Framer Motion variants or CSS keyframes. Output as JSON config for consistent motion across React/Vue apps.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T11:30:00.000Z"
+    },
+    {
+      "id": "proto-004",
+      "title": "User Flow Diagram",
+      "description": "Map user flows with decision points, error states, and success paths. Include API calls, loading states, and error boundaries. Export as React Router routes with lazy loading configuration.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T11:15:00.000Z"
+    },
+    {
+      "id": "proto-005",
+      "title": "Responsive Breakpoints",
+      "description": "Define responsive breakpoints (mobile: 375px, tablet: 768px, desktop: 1440px). Create layout grid system with Figma auto-layout. Export as Tailwind config with custom screen sizes.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T11:00:00.000Z"
+    },
+    {
+      "id": "proto-006",
+      "title": "State Management Map",
+      "description": "Visualize state management flow for complex UI. Map Redux actions, reducers, and selectors or Zustand stores. Export as TypeScript state machine with XState integration points.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T10:45:00.000Z"
+    },
+    {
+      "id": "proto-007",
+      "title": "Loading State Patterns",
+      "description": "Design skeleton screens, spinners, and progress indicators. Include Suspense boundaries and error fallbacks for React. Export as reusable components with Next.js streaming SSR support.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T10:30:00.000Z"
+    },
+    {
+      "id": "proto-008",
+      "title": "Gesture Library Setup",
+      "description": "Define gesture interactions (swipe, pinch, long-press) for mobile. Implement with React Spring or Framer Motion. Include haptic feedback triggers and iOS/Android platform differences.",
+      "category": "Prototyping",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-14T10:15:00.000Z"
+    },
+    {
+      "id": "proto-009",
+      "title": "Data Visualization Components",
+      "description": "Prototype interactive charts with D3.js or Recharts. Define data structures, tooltip behaviors, and responsive scaling. Export as React components with TypeScript prop types.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T10:00:00.000Z"
+    },
+    {
+      "id": "proto-010",
+      "title": "Design Tokens Pipeline",
+      "description": "Create design tokens from Figma (colors, typography, spacing). Set up Style Dictionary to transform tokens into CSS vars, Tailwind config, and iOS/Android native formats.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T09:45:00.000Z"
+    },
+    {
+      "id": "test-001",
+      "title": "Usability Test Script",
+      "description": "Write usability test script with 5 task scenarios. Include success criteria, time limits, and SUS questionnaire. Export as JSON for integration with UserTesting.com or Maze.design API.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T16:00:00.000Z"
+    },
+    {
+      "id": "test-002",
+      "title": "A/B Test Configuration",
+      "description": "Design A/B test for button color variants. Define success metrics (CTR, conversion), sample size calculation, and statistical significance (p < 0.05). Export as Optimizely or LaunchDarkly config JSON.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T15:45:00.000Z"
+    },
+    {
+      "id": "test-003",
+      "title": "Remote Testing Setup",
+      "description": "Configure remote usability testing with Zoom or UserZoom. Create moderator guide, participant consent forms, and session recording checklist. Export as testing playbook with GDPR compliance notes.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T15:30:00.000Z"
+    },
+    {
+      "id": "test-004",
+      "title": "Task Success Metrics",
+      "description": "Define KPIs for task completion: success rate, time-on-task, error count, and satisfaction scores. Create analytics dashboard mockup with Chart.js or Plotly integration specs.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T15:15:00.000Z"
+    },
+    {
+      "id": "test-005",
+      "title": "Eye Tracking Analysis",
+      "description": "Analyze eye tracking heatmaps for landing page optimization. Identify fixation points, scan patterns, and attention metrics. Export findings as annotated Figma frames with optimization recommendations.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T15:00:00.000Z"
+    },
+    {
+      "id": "test-006",
+      "title": "Accessibility Testing Suite",
+      "description": "Run automated accessibility tests with axe-core, Lighthouse, and Pa11y. Create CI/CD pipeline for regression testing. Export results as JSON with severity levels and remediation steps.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T14:45:00.000Z"
+    },
+    {
+      "id": "test-007",
+      "title": "Mobile Device Testing",
+      "description": "Test responsive design across iOS (iPhone 14 Pro) and Android (Pixel 7). Check touch targets, scroll performance, and orientation changes. Document findings with BrowserStack screenshots.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T14:30:00.000Z"
+    },
+    {
+      "id": "test-008",
+      "title": "Card Sorting Results",
+      "description": "Analyze open card sorting data from OptimalSort. Calculate agreement scores, create dendrogram visualizations, and recommend IA structure. Export as JSON sitemap for React Router configuration.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T14:15:00.000Z"
+    },
+    {
+      "id": "test-009",
+      "title": "First Click Testing",
+      "description": "Evaluate navigation effectiveness with first click tests. Measure click accuracy, task completion paths, and confusion points. Export heatmap data as SVG overlays for Figma integration.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T14:00:00.000Z"
+    },
+    {
+      "id": "test-010",
+      "title": "Performance Benchmarking",
+      "description": "Measure Core Web Vitals (LCP, FID, CLS) for React app. Use Lighthouse CI in GitHub Actions. Set performance budgets and export metrics as JSON for monitoring dashboards.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T13:45:00.000Z"
+    },
+    {
+      "id": "idea-001",
+      "title": "Design Sprint Kickoff",
+      "description": "Facilitate 5-day design sprint (Understand, Sketch, Decide, Prototype, Test). Create Miro board templates with lightning talks, crazy 8s, and voting sessions. Export sprint outputs as Notion pages.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T16:00:00.000Z"
+    },
+    {
+      "id": "idea-002",
+      "title": "Crazy 8s Workshop",
+      "description": "Lead rapid ideation with 8 sketches in 8 minutes. Focus on mobile checkout flow improvements. Digitize sketches and export as Figma frames with annotation layers.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T15:45:00.000Z"
+    },
+    {
+      "id": "idea-003",
+      "title": "How Might We Questions",
+      "description": "Generate HMW questions from user pain points. Convert '45% of users abandon checkout' into actionable design challenges. Export as FigJam sticky notes with voting dots.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T15:30:00.000Z"
+    },
+    {
+      "id": "idea-004",
+      "title": "SCAMPER Innovation",
+      "description": "Apply SCAMPER method (Substitute, Combine, Adapt, Modify, Put to use, Eliminate, Reverse) to redesign navigation. Generate 7 alternative concepts and export as annotated wireframes.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T15:15:00.000Z"
+    },
+    {
+      "id": "idea-005",
+      "title": "Mind Mapping Session",
+      "description": "Create mind map exploring 'future of remote collaboration tools'. Branch into features, tech stack (WebRTC, Three.js), and user needs. Export as interactive SVG with clickable nodes.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T15:00:00.000Z"
+    },
+    {
+      "id": "idea-006",
+      "title": "Analogous Inspiration",
+      "description": "Find design patterns from gaming UIs (HP bars, skill trees) to apply to productivity apps. Create mood board with screenshots and Figma component translations.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T14:45:00.000Z"
+    },
+    {
+      "id": "idea-007",
+      "title": "Future State Visioning",
+      "description": "Envision 2030 healthcare app with AR diagnostics, AI triage, and blockchain health records. Sketch concept screens and export as Figma prototype with futuristic UI kit.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T14:30:00.000Z"
+    },
+    {
+      "id": "idea-008",
+      "title": "Worst Idea Brainstorm",
+      "description": "Generate intentionally terrible onboarding ideas (50 steps, auto-playing videos, mandatory surveys). Reverse-engineer to discover what NOT to do and refine best practices.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T14:15:00.000Z"
+    },
+    {
+      "id": "idea-009",
+      "title": "Constraint-Based Design",
+      "description": "Design mobile app with constraints: 3 colors max, no images, 5-second load time. Force creative solutions and export minimalist design system as Tailwind config.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T14:00:00.000Z"
+    },
+    {
+      "id": "idea-010",
+      "title": "Cross-Functional Ideation",
+      "description": "Facilitate workshop with designers, developers, and PMs. Use dot voting, affinity mapping, and feasibility scoring. Export prioritized features as Jira epics with story points.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T13:45:00.000Z"
+    }
+  ],
+  "metadata": {
+    "totalPrompts": 50,
+    "categories": {
+      "UX Research": 10,
+      "Accessibility": 10,
+      "Prototyping": 10,
+      "User Testing": 10,
+      "Ideation": 10
+    },
+    "tags": {
+      "#detailed": 40,
+      "#vibe": 10
+    },
+    "models": {
+      "Claude": 41,
+      "GPT": 9
+    },
+    "version": "1.0.0",
+    "lazyScrollConfig": {
+      "batchSize": 5,
+      "totalBatches": 10,
+      "recommendedPageSize": 10
+    }
+  }
+}
+

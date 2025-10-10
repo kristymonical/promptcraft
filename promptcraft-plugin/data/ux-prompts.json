@@ -1,0 +1,462 @@
+{
+  "prompts": [
+    {
+      "id": "uxr-001",
+      "title": "User Interview Script Generator",
+      "description": "Create a comprehensive user interview script for [product/feature]. Include warm-up questions, main research objectives, follow-up probes, and closing questions. Focus on understanding user pain points, motivations, and behaviors.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "id": "uxr-002", 
+      "title": "Competitive Analysis Framework",
+      "description": "Design a competitive analysis framework comparing [your product] with [competitor 1, 2, 3]. Include feature comparison matrix, user experience evaluation, pricing analysis, and opportunity identification.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T09:45:00.000Z"
+    },
+    {
+      "id": "uxr-003",
+      "title": "User Persona Development",
+      "description": "Develop detailed user personas for [target audience]. Include demographics, psychographics, goals, pain points, behaviors, and design implications. Base on research data and user interviews.",
+      "category": "UX Research", 
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T09:30:00.000Z"
+    },
+    {
+      "id": "uxr-004",
+      "title": "Journey Mapping Workshop",
+      "description": "Facilitate a user journey mapping session for [user type] using [product/service]. Include touchpoints, emotions, pain points, and opportunities for improvement across all stages.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude", 
+      "createdAt": "2024-01-15T09:15:00.000Z"
+    },
+    {
+      "id": "uxr-005",
+      "title": "Survey Design for UX Insights",
+      "description": "Create a user survey to gather insights about [research topic]. Include demographic questions, behavior patterns, satisfaction ratings, and open-ended feedback sections.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T09:00:00.000Z"
+    },
+    {
+      "id": "uxr-006",
+      "title": "Card Sorting Analysis",
+      "description": "Design and analyze a card sorting exercise for [website/app] navigation. Include methodology, participant recruitment, data analysis framework, and information architecture recommendations.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T08:45:00.000Z"
+    },
+    {
+      "id": "uxr-007",
+      "title": "Usability Testing Protocol",
+      "description": "Develop a usability testing protocol for [feature/product]. Include test objectives, task scenarios, success metrics, observation guidelines, and post-test interview questions.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T08:30:00.000Z"
+    },
+    {
+      "id": "uxr-008",
+      "title": "A/B Testing Strategy",
+      "description": "Create an A/B testing strategy for [hypothesis]. Include test design, success metrics, statistical significance requirements, and implementation plan with React/Tailwind components.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T08:15:00.000Z"
+    },
+    {
+      "id": "uxr-009",
+      "title": "Analytics Dashboard Design",
+      "description": "Design a UX analytics dashboard showing user behavior metrics, conversion funnels, and engagement patterns. Include data visualization best practices and actionable insights.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T08:00:00.000Z"
+    },
+    {
+      "id": "uxr-010",
+      "title": "Stakeholder Interview Guide",
+      "description": "Develop a stakeholder interview guide to understand business requirements, technical constraints, and success metrics for [project]. Include questions for different stakeholder types.",
+      "category": "UX Research",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-15T07:45:00.000Z"
+    },
+    {
+      "id": "acc-001",
+      "title": "WCAG 2.1 AA Compliance Audit",
+      "description": "Conduct a comprehensive accessibility audit for [website/app] following WCAG 2.1 AA guidelines. Include color contrast analysis, keyboard navigation testing, and screen reader compatibility.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T16:00:00.000Z"
+    },
+    {
+      "id": "acc-002",
+      "title": "ARIA Labels Implementation",
+      "description": "Implement proper ARIA labels, roles, and properties for [component type]. Include semantic HTML structure, screen reader announcements, and keyboard interaction patterns.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T15:45:00.000Z"
+    },
+    {
+      "id": "acc-003",
+      "title": "Color Contrast Optimization",
+      "description": "Optimize color contrast ratios for [design system] ensuring WCAG AA compliance. Include color palette recommendations, text/background combinations, and accessibility testing tools.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T15:30:00.000Z"
+    },
+    {
+      "id": "acc-004",
+      "title": "Keyboard Navigation Design",
+      "description": "Design keyboard navigation patterns for [interface type]. Include tab order, focus indicators, skip links, and keyboard shortcuts with React/Tailwind implementation examples.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T15:15:00.000Z"
+    },
+    {
+      "id": "acc-005",
+      "title": "Screen Reader Testing Protocol",
+      "description": "Develop a screen reader testing protocol using NVDA, JAWS, and VoiceOver. Include test scenarios, expected behaviors, and common accessibility issues to identify.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T15:00:00.000Z"
+    },
+    {
+      "id": "acc-006",
+      "title": "Alternative Text Guidelines",
+      "description": "Create comprehensive alt text guidelines for images, icons, and graphics. Include context-specific examples, decorative vs. informative image handling, and automated testing approaches.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T14:45:00.000Z"
+    },
+    {
+      "id": "acc-007",
+      "title": "Form Accessibility Best Practices",
+      "description": "Design accessible forms with proper labels, error handling, and validation messages. Include ARIA attributes, fieldset/legend usage, and assistive technology compatibility.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T14:30:00.000Z"
+    },
+    {
+      "id": "acc-008",
+      "title": "Motion and Animation Accessibility",
+      "description": "Implement accessible motion and animation patterns with reduced motion preferences, focus management, and seizure-safe design principles for [component library].",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T14:15:00.000Z"
+    },
+    {
+      "id": "acc-009",
+      "title": "Mobile Accessibility Testing",
+      "description": "Create mobile accessibility testing procedures for iOS and Android. Include touch target sizes, gesture alternatives, and mobile screen reader compatibility testing.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T14:00:00.000Z"
+    },
+    {
+      "id": "acc-010",
+      "title": "Accessibility Documentation Template",
+      "description": "Create accessibility documentation templates for design systems. Include component accessibility notes, implementation guidelines, and testing checklists for developers.",
+      "category": "Accessibility",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T13:45:00.000Z"
+    },
+    {
+      "id": "proto-001",
+      "title": "Interactive Prototype with Framer",
+      "description": "Create an interactive prototype in Framer for [feature/flow]. Include micro-interactions, state changes, and user flow validation with realistic data and animations.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T12:00:00.000Z"
+    },
+    {
+      "id": "proto-002",
+      "title": "Figma Auto Layout Components",
+      "description": "Design responsive components using Figma Auto Layout for [component type]. Include breakpoint variations, content overflow handling, and developer handoff specifications.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T11:45:00.000Z"
+    },
+    {
+      "id": "proto-003",
+      "title": "Micro-interaction Design System",
+      "description": "Create a micro-interaction design system with hover states, loading animations, and feedback patterns. Include timing functions, easing curves, and implementation guidelines.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T11:30:00.000Z"
+    },
+    {
+      "id": "proto-004",
+      "title": "User Flow Prototyping",
+      "description": "Prototype complete user flows for [user journey] with decision points, error states, and edge cases. Include navigation patterns and state management visualization.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T11:15:00.000Z"
+    },
+    {
+      "id": "proto-005",
+      "title": "Responsive Design Prototypes",
+      "description": "Create responsive prototypes for mobile, tablet, and desktop breakpoints. Include adaptive layouts, touch interactions, and content prioritization strategies.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T11:00:00.000Z"
+    },
+    {
+      "id": "proto-006",
+      "title": "Animation and Transition Library",
+      "description": "Design a comprehensive animation library with entrance/exit animations, page transitions, and loading states. Include performance considerations and accessibility guidelines.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T10:45:00.000Z"
+    },
+    {
+      "id": "proto-007",
+      "title": "Component State Management",
+      "description": "Prototype component states including loading, error, empty, and success states. Include state transition logic and user feedback mechanisms for [component type].",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T10:30:00.000Z"
+    },
+    {
+      "id": "proto-008",
+      "title": "Gesture-Based Interactions",
+      "description": "Design gesture-based interactions for mobile interfaces including swipe, pinch, and long-press patterns. Include haptic feedback and gesture recognition guidelines.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T10:15:00.000Z"
+    },
+    {
+      "id": "proto-009",
+      "title": "Data Visualization Prototypes",
+      "description": "Create interactive data visualization prototypes with filtering, sorting, and drill-down capabilities. Include chart types, interaction patterns, and responsive behavior.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T10:00:00.000Z"
+    },
+    {
+      "id": "proto-010",
+      "title": "Developer Handoff Specifications",
+      "description": "Create comprehensive developer handoff documentation with measurements, spacing, typography, and interaction specifications. Include React/Tailwind code examples and asset exports.",
+      "category": "Prototyping",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-14T09:45:00.000Z"
+    },
+    {
+      "id": "test-001",
+      "title": "Usability Testing Session Plan",
+      "description": "Plan a usability testing session for [feature/product]. Include participant recruitment, test scenarios, observation guidelines, and data collection methods.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T16:00:00.000Z"
+    },
+    {
+      "id": "test-002",
+      "title": "A/B Test Design and Analysis",
+      "description": "Design and analyze A/B tests for [hypothesis]. Include statistical significance calculations, sample size determination, and results interpretation framework.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T15:45:00.000Z"
+    },
+    {
+      "id": "test-003",
+      "title": "Remote User Testing Setup",
+      "description": "Set up remote user testing sessions using [platform]. Include participant recruitment, session recording, and data analysis workflows for distributed teams.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T15:30:00.000Z"
+    },
+    {
+      "id": "test-004",
+      "title": "Task-Based Testing Scenarios",
+      "description": "Create realistic task-based testing scenarios for [user type] using [product]. Include success criteria, completion rates, and error analysis frameworks.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T15:15:00.000Z"
+    },
+    {
+      "id": "test-005",
+      "title": "Eye Tracking Study Design",
+      "description": "Design an eye tracking study to understand visual attention patterns on [interface]. Include heatmap analysis, fixation sequences, and design optimization recommendations.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T15:00:00.000Z"
+    },
+    {
+      "id": "test-006",
+      "title": "Accessibility Testing Protocol",
+      "description": "Develop comprehensive accessibility testing using screen readers, keyboard navigation, and assistive technologies. Include WCAG compliance validation and remediation strategies.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T14:45:00.000Z"
+    },
+    {
+      "id": "test-007",
+      "title": "Mobile Usability Testing",
+      "description": "Conduct mobile usability testing across different devices and operating systems. Include touch interaction analysis, performance testing, and responsive design validation.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T14:30:00.000Z"
+    },
+    {
+      "id": "test-008",
+      "title": "Card Sorting Analysis",
+      "description": "Analyze card sorting results to optimize information architecture. Include statistical analysis, cluster identification, and navigation structure recommendations.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T14:15:00.000Z"
+    },
+    {
+      "id": "test-009",
+      "title": "First Click Testing",
+      "description": "Design first click testing to evaluate navigation effectiveness. Include task completion analysis, click path optimization, and interface clarity improvements.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T14:00:00.000Z"
+    },
+    {
+      "id": "test-010",
+      "title": "Post-Launch Analytics Review",
+      "description": "Analyze post-launch user behavior data to identify optimization opportunities. Include funnel analysis, user engagement metrics, and iterative improvement strategies.",
+      "category": "User Testing",
+      "tags": ["#detailed"],
+      "model": "Claude",
+      "createdAt": "2024-01-13T13:45:00.000Z"
+    },
+    {
+      "id": "idea-001",
+      "title": "Design Sprint Workshop",
+      "description": "Facilitate a design sprint for [problem/challenge]. Include understand, diverge, decide, prototype, and validate phases with cross-functional team collaboration.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T16:00:00.000Z"
+    },
+    {
+      "id": "idea-002",
+      "title": "Crazy 8s Brainstorming",
+      "description": "Lead a Crazy 8s ideation session for [feature/interface]. Generate 8 rapid ideas in 8 minutes, then refine and combine concepts for innovative solutions.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T15:45:00.000Z"
+    },
+    {
+      "id": "idea-003",
+      "title": "How Might We Questions",
+      "description": "Generate 'How Might We' questions for [user problem]. Use HMW framework to reframe challenges into opportunities and spark creative solution generation.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T15:30:00.000Z"
+    },
+    {
+      "id": "idea-004",
+      "title": "Worst Possible Idea",
+      "description": "Use the 'Worst Possible Idea' technique to generate intentionally bad solutions for [challenge]. Then reverse-engineer these to discover innovative approaches.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T15:15:00.000Z"
+    },
+    {
+      "id": "idea-005",
+      "title": "SCAMPER Innovation Method",
+      "description": "Apply SCAMPER (Substitute, Combine, Adapt, Modify, Put to other uses, Eliminate, Reverse) to [existing solution] to generate new ideas and improvements.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T15:00:00.000Z"
+    },
+    {
+      "id": "idea-006",
+      "title": "Mind Mapping Session",
+      "description": "Create a comprehensive mind map for [topic/feature] exploring connections, relationships, and unexpected associations to uncover new design opportunities.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T14:45:00.000Z"
+    },
+    {
+      "id": "idea-007",
+      "title": "Analogous Inspiration",
+      "description": "Find inspiration from unrelated industries and domains to solve [design challenge]. Apply successful patterns from other contexts to create innovative solutions.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T14:30:00.000Z"
+    },
+    {
+      "id": "idea-008",
+      "title": "Future State Visioning",
+      "description": "Envision the ideal future state for [product/experience] in 5-10 years. Include emerging technologies, user needs evolution, and breakthrough innovation opportunities.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T14:15:00.000Z"
+    },
+    {
+      "id": "idea-009",
+      "title": "Constraint-Based Innovation",
+      "description": "Use artificial constraints (time, resources, technology) to force creative problem-solving for [challenge]. Explore how limitations can drive innovation and breakthrough thinking.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T14:00:00.000Z"
+    },
+    {
+      "id": "idea-010",
+      "title": "Cross-Pollination Workshop",
+      "description": "Facilitate cross-pollination between different teams, disciplines, and perspectives to generate fresh ideas for [project]. Include structured sharing and idea combination techniques.",
+      "category": "Ideation",
+      "tags": ["#vibe"],
+      "model": "GPT",
+      "createdAt": "2024-01-12T13:45:00.000Z"
+    }
+  ],
+  "metadata": {
+    "totalPrompts": 50,
+    "categories": ["UX Research", "Accessibility", "Prototyping", "User Testing", "Ideation"],
+    "tags": ["#detailed", "#vibe"],
+    "models": ["Claude", "GPT"],
+    "lastUpdated": "2024-01-15T10:00:00.000Z",
+    "version": "1.0.0"
+  }
+}
