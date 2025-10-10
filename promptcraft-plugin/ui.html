@@ -266,9 +266,9 @@
         }
 
         .section-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
             color: var(--text-color);
             font-family: var(--font-title);
         }
@@ -663,7 +663,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         .star-icon:hover {
@@ -673,17 +673,23 @@
         /* Material Icons Star Styling */
         .material-icons.star {
             font-size: 14px;
-            color: #ccc;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: color 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         .material-icons.star.active {
-            color: #f5b301;
+            color: var(--secondary-color);
         }
 
         .material-icons.star:hover {
-            color: #f5b301;
+            color: var(--secondary-color);
+            background: rgba(245, 179, 1, 0.1);
+        }
+
+        .material-icons.star.active:hover {
+            color: var(--secondary-color);
+            background: rgba(245, 179, 1, 0.2);
         }
 
         .toast {
@@ -831,7 +837,7 @@
             // Handle search and filter changes
             useEffect(() => {
                 if (prompts.length > 0) {
-                    const filtered = filterPromptsLocally(prompts, searchQuery, filterCategory, activeTab);
+                    const filtered = filterPromptsLocally(prompts, searchQuery, 'All', activeTab);
                     setFilteredPrompts(filtered);
                     setTotalCount(filtered.length);
                     setHasMore(false); // Disable lazy loading for filtered results
@@ -853,8 +859,14 @@
 
             // Handle category changes - request prompts from backend
             useEffect(() => {
-                // Only load from backend if no search/filter is active
-                if (!searchQuery.trim() && filterCategory === 'All') {
+                // Load prompts when activeTab changes (unless search is active)
+                if (!searchQuery.trim()) {
+                    // Clear current prompts and show loading
+                    setPrompts([]);
+                    setFilteredPrompts([]);
+                    setTotalCount(0);
+                    setHasMore(false);
+                    
                     parent.postMessage({ 
                         pluginMessage: { 
                             type: 'load-prompts',
@@ -863,7 +875,7 @@
                     }, '*');
                     setIsLoading(true);
                 }
-            }, [activeTab, searchQuery, filterCategory]);
+            }, [activeTab, searchQuery]);
 
             // Handle messages from the plugin backend
             useEffect(() => {
@@ -878,7 +890,7 @@
                     setPrompts(msg.prompts || []);
                     // Apply local filtering if search/filter is active
                     if (searchQuery.trim() || filterCategory !== 'All' || activeTab === 'My Library') {
-                        const filtered = filterPromptsLocally(msg.prompts || [], searchQuery, filterCategory, activeTab);
+                        const filtered = filterPromptsLocally(msg.prompts || [], searchQuery, 'All', activeTab);
                         setFilteredPrompts(filtered);
                         setTotalCount(filtered.length);
                         setHasMore(false);
@@ -1202,14 +1214,15 @@
                     h('div', { className: 'prompt-title' }, prompt.title || 'Untitled Prompt'),
                     h('div', { className: 'prompt-description' }, prompt.description || 'No description'),
                     h('div', { className: 'prompt-meta' }, [
-                        h('span', {}, `${prompt.category} • ${prompt.model}`),
-                        h('div', { className: 'prompt-tags' }, 
-                            (prompt.tags || []).map(tag => 
-                                h('span', { 
-                                    className: `tag ${tag.replace('#', '')}` 
-                                }, tag)
-                            )
-                        )
+                        h('span', {}, `${prompt.category} • ${prompt.model}`)
+                        // Tags hidden for now
+                        // h('div', { className: 'prompt-tags' }, 
+                        //     (prompt.tags || []).map(tag => 
+                        //         h('span', { 
+                        //             className: `tag ${tag.replace('#', '')}` 
+                        //         }, tag)
+                        //     )
+                        // )
                     ]),
                     h('button', {
                         className: 'button secondary small',
@@ -1477,7 +1490,9 @@
                                     !hasMore && filteredPrompts.length > 0 ? h('div', {
                                         className: 'no-more',
                                         key: 'no-more'
-                                    }, 'More prompts coming soon.') : null
+                                    }, activeTab === 'My Library' 
+                                        ? 'No more prompts in your library.' 
+                                        : 'More prompts coming soon.') : null
                                 ].filter(Boolean)
                                 : (searchQuery.trim() || filterCategory !== 'All' || activeTab === 'My Library') 
                                     ? h('div', { className: 'no-results' }, [

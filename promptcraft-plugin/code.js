@@ -130,8 +130,16 @@ function filterPromptsByCategory(prompts, category) {
     console.log('Returning all prompts:', prompts.length);
     return prompts;
   }
-  const filtered = prompts.filter(prompt => prompt.category === category);
+  if (category === 'My Library') {
+    // Filter by favorites
+    const filtered = prompts.filter(function(prompt) { return FAVORITES.includes(prompt.id); });
+    console.log(`Filtered to ${filtered.length} favorited prompts`);
+    return filtered;
+  }
+  const filtered = prompts.filter(function(prompt) { return prompt.category === category; });
   console.log(`Filtered to ${filtered.length} prompts for category: ${category}`);
+  console.log('Sample categories in data:', prompts.slice(0, 3).map(function(p) { return p.category; }));
+  console.log('Looking for category:', category);
   return filtered;
 }
 
@@ -165,13 +173,14 @@ function getAllPrompts() {
 }
 
 // Handle messages from the UI
-figma.ui.onmessage = async (msg) => {
+figma.ui.onmessage = function(msg) {
   switch (msg.type) {
     case 'load-prompts':
       // Send first 5 prompts, filtered by category
       currentOffset = 0;
       currentCategory = msg.category || 'All';
-      console.log(`Loading prompts for category: ${currentCategory}, total prompts: ${ALL_PROMPTS.length}`);
+      console.log(`Loading prompts for category: "${currentCategory}", total prompts: ${ALL_PROMPTS.length}`);
+      console.log('Available categories in data:', Array.from(new Set(ALL_PROMPTS.map(function(p) { return p.category; }))));
       
       const initialData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
       console.log(`Filtered prompts for ${currentCategory}:`, initialData.prompts.length, 'out of', initialData.totalCount);
@@ -259,25 +268,25 @@ figma.ui.onmessage = async (msg) => {
         ALL_PROMPTS.unshift(newPrompt); // Add to beginning
         
         // Save to storage
-        await figma.clientStorage.setAsync('prompts', ALL_PROMPTS);
-        
-        console.log('Prompt added:', newPrompt.title);
-        figma.notify(`Added "${newPrompt.title}" to prompts`);
-        
-        // Reload prompts for the active category
-        currentOffset = 0;
-        const updatedData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
-        figma.ui.postMessage({
-          type: 'prompts-loaded',
-          prompts: updatedData.prompts,
-          totalCount: updatedData.totalCount,
-          hasMore: updatedData.hasMore,
-          offset: updatedData.offset,
-          limit: updatedData.limit,
-          category: updatedData.category
+        figma.clientStorage.setAsync('prompts', ALL_PROMPTS).then(function() {
+          console.log('Prompt added:', newPrompt.title);
+          figma.notify(`Added "${newPrompt.title}" to prompts`);
+          
+          // Reload prompts for the active category
+          currentOffset = 0;
+          const updatedData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
+          figma.ui.postMessage({
+            type: 'prompts-loaded',
+            prompts: updatedData.prompts,
+            totalCount: updatedData.totalCount,
+            hasMore: updatedData.hasMore,
+            offset: updatedData.offset,
+            limit: updatedData.limit,
+            category: updatedData.category
+          });
+          
+          currentOffset = BATCH_SIZE;
         });
-        
-        currentOffset = BATCH_SIZE;
       } catch (error) {
         console.error('Failed to add prompt:', error);
         figma.notify('Failed to add prompt');
@@ -296,8 +305,7 @@ figma.ui.onmessage = async (msg) => {
       break;
 
     case 'load-favorites':
-      try {
-        const storedFavorites = await figma.clientStorage.getAsync('favorites');
+      figma.clientStorage.getAsync('favorites').then(function(storedFavorites) {
         FAVORITES = Array.isArray(storedFavorites) ? storedFavorites : [];
         console.log('Favorites loaded:', FAVORITES.length);
         
@@ -305,55 +313,54 @@ figma.ui.onmessage = async (msg) => {
           type: 'favorites-loaded',
           favorites: FAVORITES
         });
-      } catch (error) {
+      }).catch(function(error) {
         console.error('Failed to load favorites:', error);
         FAVORITES = [];
         figma.ui.postMessage({
           type: 'favorites-loaded',
           favorites: []
         });
-      }
+      });
       break;
 
     case 'save-favorites':
-      try {
-        FAVORITES = msg.favorites || [];
-        await figma.clientStorage.setAsync('favorites', FAVORITES);
+      FAVORITES = msg.favorites || [];
+      figma.clientStorage.setAsync('favorites', FAVORITES).then(function() {
         console.log('Favorites saved:', FAVORITES.length);
-      } catch (error) {
+      }).catch(function(error) {
         console.error('Failed to save favorites:', error);
-      }
+      });
       break;
 
     case 'delete-prompt':
       try {
         const promptId = msg.data.id;
-        const promptIndex = ALL_PROMPTS.findIndex(p => p.id === promptId);
+        const promptIndex = ALL_PROMPTS.findIndex(function(p) { return p.id === promptId; });
         
         if (promptIndex !== -1) {
           const deletedPrompt = ALL_PROMPTS[promptIndex];
           ALL_PROMPTS.splice(promptIndex, 1);
           
           // Save updated prompts to storage
-          await figma.clientStorage.setAsync('prompts', ALL_PROMPTS);
-          
-          console.log('Prompt deleted:', deletedPrompt.title);
-          figma.notify(`Deleted "${deletedPrompt.title}"`);
-          
-          // Reload prompts for the current active category
-          currentOffset = 0;
-          const updatedData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
-          figma.ui.postMessage({
-            type: 'prompts-loaded',
-            prompts: updatedData.prompts,
-            totalCount: updatedData.totalCount,
-            hasMore: updatedData.hasMore,
-            offset: updatedData.offset,
-            limit: updatedData.limit,
-            category: updatedData.category
+          figma.clientStorage.setAsync('prompts', ALL_PROMPTS).then(function() {
+            console.log('Prompt deleted:', deletedPrompt.title);
+            figma.notify(`Deleted "${deletedPrompt.title}"`);
+            
+            // Reload prompts for the current active category
+            currentOffset = 0;
+            const updatedData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
+            figma.ui.postMessage({
+              type: 'prompts-loaded',
+              prompts: updatedData.prompts,
+              totalCount: updatedData.totalCount,
+              hasMore: updatedData.hasMore,
+              offset: updatedData.offset,
+              limit: updatedData.limit,
+              category: updatedData.category
+            });
+            
+            currentOffset = BATCH_SIZE;
           });
-          
-          currentOffset = BATCH_SIZE;
         } else {
           console.warn('Prompt not found for deletion:', promptId);
           figma.notify('Prompt not found');
@@ -374,45 +381,96 @@ figma.ui.onmessage = async (msg) => {
 };
 
 // Initialize the plugin
-async function init() {
+function init() {
   console.log('PromptCraft plugin initialized');
 
-  try {
-    const stored = await figma.clientStorage.getAsync('prompts');
+  figma.clientStorage.getAsync('prompts').then(function(stored) {
     if (Array.isArray(stored) && stored.length > 0) {
-      ALL_PROMPTS = stored;
-      console.log(`Prompts loaded from storage: ${ALL_PROMPTS.length}`);
-      console.log('Sample prompt:', ALL_PROMPTS[0]);
+      // Check if stored data has old category names and update them
+      let needsUpdate = false;
+      const updatedPrompts = stored.map(function(prompt) {
+        if (prompt.category === 'UX Research') {
+          needsUpdate = true;
+          return Object.assign({}, prompt, { category: 'Prototype Review & UX Feedback' });
+        }
+        if (prompt.category === 'Accessibility') {
+          needsUpdate = true;
+          return Object.assign({}, prompt, { category: 'Accessibility & QA' });
+        }
+        if (prompt.category === 'Prototyping') {
+          needsUpdate = true;
+          return Object.assign({}, prompt, { category: 'Experimentation & Iteration' });
+        }
+        if (prompt.category === 'User Testing') {
+          needsUpdate = true;
+          return Object.assign({}, prompt, { category: 'Prototype Review & UX Feedback' });
+        }
+        if (prompt.category === 'Ideation') {
+          needsUpdate = true;
+          return Object.assign({}, prompt, { category: 'Design Ops & Governance' });
+        }
+        return prompt;
+      });
+      
+      if (needsUpdate) {
+        console.log('Updating stored prompts with new category names');
+        return figma.clientStorage.setAsync('prompts', updatedPrompts).then(function() {
+          ALL_PROMPTS = updatedPrompts;
+          console.log(`Prompts loaded from storage: ${ALL_PROMPTS.length}`);
+          console.log('Sample prompt:', ALL_PROMPTS[0]);
+          loadFavorites();
+        });
+      } else {
+        ALL_PROMPTS = stored;
+        console.log(`Prompts loaded from storage: ${ALL_PROMPTS.length}`);
+        console.log('Sample prompt:', ALL_PROMPTS[0]);
+        loadFavorites();
+      }
     } else {
       ALL_PROMPTS = HARD_CODED_FALLBACK;
       console.log('Using hardcoded prompts:', ALL_PROMPTS.length);
       console.log('Sample prompt:', ALL_PROMPTS[0]);
+      loadFavorites();
     }
-  } catch (e) {
+  }).catch(function(e) {
     ALL_PROMPTS = HARD_CODED_FALLBACK;
     console.log('Using hardcoded prompts due to error:', e);
     console.log('Sample prompt:', ALL_PROMPTS[0]);
-  }
+    loadFavorites();
+  });
 
-  // Load favorites
-  try {
-    const storedFavorites = await figma.clientStorage.getAsync('favorites');
+}
+
+// Load favorites and initialize UI
+function loadFavorites() {
+  figma.clientStorage.getAsync('favorites').then(function(storedFavorites) {
     FAVORITES = Array.isArray(storedFavorites) ? storedFavorites : [];
     console.log('Favorites loaded:', FAVORITES.length);
-  } catch (e) {
+    
+    // Show the UI
+    showUI();
+
+    // Inform UI of readiness
+    figma.ui.postMessage({
+      type: 'plugin-ready',
+      totalPromptCount: ALL_PROMPTS.length,
+      batchSize: BATCH_SIZE,
+      categories: CATEGORIES
+    });
+  }).catch(function(e) {
     FAVORITES = [];
     console.log('No favorites found, starting fresh');
-  }
+    
+    // Show the UI
+    showUI();
 
-  // Show the UI
-  showUI();
-
-  // Inform UI of readiness
-  figma.ui.postMessage({
-    type: 'plugin-ready',
-    totalPromptCount: ALL_PROMPTS.length,
-    batchSize: BATCH_SIZE,
-    categories: CATEGORIES
+    // Inform UI of readiness
+    figma.ui.postMessage({
+      type: 'plugin-ready',
+      totalPromptCount: ALL_PROMPTS.length,
+      batchSize: BATCH_SIZE,
+      categories: CATEGORIES
+    });
   });
 }
 
