@@ -4,29 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PromptCraft</title>
+   
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <style>
         /* CSS Variables for theme preparation */
         :root {
-            --primary-color: #18a0fb;
-            --primary-hover: #0d8ce8;
-            --secondary-color: #666;
-            --secondary-hover: #555;
-            --background-color: #ffffff;
-            --text-color: #1a1a1a;
-            --text-secondary: #666;
+            --primary-color: #2c2c2e;
+            --primary-hover: #3e3e45; 
+            --secondary-color: #51bc8f;
+            --secondary-hover: #60d1a6;
+            --secondary-text-color: #ffffff;
+            --background-color:  #ffffff;
+            --background-color-secondary: #e7e9ee;
+            --text-color: #1e1e1f;
+            --text-secondary:  #555663;
             --text-muted: #888;
-            --border-color: #ddd;
+            --border-color: #cbcdd5;
             --hover-background: #f5f5f5;
             --selected-background: #e6f3ff;
             --form-background: #f8f9fa;
-            --editor-background: #f9f9f9;
             --highlight-background: #f0f8ff;
             --disabled-color: #ccc;
             --border-radius: 4px;
+            --spacing-none: 0px;
             --spacing-xs: 4px;
             --spacing-sm: 8px;
             --spacing-md: 16px;
             --spacing-lg: 24px;
+            --font-family:'Roboto', sans-serif;
+            --font-title:'montserrat', sans-serif;
         }
 
         * {
@@ -36,7 +46,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-family);
             font-size: 16px;
             line-height: 1.4;
             color: var(--text-color);
@@ -47,6 +57,7 @@
         .promptcraft-container {
             max-width: 100%;
             margin: 0 auto;
+            padding-bottom: 60px; /* Space for fixed bottom buttons */
         }
 
         .header {
@@ -55,6 +66,7 @@
         }
 
         .title {
+            font-family: var(--font-title);
             font-size: 18px;
             font-weight: 600;
             color: #333;
@@ -66,16 +78,17 @@
             color: #666;
         }
 
+        /* ===== FORM COMPONENTS ===== */
         .form {
-            margin-bottom: 16px;
+            margin-bottom: var(--spacing-md);
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: var(--spacing-sm);
         }
 
         .form-row {
             display: flex;
-            gap: 8px;
+            gap: var(--spacing-sm);
             align-items: flex-end;
         }
 
@@ -83,351 +96,156 @@
             flex: 1;
         }
 
+        .form-section {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .form-section.large {
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* ===== INPUT COMPONENTS ===== */
         input, textarea, select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
             font-size: 14px;
             font-family: inherit;
+            transition: border-color 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(24, 160, 251, 0.1);
         }
 
         textarea {
-            height: 60px;
+            min-height: 60px;
             resize: vertical;
         }
 
+        /* ===== BUTTON COMPONENTS ===== */
         button {
-            background: #18a0fb;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-family: inherit;
-            transition: background-color 0.2s;
-        }
-
-        button:hover:not(:disabled) {
-            background: #0d8ce8;
-        }
-
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .send-button {
-            background: #18a0fb;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-family: inherit;
-            transition: background-color 0.2s;
-        }
-
-        .send-button:hover:not(:disabled) {
-            background: #0d8ce8;
-        }
-
-        .send-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .button-secondary {
-            background: #666;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-family: inherit;
-            transition: background-color 0.2s;
-        }
-
-        .button-secondary:hover:not(:disabled) {
-            background: #555;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 8px;
-        }
-
-        .tab {
-            padding: 8px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            color: #666;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .tab:hover {
-            color: #333;
-        }
-
-        .tab.active {
-            color: #18a0fb;
-            border-bottom-color: #18a0fb;
-            font-weight: 500;
-        }
-
-        .prompts-section {
-            margin-top: 16px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #333;
-        }
-
-        .prompts-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .prompt {
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .prompt:hover {
-            background: #f5f5f5;
-        }
-
-        .prompt.selected {
-            background: #e6f3ff;
-            border-left: 3px solid #18a0fb;
-        }
-
-        .prompt-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: #333;
-        }
-
-        .prompt-description {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .prompt-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .prompt-tags {
-            display: flex;
-            gap: 4px;
-        }
-
-        .tag {
-            padding: 2px 6px;
-            background: #f0f0f0;
-            border-radius: 3px;
-            font-size: 11px;
-        }
-
-        .tag.detailed {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-
-        .tag.vibe {
-            background: #f3e5f5;
-            color: #7b1fa2;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-
-        .loading-more {
-            text-align: center;
-            padding: 12px;
-            color: #666;
-            font-size: 13px;
-        }
-
-        .end-of-list {
-            text-align: center;
-            padding: 8px;
-            color: #666;
-            font-size: 13px;
-            border-top: 1px solid #eee;
-        }
-
-        .no-more {
-            text-align: center;
-            padding: 8px;
-            color: #666;
-            font-size: 13px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-            font-style: italic;
-        }
-
-        .add-prompt-form {
-            background: #f8f9fa;
-            padding: 16px;
-            border-radius: 6px;
-            margin-bottom: 16px;
-        }
-
-        .add-prompt-form h3 {
-            margin-bottom: 12px;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .editor {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: #f9f9f9;
-            border-radius: 6px;
-            margin-bottom: 16px;
-        }
-
-        .editor h3 {
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .editor-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .preview-output {
-            background: #f0f0f0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 12px;
-            margin-top: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            white-space: pre-wrap;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        /* Consolidated component styles */
-        .card {
-            position: relative;
-            padding: var(--spacing-sm);
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .card:hover {
-            background: var(--hover-background);
-        }
-
-        .card.selected {
-            background: var(--selected-background);
-            border-left: 3px solid var(--primary-color);
-        }
-
-        .card.editing {
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .button {
-            background: var(--primary-color);
-            color: white;
+            background: var(--secondary-color);
+            color:  var(--secondary-text-color);
             border: none;
             padding: var(--spacing-sm);
             border-radius: var(--border-radius);
             cursor: pointer;
             font-size: 14px;
             font-family: inherit;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s ease;
+            font-family: var(--font-family);
         }
 
-        .button:hover:not(:disabled) {
-            background: var(--primary-hover);
+        button:hover:not(:disabled) {
+            background: var(--secondary-hover);
+            color: var(--secondary-text-color);
         }
 
-        .button:disabled {
+        button:disabled {
             background: var(--disabled-color);
             cursor: not-allowed;
         }
 
-        .button.active {
-            background: var(--primary-hover);
-            box-shadow: 0 2px 4px rgba(24, 160, 251, 0.2);
-        }
-
         .button.secondary {
             background: var(--secondary-color);
+            color: var(--secondary-text-color);
         }
 
         .button.secondary:hover:not(:disabled) {
             background: var(--secondary-hover);
+            color: var(--secondary-text-color);
+        }
+
+        .button.active {
+            background: var(--primary-hover);
+            color: var(--secondary-text-color);
+            box-shadow: 0 2px 4px rgba(24, 160, 251, 0.2);
         }
 
         .button.small {
-            margin-top: 8px;
-            font-size: 12px;
             padding: 4px 8px;
+            font-size: 12px;
         }
 
         .button.full-width {
             width: 100%;
         }
 
+        .button.tertiary {
+            background: transparent;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 6px 12px;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .button.tertiary:hover:not(:disabled) {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-action {
+            margin-top: 8px;
+            margin-bottom: 0;
+        }
+
+        /* ===== TAB COMPONENTS ===== */
+        .tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: var(--spacing-none);
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            white-space: nowrap;
+            font-family: var(--font-family);
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
         .tab {
-            padding: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-secondary);
             border-bottom: 2px solid transparent;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            white-space: nowrap;
+            border-radius: 0;
+            font-family: inherit;
+            font-weight: 400;
+            color: var(--text-color);
         }
 
-        .tab:hover {
+        .tab:hover:not(.active) {
             color: var(--text-color);
+            border-bottom-color: var(--secondary-color);
+            font-weight: 500;
+            background-color:#ffffff;
         }
 
         .tab.active {
             color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-            font-weight: 500;
+            border-bottom-color: var(--secondary-color);
+            font-weight: 600;
+            background-color: transparent;
+        }
+        .tab:hover:is(.active) {
+            background-color: var(--background-color);
+            color: var(--text-color);
         }
 
         .tab.toggle {
@@ -442,82 +260,235 @@
             margin-left: var(--spacing-xs);
         }
 
+        /* ===== PROMPT COMPONENTS ===== */
+        .prompts-section {
+            margin-top: var(--spacing-md);
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+            font-family: var(--font-title);
+        }
+
+        .prompts-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: var(--spacing-xs);
+        }
+
+        .prompts-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .prompts-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .prompts-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .prompts-list::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        .card {
+            position: relative;
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .card:hover {
+            background: var(--background-color-secondary);
+        }
+
+        .card.selected {
+            background: var(--background-color-secondary);
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .prompt-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .prompt-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+            line-height: 1.4;
+        }
+
+        .prompt-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .prompt-tags {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 2px var(--spacing-xs);
+            background: var(--hover-background);
+            border-radius: var(--border-radius);
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .tag.detailed {
+            background: var(--highlight-background);
+            color: var(--primary-color);
+        }
+
+        .tag.vibe {
+            background: var(--form-background);
+            color: var(--text-color);
+        }
+
+        /* ===== STATE COMPONENTS ===== */
+        .loading, .loading-more, .no-more, .empty-state {
+            text-align: center;
+            padding: var(--spacing-lg);
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .loading-more {
+            padding: var(--spacing-md);
+        }
+
+        .no-more {
+            padding: var(--spacing-sm);
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: var(--spacing-lg);
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .no-results h3 {
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .no-results p {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* ===== SPECIAL COMPONENTS ===== */
+        .add-prompt-form {
+            background: var(--form-background);
+            padding: var(--spacing-md);
+            border-radius: 6px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .add-prompt-form h3 {
+            margin-bottom: var(--spacing-md);
+            font-size: 14px;
+            color: var(--text-color);
+            font-family: var(--font-title);
+        }
+
+        .editor {
+            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            background: var(--form-background);
+            border-radius: 6px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .editor h3 {
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .editor-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        .preview-output {
+            background: #f0f0f0;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-top: var(--spacing-sm);
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
         .highlight {
             background: var(--highlight-background);
             border: 1px solid var(--primary-color);
             border-radius: var(--border-radius);
-            padding: 12px;
+            padding: var(--spacing-md);
             margin-top: var(--spacing-md);
         }
 
         .highlight h4 {
-            margin-bottom: 8px;
+            margin-bottom: var(--spacing-sm);
             font-size: 14px;
+            color: var(--text-color);
         }
 
         .highlight .title {
-            margin-bottom: 8px;
+            margin-bottom: var(--spacing-sm);
             font-weight: bold;
+            font-size: 14px;
+            font-family: var(--font-title);
         }
 
         .highlight .description {
             font-size: 13px;
-            color: #666;
-            margin-bottom: 12px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
             line-height: 1.4;
         }
 
         .highlight .meta {
             font-size: 12px;
-            color: #888;
-            margin-bottom: 12px;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-md);
         }
 
-        .input {
-            width: 100%;
-            padding: var(--spacing-sm);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            font-size: 14px;
-            font-family: inherit;
-        }
-
-        .input.bold {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .input.large {
-            min-height: 120px;
-            height: auto;
-        }
-
-        .input.medium {
-            min-height: 80px;
-        }
-
-        .input.full-width {
-            width: 100%;
-        }
-
-        .form-section {
-            margin-bottom: 8px;
-        }
-
-        .form-section.large {
-            margin-bottom: 16px;
-        }
-
-        /* Search and Filter Styles */
+        /* ===== SEARCH COMPONENTS ===== */
         .search-section {
             margin-bottom: var(--spacing-md);
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
         }
 
         .search-input-wrapper {
-            flex: 1;
+            width: 100%;
         }
 
         .search-input {
@@ -535,45 +506,151 @@
             box-shadow: 0 0 0 2px rgba(24, 160, 251, 0.1);
         }
 
-        .filter-wrapper {
-            flex: 0 0 auto;
+        /* ===== LAYOUT COMPONENTS ===== */
+        .fixed-bottom-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--background-color);
+            border-top: 1px solid var(--border-color);
+            padding: var(--spacing-sm);
+            display: flex;
+            gap: var(--spacing-sm);
+            z-index: 100;
         }
 
-        .filter-select {
+        .fixed-bottom-buttons .button {
+            flex: 1;
+            margin: 0;
+        }
+
+        /* ===== FULLSCREEN FORMS ===== */
+        .fullscreen-form-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--background-color);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+        }
+
+        .fullscreen-form-container {
+            max-width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-title {
+            font-family: var(--font-title);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            border-radius: var(--border-radius);
+            transition: all 0.2s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-button:hover {
+            background: var(--hover-background);
+            color: var(--text-color);
+        }
+
+        .fullscreen-form {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 80px; /* Space for fixed form actions */
+        }
+
+        .fullscreen-form .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .fullscreen-form .form-group:last-of-type {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .fullscreen-form .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .fullscreen-form .input {
             width: 100%;
             padding: var(--spacing-sm);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             font-size: 14px;
             font-family: inherit;
-            background: var(--background-color);
+            transition: border-color 0.2s ease;
         }
 
-        .filter-select:focus {
+        .fullscreen-form .input:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(24, 160, 251, 0.1);
         }
 
-        /* No results state */
-        .no-results {
-            text-align: center;
-            padding: var(--spacing-lg);
-            color: var(--text-secondary);
-            font-style: italic;
+        .fullscreen-form .input.large {
+            min-height: 200px;
+            resize: vertical;
         }
 
-        .no-results h3 {
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-color);
+        .fullscreen-form .input.medium {
+            min-height: 100px;
+            resize: vertical;
         }
 
-        .no-results p {
-            font-size: 14px;
-            line-height: 1.4;
+        .form-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--background-color);
+            border-top: 1px solid var(--border-color);
+            padding: var(--spacing-sm);
+            display: flex;
+            gap: var(--spacing-sm);
+            z-index: 1000;
         }
 
-        /* Star icon styles */
+        .form-actions .button {
+            flex: 1;
+        }
+
+        /* ===== INTERACTIVE ELEMENTS ===== */
         .star-icon {
             position: absolute;
             top: var(--spacing-sm);
@@ -581,30 +658,40 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            color: #ccc;
-            transition: color 0.2s ease;
             padding: 4px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s ease;
         }
 
         .star-icon:hover {
-            color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
+            background: rgba(245, 179, 1, 0.1);
         }
 
-        .star-icon.favorited {
-            color: #ffd700;
+        /* Material Icons Star Styling */
+        .material-icons.star {
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .star-icon.favorited:hover {
-            color: #ffb300;
+        .material-icons.star.active {
+            color: var(--secondary-color);
         }
 
-        /* Toast notification styles */
+        .material-icons.star:hover {
+            color: var(--secondary-color);
+            background: rgba(245, 179, 1, 0.1);
+        }
+
+        .material-icons.star.active:hover {
+            color: var(--secondary-color);
+            background: rgba(245, 179, 1, 0.2);
+        }
+
         .toast {
             position: fixed;
             top: 20px;
@@ -630,28 +717,6 @@
                 opacity: 1;
             }
         }
-
-
-        /* Theme preparation: Dark mode can be added by overriding CSS variables */
-        /* Example: [data-theme="dark"] { --background-color: #1a1a1a; --text-color: #ffffff; } */
-
-        /* Scrollbar styling */
-        .prompts-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .prompts-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        .prompts-list::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-
-        .prompts-list::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
     </style>
     <script crossorigin src="https://unpkg.com/preact@10.5.14/dist/preact.umd.js"></script>
     <script crossorigin src="https://unpkg.com/preact@10.5.14/hooks/dist/hooks.umd.js"></script>
@@ -667,14 +732,14 @@
             const [prompts, setPrompts] = useState([]);
             const [filteredPrompts, setFilteredPrompts] = useState([]);
             const [activeTab, setActiveTab] = useState('All');
-            const [categories, setCategories] = useState(['All', 'My Library', 'UX Research', 'Accessibility', 'Prototyping', 'User Testing', 'Ideation']);
+            const [categories, setCategories] = useState(['All', 'My Library', 'Prototype Review & UX Feedback', 'Collaboration & Handoff', 'Accessibility & QA', 'Experimentation & Iteration', 'Design Ops & Governance']);
             const [searchQuery, setSearchQuery] = useState('');
             const [filterCategory, setFilterCategory] = useState('All');
             const [favorites, setFavorites] = useState([]);
             const [formData, setFormData] = useState({
                 title: '',
                 description: '',
-                category: 'UX Research'
+                category: 'Prototype Review & UX Feedback'
             });
             const [selectedPrompt, setSelectedPrompt] = useState(null);
             const [editingPrompt, setEditingPrompt] = useState(null);
@@ -772,7 +837,7 @@
             // Handle search and filter changes
             useEffect(() => {
                 if (prompts.length > 0) {
-                    const filtered = filterPromptsLocally(prompts, searchQuery, filterCategory, activeTab);
+                    const filtered = filterPromptsLocally(prompts, searchQuery, 'All', activeTab);
                     setFilteredPrompts(filtered);
                     setTotalCount(filtered.length);
                     setHasMore(false); // Disable lazy loading for filtered results
@@ -794,8 +859,14 @@
 
             // Handle category changes - request prompts from backend
             useEffect(() => {
-                // Only load from backend if no search/filter is active
-                if (!searchQuery.trim() && filterCategory === 'All') {
+                // Load prompts when activeTab changes (unless search is active)
+                if (!searchQuery.trim()) {
+                    // Clear current prompts and show loading
+                    setPrompts([]);
+                    setFilteredPrompts([]);
+                    setTotalCount(0);
+                    setHasMore(false);
+                    
                     parent.postMessage({ 
                         pluginMessage: { 
                             type: 'load-prompts',
@@ -804,7 +875,7 @@
                     }, '*');
                     setIsLoading(true);
                 }
-            }, [activeTab, searchQuery, filterCategory]);
+            }, [activeTab, searchQuery]);
 
             // Handle messages from the plugin backend
             useEffect(() => {
@@ -819,7 +890,7 @@
                     setPrompts(msg.prompts || []);
                     // Apply local filtering if search/filter is active
                     if (searchQuery.trim() || filterCategory !== 'All' || activeTab === 'My Library') {
-                        const filtered = filterPromptsLocally(msg.prompts || [], searchQuery, filterCategory, activeTab);
+                        const filtered = filterPromptsLocally(msg.prompts || [], searchQuery, 'All', activeTab);
                         setFilteredPrompts(filtered);
                         setTotalCount(filtered.length);
                         setHasMore(false);
@@ -919,20 +990,39 @@
                 };
             }, [hasMore, isLoadingMore, filteredPrompts.length, activeTab]);
 
-            // Handle form submission
-            const handleSendToMake = () => {
-                const textToSend = selectedPrompt ? selectedPrompt.description : formData.description;
-                if (!textToSend.trim()) return;
+            // Handle copy prompt functionality
+            const handleCopyPrompt = () => {
+                const textToCopy = selectedPrompt ? selectedPrompt.description : formData.description;
+                if (!textToCopy.trim()) return;
 
-                parent.postMessage({
-                    pluginMessage: {
-                        type: 'send-to-make',
-                        data: {
-                            prompt: textToSend.trim(),
-                            timestamp: new Date().toISOString()
-                        }
+                try {
+                    // Create a temporary textarea element to copy text
+                    const textArea = document.createElement('textarea');
+                    textArea.value = textToCopy.trim();
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    // Try to copy using execCommand (works in Figma)
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (successful) {
+                        showToast('Prompt copied to clipboard!');
+                    } else {
+                        // Fallback: show the text in a prompt for manual copying
+                        prompt('Copy this prompt text:', textToCopy.trim());
+                        showToast('Text selected for manual copying');
                     }
-                }, '*');
+                } catch (error) {
+                    console.error('Failed to copy:', error);
+                    // Fallback: show the text in a prompt for manual copying
+                    prompt('Copy this prompt text:', textToCopy.trim());
+                    showToast('Text selected for manual copying');
+                }
             };
 
             // Mock AI generator function
@@ -942,22 +1032,22 @@
                     'onboarding': {
                         title: 'User Onboarding Flow Design',
                         description: 'Create a comprehensive user onboarding flow that guides new users through key features. Include welcome screens, feature highlights, progress indicators, and clear next steps. Focus on reducing time-to-value and improving user retention.',
-                        category: 'UX Research'
+                        category: 'Prototype Review & UX Feedback'
                     },
                     'mobile': {
                         title: 'Mobile CTA Optimization',
                         description: 'Design and optimize call-to-action buttons for mobile interfaces. Consider touch targets, visual hierarchy, color psychology, and accessibility. Include A/B testing recommendations and conversion tracking strategies.',
-                        category: 'Prototyping'
+                        category: 'Experimentation & Iteration'
                     },
                     'accessibility': {
                         title: 'Accessibility Audit Checklist',
                         description: 'Develop a comprehensive accessibility audit checklist for web and mobile applications. Include WCAG 2.1 AA compliance checks, keyboard navigation, screen reader compatibility, color contrast, and inclusive design principles.',
-                        category: 'Accessibility'
+                        category: 'Accessibility & QA'
                     },
                     'testing': {
                         title: 'User Testing Protocol',
                         description: 'Create a structured user testing protocol for validating design decisions. Include participant recruitment, test scenarios, data collection methods, analysis frameworks, and actionable insights generation.',
-                        category: 'User Testing'
+                        category: 'Prototype Review & UX Feedback'
                     }
                 };
 
@@ -972,7 +1062,7 @@
                 return {
                     title: 'AI-Generated UX Prompt',
                     description: `Based on your request: "${input}". This is a mock AI-generated prompt. In a real implementation, this would be generated by ${model} using advanced prompt engineering techniques.`,
-                    category: 'UX Research'
+                    category: 'Prototype Review & UX Feedback'
                 };
             };
 
@@ -1018,7 +1108,7 @@
                 setFormData({
                     title: '',
                     description: '',
-                    category: 'UX Research'
+                    category: 'Prototype Review & UX Feedback'
                 });
                 setShowCreatePrompt(false);
                 setCreateMode('manual');
@@ -1040,6 +1130,9 @@
 
             // Handle opening editor for a prompt
             const handleOpenEditor = (prompt) => {
+                console.log('Opening editor for prompt:', prompt);
+                console.log('Prompt ID:', prompt.id);
+                console.log('Is custom prompt:', prompt.id && prompt.id.startsWith('custom-'));
                 setSelectedPrompt(prompt);
                 setEditingPrompt(prompt);
                 setEditData({
@@ -1070,64 +1163,36 @@
                 setEditData({ title: '', description: '', category: '' });
             };
 
+            // Handle deleting prompt
+            const handleDeletePrompt = () => {
+                if (!editingPrompt) return;
+
+                // Confirm deletion
+                if (confirm(`Are you sure you want to delete "${editingPrompt.title}"? This action cannot be undone.`)) {
+                    parent.postMessage({
+                        pluginMessage: {
+                            type: 'delete-prompt',
+                            data: {
+                                id: editingPrompt.id
+                            }
+                        }
+                    }, '*');
+
+                    // Close editor
+                    setEditingPrompt(null);
+                    setEditData({ title: '', description: '', category: '' });
+                    showToast('Prompt deleted');
+                }
+            };
+
 
 
             // Render individual prompt item
             const PromptItem = ({ prompt, isLast }) => {
                 const isSelected = selectedPrompt?.id === prompt.id;
-                const isEditing = editingPrompt?.id === prompt.id;
                 
                 if (isLast) {
                     console.log('Rendering last prompt item:', prompt.title);
-                }
-                
-                if (isEditing) {
-                    // Show editable form
-                    return h('div', {
-                        className: 'card selected editing',
-                        key: prompt.id,
-                        ref: isLast ? lastItemRef : null
-                    }, [
-                        h('div', { className: 'form-group' }, [
-                            h('input', {
-                                type: 'text',
-                                className: 'input bold',
-                                value: editData.title,
-                                onChange: (e) => setEditData({...editData, title: e.target.value})
-                            })
-                        ]),
-                        h('div', { className: 'form-group' }, [
-                            h('textarea', {
-                                className: 'input large',
-                                value: editData.description,
-                                onChange: (e) => setEditData({...editData, description: e.target.value})
-                            })
-                        ]),
-                        // Show category selector for custom prompts (those with 'custom-' prefix)
-                        prompt.id && prompt.id.startsWith('custom-') ? h('div', { className: 'form-group' }, [
-                            h('select', {
-                                className: 'input full-width',
-                                value: editData.category || prompt.category,
-                                onChange: (e) => setEditData({...editData, category: e.target.value})
-                            }, categories.filter(cat => cat !== 'All').map(cat => 
-                                h('option', { key: cat, value: cat }, cat)
-                            ))
-                        ]) : null,
-                        h('div', { className: 'form-row' }, [
-                            h('button', {
-                                className: 'button',
-                                onClick: handleEditPrompt,
-                                disabled: !editData.title.trim() || !editData.description.trim()
-                            }, 'Save'),
-                            h('button', {
-                                className: 'button secondary',
-                                onClick: () => {
-                                    setEditingPrompt(null);
-                                    setEditData({ title: '', description: '', category: '' });
-                                }
-                            }, 'Cancel')
-                        ])
-                    ]);
                 }
                 
                 // Show normal prompt card
@@ -1141,18 +1206,23 @@
                         className: `star-icon ${favorites.includes(prompt.id) ? 'favorited' : ''}`,
                         onClick: (e) => handleToggleFavorite(prompt.id, e),
                         title: favorites.includes(prompt.id) ? 'Remove from My Library' : 'Add to My Library'
-                    }, '⭐'),
+                    }, [
+                        h('span', {
+                            className: `material-icons star ${favorites.includes(prompt.id) ? 'active' : ''}`
+                        }, 'star')
+                    ]),
                     h('div', { className: 'prompt-title' }, prompt.title || 'Untitled Prompt'),
                     h('div', { className: 'prompt-description' }, prompt.description || 'No description'),
                     h('div', { className: 'prompt-meta' }, [
-                        h('span', {}, `${prompt.category} • ${prompt.model}`),
-                        h('div', { className: 'prompt-tags' }, 
-                            (prompt.tags || []).map(tag => 
-                                h('span', { 
-                                    className: `tag ${tag.replace('#', '')}` 
-                                }, tag)
-                            )
-                        )
+                        h('span', {}, `${prompt.category} • ${prompt.model}`)
+                        // Tags hidden for now
+                        // h('div', { className: 'prompt-tags' }, 
+                        //     (prompt.tags || []).map(tag => 
+                        //         h('span', { 
+                        //             className: `tag ${tag.replace('#', '')}` 
+                        //         }, tag)
+                        //     )
+                        // )
                     ]),
                     h('button', {
                         className: 'button secondary small',
@@ -1171,7 +1241,7 @@
                     h('div', { className: 'subtitle' }, `${totalCount} prompts`)
                 ]),
 
-                // Search and Filter Section
+                // Search Section
                 h('div', { className: 'search-section' }, [
                     h('div', { className: 'search-input-wrapper' }, [
                         h('input', {
@@ -1181,41 +1251,22 @@
                             value: searchQuery,
                             onChange: (e) => setSearchQuery(e.target.value)
                         })
-                    ]),
-                    h('div', { className: 'filter-wrapper' }, [
-                        h('select', {
-                            className: 'input filter-select',
-                            value: filterCategory,
-                            onChange: (e) => setFilterCategory(e.target.value)
-                        }, [
-                            h('option', { value: 'All' }, 'All Categories'),
-                            ...categories.filter(cat => cat !== 'All').map(cat => 
-                                h('option', { key: cat, value: cat }, cat)
-                            )
-                        ])
                     ])
                 ]),
 
-                // Top Action Buttons
-                h('div', { className: 'form-row' }, [
-                    !showCreatePrompt ? h('button', {
-                        className: 'button',
-                        onClick: () => setShowCreatePrompt(true)
-                    }, 'Create Prompt') : null,
-                    h('button', {
-                        className: `button ${(selectedPrompt || formData.description.trim()) ? 'active' : ''}`,
-                        onClick: handleSendToMake,
-                        disabled: !selectedPrompt && !formData.description.trim()
-                    }, 'Send to Make')
-                ].filter(Boolean)),
 
-                // Create Prompt Component (when shown)
-                showCreatePrompt ? h('div', {
-                    className: 'form add-prompt-form'
-                }, [
-                    h('h3', {}, 'Create Prompt'),
-                    
-                    // Mode Toggle
+                // Create Prompt Component (when shown) - takes over entire screen
+                showCreatePrompt ? h('div', { className: 'fullscreen-form-overlay' }, [
+                    h('div', { className: 'fullscreen-form-container' }, [
+                        h('div', { className: 'form-header' }, [
+                            h('h2', { className: 'form-title' }, 'Create Prompt'),
+                            h('button', {
+                                className: 'close-button',
+                                onClick: () => setShowCreatePrompt(false)
+                            }, '×')
+                        ]),
+                        h('div', { className: 'fullscreen-form' }, [
+                            // Mode Toggle
                     h('div', { className: 'form-row form-section large' }, [
                         h('button', {
                             className: `tab toggle ${createMode === 'manual' ? 'active' : ''}`,
@@ -1273,7 +1324,7 @@
                                     setFormData({
                                         title: '',
                                         description: '',
-                                        category: 'UX Research'
+                                        category: 'Prototype Review & UX Feedback'
                                     });
                                 }
                             }, 'Cancel')
@@ -1328,6 +1379,8 @@
                             }, 'Use This Prompt')
                         ]) : null
                     ]) : null
+                        ])
+                    ])
                 ]) : null,
 
 
@@ -1342,8 +1395,76 @@
                     )
                 ),
 
-                // Prompts list
-                h('div', { className: 'prompts-section' }, [
+                // Edit Prompt Form (when editing) - takes over entire screen
+                editingPrompt ? h('div', { className: 'fullscreen-form-overlay' }, [
+                    h('div', { className: 'fullscreen-form-container' }, [
+                        h('div', { className: 'form-header' }, [
+                            h('h2', { className: 'form-title' }, 'Edit Prompt'),
+                            h('button', {
+                                className: 'close-button',
+                                onClick: () => {
+                                    setEditingPrompt(null);
+                                    setEditData({ title: '', description: '', category: '' });
+                                }
+                            }, '×')
+                        ]),
+                        h('div', { className: 'fullscreen-form' }, [
+                            h('div', { className: 'form-group' }, [
+                                h('label', { className: 'form-label' }, 'Title'),
+                                h('input', {
+                                    type: 'text',
+                                    className: 'input',
+                                    placeholder: 'Enter prompt title',
+                                    value: editData.title,
+                                    onChange: (e) => setEditData({...editData, title: e.target.value})
+                                })
+                            ]),
+                            h('div', { className: 'form-group' }, [
+                                h('label', { className: 'form-label' }, 'Description'),
+                                h('textarea', {
+                                    className: 'input large',
+                                    placeholder: 'Enter prompt description',
+                                    value: editData.description,
+                                    onChange: (e) => setEditData({...editData, description: e.target.value})
+                                })
+                            ]),
+                            // Always show category selector for debugging
+                            h('div', { className: 'form-group' }, [
+                                h('label', { className: 'form-label' }, 'Category'),
+                                h('select', {
+                                    className: 'input',
+                                    value: editData.category || editingPrompt.category,
+                                    onChange: (e) => setEditData({...editData, category: e.target.value})
+                                }, categories.filter(cat => cat !== 'All').map(cat => 
+                                    h('option', { key: cat, value: cat }, cat)
+                                )),
+                                // Delete button as tertiary link under category
+                                editingPrompt && editingPrompt.id && editingPrompt.id.startsWith('custom-') ? h('div', { 
+                                    className: 'form-group delete-action'
+                                }, [
+                                    h('button', {
+                                        className: 'button tertiary',
+                                        onClick: handleDeletePrompt
+                                    }, 'Delete Prompt')
+                                ]) : null
+                            ]),
+                            h('div', { className: 'form-actions' }, [
+                                h('button', {
+                                    className: 'button secondary',
+                                    onClick: () => {
+                                        setEditingPrompt(null);
+                                        setEditData({ title: '', description: '', category: '' });
+                                    }
+                                }, 'Cancel'),
+                                h('button', {
+                                    className: 'button',
+                                    onClick: handleEditPrompt,
+                                    disabled: !editData.title.trim() || !editData.description.trim()
+                                }, 'Save Changes')
+                            ])
+                        ])
+                    ])
+                ]) : h('div', { className: 'prompts-section' }, [
                     h('h2', { className: 'section-title' }, 
                         (searchQuery.trim() || filterCategory !== 'All') 
                             ? `Search Results (${filteredPrompts.length})`
@@ -1369,7 +1490,9 @@
                                     !hasMore && filteredPrompts.length > 0 ? h('div', {
                                         className: 'no-more',
                                         key: 'no-more'
-                                    }, 'More prompts coming soon.') : null
+                                    }, activeTab === 'My Library' 
+                                        ? 'No more prompts in your library.' 
+                                        : 'More prompts coming soon.') : null
                                 ].filter(Boolean)
                                 : (searchQuery.trim() || filterCategory !== 'All' || activeTab === 'My Library') 
                                     ? h('div', { className: 'no-results' }, [
@@ -1383,7 +1506,20 @@
                                     ])
                                     : h('div', { className: 'empty-state' }, `No ${activeTab.toLowerCase()} prompts yet.`)
                     )
-                ])
+                ]),
+
+                // Fixed Bottom Buttons
+                h('div', { className: 'fixed-bottom-buttons' }, [
+                    !showCreatePrompt ? h('button', {
+                        className: 'button',
+                        onClick: () => setShowCreatePrompt(true)
+                    }, 'Create Prompt') : null,
+                    h('button', {
+                        className: `button ${(selectedPrompt || formData.description.trim()) ? 'active' : ''}`,
+                        onClick: handleCopyPrompt,
+                        disabled: !selectedPrompt && !formData.description.trim()
+                    }, 'Copy Prompt')
+                ].filter(Boolean))
             ]);
         }
 

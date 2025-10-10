@@ -1,92 +1,109 @@
 // PromptCraft Figma Plugin - Backend Code
 // Loads prompts from figma.clientStorage with category filtering
 
-// Fallback dataset (75 prompts: 15 per category) used only if clientStorage is empty
+// Fallback dataset (90 prompts: 15 per category) used only if clientStorage is empty
 const HARD_CODED_FALLBACK = [
-  // UX Research (15 prompts)
-  { id: 'uxr-001', title: 'User Persona Builder', description: 'Generate a comprehensive user persona for a fintech app, export as JSON for React handoff.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-002', title: 'Journey Mapping Workshop', description: 'Create a user journey map for e-commerce checkout flow with pain points and opportunities.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-003', title: 'Competitive Analysis Framework', description: 'Analyze 3 direct competitors and create feature comparison matrix with insights.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-004', title: 'User Interview Guide', description: 'Design 45-minute user interview script with 8 open-ended questions and follow-ups.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-005', title: 'Survey Design Template', description: 'Create user satisfaction survey with 12 questions and demographic segmentation.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-006', title: 'Card Sorting Analysis', description: 'Design and analyze card sorting study for information architecture optimization.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-007', title: 'A/B Test Hypothesis', description: 'Formulate A/B test hypothesis for homepage conversion rate improvement.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-008', title: 'Stakeholder Interview Plan', description: 'Plan stakeholder interviews to understand business requirements and constraints.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-009', title: 'User Story Mapping', description: 'Create user story map for mobile app onboarding with epics and user stories.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-010', title: 'Mental Model Analysis', description: 'Analyze user mental models for complex dashboard interface design.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-011', title: 'Contextual Inquiry Guide', description: 'Design contextual inquiry study to observe users in their natural environment.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-012', title: 'Focus Group Protocol', description: 'Create focus group discussion guide for product concept validation.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-013', title: 'Heuristic Evaluation Checklist', description: 'Conduct heuristic evaluation using Nielsen\'s 10 principles for usability issues.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-014', title: 'Task Analysis Framework', description: 'Break down complex user tasks into subtasks with time estimates and dependencies.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
-  { id: 'uxr-015', title: 'Research Synthesis Report', description: 'Synthesize user research findings into actionable insights and recommendations.', category: 'UX Research', tags: ['#detailed'], model: 'Claude' },
+  // Prototype Review & UX Feedback (15 prompts)
+  { id: 'uxr-001', title: 'User Persona Builder', description: 'Generate a comprehensive user persona for a fintech app, export as JSON for React handoff.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-002', title: 'Journey Mapping Workshop', description: 'Create a user journey map for e-commerce checkout flow with pain points and opportunities.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-003', title: 'Competitive Analysis Framework', description: 'Analyze 3 direct competitors and create feature comparison matrix with insights.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-004', title: 'User Interview Guide', description: 'Design 45-minute user interview script with 8 open-ended questions and follow-ups.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-005', title: 'Survey Design Template', description: 'Create user satisfaction survey with 12 questions and demographic segmentation.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-006', title: 'Card Sorting Analysis', description: 'Design and analyze card sorting study for information architecture optimization.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-007', title: 'A/B Test Hypothesis', description: 'Formulate A/B test hypothesis for homepage conversion rate improvement.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-008', title: 'Stakeholder Interview Plan', description: 'Plan stakeholder interviews to understand business requirements and constraints.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-009', title: 'User Story Mapping', description: 'Create user story map for mobile app onboarding with epics and user stories.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-010', title: 'Mental Model Analysis', description: 'Analyze user mental models for complex dashboard interface design.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-011', title: 'Contextual Inquiry Guide', description: 'Design contextual inquiry study to observe users in their natural environment.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-012', title: 'Focus Group Protocol', description: 'Create focus group discussion guide for product concept validation.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-013', title: 'Heuristic Evaluation Checklist', description: 'Conduct heuristic evaluation using Nielsen\'s 10 principles for usability issues.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-014', title: 'Task Analysis Framework', description: 'Break down complex user tasks into subtasks with time estimates and dependencies.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'uxr-015', title: 'Research Synthesis Report', description: 'Synthesize user research findings into actionable insights and recommendations.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
 
-  // Accessibility (15 prompts)
-  { id: 'acc-001', title: 'WCAG AA Compliance Audit', description: 'Conduct WCAG 2.1 AA audit for a React component library with remediation plan.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-002', title: 'Screen Reader Testing', description: 'Test interface with screen readers and document navigation patterns.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-003', title: 'Color Contrast Analysis', description: 'Analyze color contrast ratios and provide accessible color palette alternatives.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-004', title: 'Keyboard Navigation Audit', description: 'Audit keyboard navigation flow and ensure all interactive elements are accessible.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-005', title: 'ARIA Implementation Guide', description: 'Implement proper ARIA labels, roles, and properties for complex UI components.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-006', title: 'Focus Management Strategy', description: 'Design focus management for single-page applications and modal dialogs.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-007', title: 'Alternative Text Guidelines', description: 'Create guidelines for writing effective alt text for images and icons.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-008', title: 'Accessible Form Design', description: 'Design accessible forms with proper labels, error handling, and validation.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-009', title: 'Motion Sensitivity Options', description: 'Implement reduced motion preferences and animation alternatives.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-010', title: 'Voice Control Optimization', description: 'Optimize interface for voice control and speech recognition software.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-011', title: 'Cognitive Load Assessment', description: 'Assess cognitive load and design for users with cognitive disabilities.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-012', title: 'Mobile Accessibility Testing', description: 'Test mobile accessibility features including touch targets and gestures.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-013', title: 'Accessibility Documentation', description: 'Create comprehensive accessibility documentation for development teams.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-014', title: 'Inclusive Design Principles', description: 'Apply inclusive design principles to create products for diverse user needs.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
-  { id: 'acc-015', title: 'Accessibility Testing Protocol', description: 'Develop systematic accessibility testing protocol with automated and manual checks.', category: 'Accessibility', tags: ['#detailed'], model: 'Claude' },
+  // Accessibility & QA (15 prompts)
+  { id: 'acc-001', title: 'WCAG AA Compliance Audit', description: 'Conduct WCAG 2.1 AA audit for a React component library with remediation plan.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-002', title: 'Screen Reader Testing', description: 'Test interface with screen readers and document navigation patterns.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-003', title: 'Color Contrast Analysis', description: 'Analyze color contrast ratios and provide accessible color palette alternatives.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-004', title: 'Keyboard Navigation Audit', description: 'Audit keyboard navigation flow and ensure all interactive elements are accessible.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-005', title: 'ARIA Implementation Guide', description: 'Implement proper ARIA labels, roles, and properties for complex UI components.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-006', title: 'Focus Management Strategy', description: 'Design focus management for single-page applications and modal dialogs.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-007', title: 'Alternative Text Guidelines', description: 'Create guidelines for writing effective alt text for images and icons.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-008', title: 'Accessible Form Design', description: 'Design accessible forms with proper labels, error handling, and validation.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-009', title: 'Motion Sensitivity Options', description: 'Implement reduced motion preferences and animation alternatives.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-010', title: 'Voice Control Optimization', description: 'Optimize interface for voice control and speech recognition software.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-011', title: 'Cognitive Load Assessment', description: 'Assess cognitive load and design for users with cognitive disabilities.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-012', title: 'Mobile Accessibility Testing', description: 'Test mobile accessibility features including touch targets and gestures.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-013', title: 'Accessibility Documentation', description: 'Create comprehensive accessibility documentation for development teams.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-014', title: 'Inclusive Design Principles', description: 'Apply inclusive design principles to create products for diverse user needs.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
+  { id: 'acc-015', title: 'Accessibility Testing Protocol', description: 'Develop systematic accessibility testing protocol with automated and manual checks.', category: 'Accessibility & QA', tags: ['#detailed'], model: 'Claude' },
 
-  // Prototyping (15 prompts)
-  { id: 'proto-001', title: 'Interactive Prototype Export', description: 'Create high-fidelity Figma prototype with micro-interactions and animations.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-002', title: 'Mobile App Wireframes', description: 'Design mobile app wireframes with user flow and navigation patterns.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-003', title: 'Responsive Design System', description: 'Create responsive design system with breakpoints and component variations.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-004', title: 'Micro-interaction Design', description: 'Design micro-interactions for buttons, forms, and navigation elements.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-005', title: 'Component Library Setup', description: 'Set up Figma component library with variants and auto-layout properties.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-006', title: 'User Flow Diagram', description: 'Create comprehensive user flow diagram with decision points and edge cases.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-007', title: 'Information Architecture', description: 'Design information architecture with sitemap and content hierarchy.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-008', title: 'Dashboard Layout Design', description: 'Design data dashboard with charts, widgets, and responsive grid system.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-009', title: 'Onboarding Flow Prototype', description: 'Create interactive onboarding flow with progressive disclosure and tutorials.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-010', title: 'E-commerce Checkout Flow', description: 'Design streamlined checkout process with payment integration and error handling.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-011', title: 'Mobile Navigation Patterns', description: 'Design mobile navigation patterns including bottom tabs, drawer, and gestures.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-012', title: 'Form Design System', description: 'Create comprehensive form design system with validation states and error handling.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-013', title: 'Loading State Design', description: 'Design loading states, skeletons, and progress indicators for better UX.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-014', title: 'Error State Design', description: 'Design error states, empty states, and 404 pages with helpful messaging.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
-  { id: 'proto-015', title: 'Animation Prototype', description: 'Create animation prototype with easing curves and timing specifications.', category: 'Prototyping', tags: ['#detailed'], model: 'Claude' },
+  // Experimentation & Iteration (15 prompts)
+  { id: 'proto-001', title: 'Interactive Prototype Export', description: 'Create high-fidelity Figma prototype with micro-interactions and animations.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-002', title: 'Mobile App Wireframes', description: 'Design mobile app wireframes with user flow and navigation patterns.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-003', title: 'Responsive Design System', description: 'Create responsive design system with breakpoints and component variations.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-004', title: 'Micro-interaction Design', description: 'Design micro-interactions for buttons, forms, and navigation elements.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-005', title: 'Component Library Setup', description: 'Set up Figma component library with variants and auto-layout properties.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-006', title: 'User Flow Diagram', description: 'Create comprehensive user flow diagram with decision points and edge cases.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-007', title: 'Information Architecture', description: 'Design information architecture with sitemap and content hierarchy.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-008', title: 'Dashboard Layout Design', description: 'Design data dashboard with charts, widgets, and responsive grid system.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-009', title: 'Onboarding Flow Prototype', description: 'Create interactive onboarding flow with progressive disclosure and tutorials.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-010', title: 'E-commerce Checkout Flow', description: 'Design streamlined checkout process with payment integration and error handling.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-011', title: 'Mobile Navigation Patterns', description: 'Design mobile navigation patterns including bottom tabs, drawer, and gestures.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-012', title: 'Form Design System', description: 'Create comprehensive form design system with validation states and error handling.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-013', title: 'Loading State Design', description: 'Design loading states, skeletons, and progress indicators for better UX.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-014', title: 'Error State Design', description: 'Design error states, empty states, and 404 pages with helpful messaging.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
+  { id: 'proto-015', title: 'Animation Prototype', description: 'Create animation prototype with easing curves and timing specifications.', category: 'Experimentation & Iteration', tags: ['#detailed'], model: 'Claude' },
 
-  // User Testing (15 prompts)
-  { id: 'test-001', title: 'Usability Test Script', description: 'Write comprehensive usability test script with 5 task scenarios and metrics.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-002', title: 'A/B Test Design', description: 'Design A/B test for homepage conversion with statistical significance requirements.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-003', title: 'Moderated Testing Protocol', description: 'Create moderated user testing protocol with observation guidelines and note-taking.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-004', title: 'Unmoderated Testing Setup', description: 'Set up unmoderated user testing with task completion and satisfaction metrics.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-005', title: 'Card Sorting Analysis', description: 'Analyze card sorting results and create optimal information architecture.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-006', title: 'First Click Testing', description: 'Design first-click test to validate navigation and information hierarchy.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-007', title: 'Tree Testing Protocol', description: 'Create tree testing study to evaluate findability and navigation structure.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-008', title: 'Task Success Metrics', description: 'Define task success metrics and completion criteria for usability testing.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-009', title: 'User Feedback Analysis', description: 'Analyze user feedback and categorize insights for design improvements.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-010', title: 'Remote Testing Setup', description: 'Set up remote user testing with screen recording and analytics integration.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-011', title: 'Accessibility Testing Plan', description: 'Create accessibility testing plan with assistive technology validation.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-012', title: 'Mobile Testing Protocol', description: 'Design mobile user testing protocol with device-specific considerations.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-013', title: 'Cross-browser Testing', description: 'Plan cross-browser testing strategy with compatibility and performance checks.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-014', title: 'Performance Testing', description: 'Design performance testing with load times, responsiveness, and user experience metrics.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
-  { id: 'test-015', title: 'Testing Report Template', description: 'Create comprehensive testing report template with findings and recommendations.', category: 'User Testing', tags: ['#detailed'], model: 'Claude' },
+  // Prototype Review & UX Feedback (15 prompts)
+  { id: 'test-001', title: 'Usability Test Script', description: 'Write comprehensive usability test script with 5 task scenarios and metrics.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-002', title: 'A/B Test Design', description: 'Design A/B test for homepage conversion with statistical significance requirements.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-003', title: 'Moderated Testing Protocol', description: 'Create moderated user testing protocol with observation guidelines and note-taking.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-004', title: 'Unmoderated Testing Setup', description: 'Set up unmoderated user testing with task completion and satisfaction metrics.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-005', title: 'Card Sorting Analysis', description: 'Analyze card sorting results and create optimal information architecture.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-006', title: 'First Click Testing', description: 'Design first-click test to validate navigation and information hierarchy.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-007', title: 'Tree Testing Protocol', description: 'Create tree testing study to evaluate findability and navigation structure.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-008', title: 'Task Success Metrics', description: 'Define task success metrics and completion criteria for usability testing.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-009', title: 'User Feedback Analysis', description: 'Analyze user feedback and categorize insights for design improvements.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-010', title: 'Remote Testing Setup', description: 'Set up remote user testing with screen recording and analytics integration.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-011', title: 'Accessibility Testing Plan', description: 'Create accessibility testing plan with assistive technology validation.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-012', title: 'Mobile Testing Protocol', description: 'Design mobile user testing protocol with device-specific considerations.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-013', title: 'Cross-browser Testing', description: 'Plan cross-browser testing strategy with compatibility and performance checks.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-014', title: 'Performance Testing', description: 'Design performance testing with load times, responsiveness, and user experience metrics.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
+  { id: 'test-015', title: 'Testing Report Template', description: 'Create comprehensive testing report template with findings and recommendations.', category: 'Prototype Review & UX Feedback', tags: ['#detailed'], model: 'Claude' },
 
-  // Ideation (15 prompts)
-  { id: 'idea-001', title: 'Design Sprint Kickoff', description: 'Facilitate 5-day design sprint with problem definition and solution ideation.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-002', title: 'Brainstorming Workshop', description: 'Lead creative brainstorming session with ideation techniques and voting.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-003', title: 'How Might We Questions', description: 'Generate How Might We questions to reframe problems and spark innovation.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-004', title: 'Crazy 8s Exercise', description: 'Facilitate Crazy 8s rapid sketching exercise for quick idea generation.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-005', title: 'SCAMPER Technique', description: 'Apply SCAMPER technique to existing products for innovative improvements.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-006', title: 'Design Thinking Workshop', description: 'Lead design thinking workshop with empathy mapping and ideation phases.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-007', title: 'Feature Prioritization', description: 'Prioritize features using MoSCoW method and impact-effort matrix.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-008', title: 'Value Proposition Canvas', description: 'Create value proposition canvas to align product features with user needs.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-009', title: 'Business Model Canvas', description: 'Develop business model canvas for new product or service concepts.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-010', title: 'Competitive Differentiation', description: 'Identify competitive differentiation opportunities and unique value propositions.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-011', title: 'Innovation Workshop', description: 'Facilitate innovation workshop with future-thinking and trend analysis.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-012', title: 'Problem-Solution Fit', description: 'Validate problem-solution fit with user interviews and market research.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-013', title: 'MVP Definition', description: 'Define minimum viable product features and development roadmap.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-014', title: 'User Story Workshop', description: 'Create user stories and acceptance criteria for development planning.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' },
-  { id: 'idea-015', title: 'Design Vision Workshop', description: 'Develop design vision and principles for product development alignment.', category: 'Ideation', tags: ['#vibe'], model: 'GPT' }
+  // Design Ops & Governance (15 prompts)
+  { id: 'idea-001', title: 'Design Sprint Kickoff', description: 'Facilitate 5-day design sprint with problem definition and solution ideation.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-002', title: 'Brainstorming Workshop', description: 'Lead creative brainstorming session with ideation techniques and voting.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-003', title: 'How Might We Questions', description: 'Generate How Might We questions to reframe problems and spark innovation.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-004', title: 'Crazy 8s Exercise', description: 'Facilitate Crazy 8s rapid sketching exercise for quick idea generation.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-005', title: 'SCAMPER Technique', description: 'Apply SCAMPER technique to existing products for innovative improvements.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-006', title: 'Design Thinking Workshop', description: 'Lead design thinking workshop with empathy mapping and ideation phases.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-007', title: 'Feature Prioritization', description: 'Prioritize features using MoSCoW method and impact-effort matrix.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-008', title: 'Value Proposition Canvas', description: 'Create value proposition canvas to align product features with user needs.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-009', title: 'Business Model Canvas', description: 'Develop business model canvas for new product or service concepts.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-010', title: 'Competitive Differentiation', description: 'Identify competitive differentiation opportunities and unique value propositions.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-011', title: 'Innovation Workshop', description: 'Facilitate innovation workshop with future-thinking and trend analysis.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-012', title: 'Problem-Solution Fit', description: 'Validate problem-solution fit with user interviews and market research.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-013', title: 'MVP Definition', description: 'Define minimum viable product features and development roadmap.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-014', title: 'User Story Workshop', description: 'Create user stories and acceptance criteria for development planning.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+  { id: 'idea-015', title: 'Design Vision Workshop', description: 'Develop design vision and principles for product development alignment.', category: 'Design Ops & Governance', tags: ['#vibe'], model: 'GPT' },
+
+  // Collaboration & Handoff (15 prompts)
+  { id: 'collab-001', title: 'Design System Documentation', description: 'Create comprehensive design system documentation with components and guidelines.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' },
+  { id: 'collab-002', title: 'Developer Handoff Specs', description: 'Generate detailed developer handoff specifications with measurements and interactions.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' },
+  { id: 'collab-003', title: 'Stakeholder Presentation', description: 'Create stakeholder presentation template for design reviews and approvals.', category: 'Collaboration & Handoff', tags: ['#vibe'], model: 'GPT' },
+  { id: 'collab-004', title: 'Design Review Checklist', description: 'Develop design review checklist for quality assurance and consistency.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' },
+  { id: 'collab-005', title: 'Cross-functional Alignment', description: 'Facilitate cross-functional team alignment on design decisions and priorities.', category: 'Collaboration & Handoff', tags: ['#vibe'], model: 'GPT' },
+  { id: 'collab-006', title: 'Design Token System', description: 'Create design token system for consistent styling across platforms.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' },
+  { id: 'collab-007', title: 'Component Library Guide', description: 'Document component library usage and implementation guidelines.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' },
+  { id: 'collab-008', title: 'Design QA Process', description: 'Establish design quality assurance process and review workflows.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' },
+  { id: 'collab-009', title: 'Feedback Collection System', description: 'Design feedback collection system for design iterations and improvements.', category: 'Collaboration & Handoff', tags: ['#vibe'], model: 'GPT' },
+  { id: 'collab-010', title: 'Design Workflow Optimization', description: 'Optimize design workflow for better team collaboration and efficiency.', category: 'Collaboration & Handoff', tags: ['#vibe'], model: 'GPT' },
+  { id: 'collab-011', title: 'Version Control Strategy', description: 'Implement version control strategy for design files and iterations.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' },
+  { id: 'collab-012', title: 'Design Communication Plan', description: 'Create design communication plan for stakeholder updates and progress.', category: 'Collaboration & Handoff', tags: ['#vibe'], model: 'GPT' },
+  { id: 'collab-013', title: 'Asset Management System', description: 'Design asset management system for organized file storage and retrieval.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' },
+  { id: 'collab-014', title: 'Design Review Meeting', description: 'Structure design review meetings for effective feedback and decision-making.', category: 'Collaboration & Handoff', tags: ['#vibe'], model: 'GPT' },
+  { id: 'collab-015', title: 'Implementation Tracking', description: 'Track design implementation progress and ensure fidelity to specifications.', category: 'Collaboration & Handoff', tags: ['#detailed'], model: 'Claude' }
 ];
 
 let ALL_PROMPTS = [];
@@ -96,7 +113,7 @@ let FAVORITES = [];
 
 // Configuration
 const BATCH_SIZE = 5;
-const CATEGORIES = ['All', 'My Library', 'UX Research', 'Accessibility', 'Prototyping', 'User Testing', 'Ideation'];
+const CATEGORIES = ['All', 'My Library', 'Prototype Review & UX Feedback', 'Collaboration & Handoff', 'Accessibility & QA', 'Experimentation & Iteration', 'Design Ops & Governance'];
 
 // Show the plugin UI
 function showUI() {
@@ -113,8 +130,16 @@ function filterPromptsByCategory(prompts, category) {
     console.log('Returning all prompts:', prompts.length);
     return prompts;
   }
-  const filtered = prompts.filter(prompt => prompt.category === category);
+  if (category === 'My Library') {
+    // Filter by favorites
+    const filtered = prompts.filter(function(prompt) { return FAVORITES.includes(prompt.id); });
+    console.log(`Filtered to ${filtered.length} favorited prompts`);
+    return filtered;
+  }
+  const filtered = prompts.filter(function(prompt) { return prompt.category === category; });
   console.log(`Filtered to ${filtered.length} prompts for category: ${category}`);
+  console.log('Sample categories in data:', prompts.slice(0, 3).map(function(p) { return p.category; }));
+  console.log('Looking for category:', category);
   return filtered;
 }
 
@@ -148,13 +173,14 @@ function getAllPrompts() {
 }
 
 // Handle messages from the UI
-figma.ui.onmessage = async (msg) => {
+figma.ui.onmessage = function(msg) {
   switch (msg.type) {
     case 'load-prompts':
       // Send first 5 prompts, filtered by category
       currentOffset = 0;
       currentCategory = msg.category || 'All';
-      console.log(`Loading prompts for category: ${currentCategory}, total prompts: ${ALL_PROMPTS.length}`);
+      console.log(`Loading prompts for category: "${currentCategory}", total prompts: ${ALL_PROMPTS.length}`);
+      console.log('Available categories in data:', Array.from(new Set(ALL_PROMPTS.map(function(p) { return p.category; }))));
       
       const initialData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
       console.log(`Filtered prompts for ${currentCategory}:`, initialData.prompts.length, 'out of', initialData.totalCount);
@@ -242,25 +268,25 @@ figma.ui.onmessage = async (msg) => {
         ALL_PROMPTS.unshift(newPrompt); // Add to beginning
         
         // Save to storage
-        await figma.clientStorage.setAsync('prompts', ALL_PROMPTS);
-        
-        console.log('Prompt added:', newPrompt.title);
-        figma.notify(`Added "${newPrompt.title}" to prompts`);
-        
-        // Reload prompts for the active category
-        currentOffset = 0;
-        const updatedData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
-        figma.ui.postMessage({
-          type: 'prompts-loaded',
-          prompts: updatedData.prompts,
-          totalCount: updatedData.totalCount,
-          hasMore: updatedData.hasMore,
-          offset: updatedData.offset,
-          limit: updatedData.limit,
-          category: updatedData.category
+        figma.clientStorage.setAsync('prompts', ALL_PROMPTS).then(function() {
+          console.log('Prompt added:', newPrompt.title);
+          figma.notify(`Added "${newPrompt.title}" to prompts`);
+          
+          // Reload prompts for the active category
+          currentOffset = 0;
+          const updatedData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
+          figma.ui.postMessage({
+            type: 'prompts-loaded',
+            prompts: updatedData.prompts,
+            totalCount: updatedData.totalCount,
+            hasMore: updatedData.hasMore,
+            offset: updatedData.offset,
+            limit: updatedData.limit,
+            category: updatedData.category
+          });
+          
+          currentOffset = BATCH_SIZE;
         });
-        
-        currentOffset = BATCH_SIZE;
       } catch (error) {
         console.error('Failed to add prompt:', error);
         figma.notify('Failed to add prompt');
@@ -279,8 +305,7 @@ figma.ui.onmessage = async (msg) => {
       break;
 
     case 'load-favorites':
-      try {
-        const storedFavorites = await figma.clientStorage.getAsync('favorites');
+      figma.clientStorage.getAsync('favorites').then(function(storedFavorites) {
         FAVORITES = Array.isArray(storedFavorites) ? storedFavorites : [];
         console.log('Favorites loaded:', FAVORITES.length);
         
@@ -288,23 +313,61 @@ figma.ui.onmessage = async (msg) => {
           type: 'favorites-loaded',
           favorites: FAVORITES
         });
-      } catch (error) {
+      }).catch(function(error) {
         console.error('Failed to load favorites:', error);
         FAVORITES = [];
         figma.ui.postMessage({
           type: 'favorites-loaded',
           favorites: []
         });
-      }
+      });
       break;
 
     case 'save-favorites':
-      try {
-        FAVORITES = msg.favorites || [];
-        await figma.clientStorage.setAsync('favorites', FAVORITES);
+      FAVORITES = msg.favorites || [];
+      figma.clientStorage.setAsync('favorites', FAVORITES).then(function() {
         console.log('Favorites saved:', FAVORITES.length);
-      } catch (error) {
+      }).catch(function(error) {
         console.error('Failed to save favorites:', error);
+      });
+      break;
+
+    case 'delete-prompt':
+      try {
+        const promptId = msg.data.id;
+        const promptIndex = ALL_PROMPTS.findIndex(function(p) { return p.id === promptId; });
+        
+        if (promptIndex !== -1) {
+          const deletedPrompt = ALL_PROMPTS[promptIndex];
+          ALL_PROMPTS.splice(promptIndex, 1);
+          
+          // Save updated prompts to storage
+          figma.clientStorage.setAsync('prompts', ALL_PROMPTS).then(function() {
+            console.log('Prompt deleted:', deletedPrompt.title);
+            figma.notify(`Deleted "${deletedPrompt.title}"`);
+            
+            // Reload prompts for the current active category
+            currentOffset = 0;
+            const updatedData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
+            figma.ui.postMessage({
+              type: 'prompts-loaded',
+              prompts: updatedData.prompts,
+              totalCount: updatedData.totalCount,
+              hasMore: updatedData.hasMore,
+              offset: updatedData.offset,
+              limit: updatedData.limit,
+              category: updatedData.category
+            });
+            
+            currentOffset = BATCH_SIZE;
+          });
+        } else {
+          console.warn('Prompt not found for deletion:', promptId);
+          figma.notify('Prompt not found');
+        }
+      } catch (error) {
+        console.error('Failed to delete prompt:', error);
+        figma.notify('Failed to delete prompt');
       }
       break;
 
@@ -318,45 +381,96 @@ figma.ui.onmessage = async (msg) => {
 };
 
 // Initialize the plugin
-async function init() {
+function init() {
   console.log('PromptCraft plugin initialized');
 
-  try {
-    const stored = await figma.clientStorage.getAsync('prompts');
+  figma.clientStorage.getAsync('prompts').then(function(stored) {
     if (Array.isArray(stored) && stored.length > 0) {
-      ALL_PROMPTS = stored;
-      console.log(`Prompts loaded from storage: ${ALL_PROMPTS.length}`);
-      console.log('Sample prompt:', ALL_PROMPTS[0]);
+      // Check if stored data has old category names and update them
+      let needsUpdate = false;
+      const updatedPrompts = stored.map(function(prompt) {
+        if (prompt.category === 'UX Research') {
+          needsUpdate = true;
+          return Object.assign({}, prompt, { category: 'Prototype Review & UX Feedback' });
+        }
+        if (prompt.category === 'Accessibility') {
+          needsUpdate = true;
+          return Object.assign({}, prompt, { category: 'Accessibility & QA' });
+        }
+        if (prompt.category === 'Prototyping') {
+          needsUpdate = true;
+          return Object.assign({}, prompt, { category: 'Experimentation & Iteration' });
+        }
+        if (prompt.category === 'User Testing') {
+          needsUpdate = true;
+          return Object.assign({}, prompt, { category: 'Prototype Review & UX Feedback' });
+        }
+        if (prompt.category === 'Ideation') {
+          needsUpdate = true;
+          return Object.assign({}, prompt, { category: 'Design Ops & Governance' });
+        }
+        return prompt;
+      });
+      
+      if (needsUpdate) {
+        console.log('Updating stored prompts with new category names');
+        return figma.clientStorage.setAsync('prompts', updatedPrompts).then(function() {
+          ALL_PROMPTS = updatedPrompts;
+          console.log(`Prompts loaded from storage: ${ALL_PROMPTS.length}`);
+          console.log('Sample prompt:', ALL_PROMPTS[0]);
+          loadFavorites();
+        });
+      } else {
+        ALL_PROMPTS = stored;
+        console.log(`Prompts loaded from storage: ${ALL_PROMPTS.length}`);
+        console.log('Sample prompt:', ALL_PROMPTS[0]);
+        loadFavorites();
+      }
     } else {
       ALL_PROMPTS = HARD_CODED_FALLBACK;
       console.log('Using hardcoded prompts:', ALL_PROMPTS.length);
       console.log('Sample prompt:', ALL_PROMPTS[0]);
+      loadFavorites();
     }
-  } catch (e) {
+  }).catch(function(e) {
     ALL_PROMPTS = HARD_CODED_FALLBACK;
     console.log('Using hardcoded prompts due to error:', e);
     console.log('Sample prompt:', ALL_PROMPTS[0]);
-  }
+    loadFavorites();
+  });
 
-  // Load favorites
-  try {
-    const storedFavorites = await figma.clientStorage.getAsync('favorites');
+}
+
+// Load favorites and initialize UI
+function loadFavorites() {
+  figma.clientStorage.getAsync('favorites').then(function(storedFavorites) {
     FAVORITES = Array.isArray(storedFavorites) ? storedFavorites : [];
     console.log('Favorites loaded:', FAVORITES.length);
-  } catch (e) {
+    
+    // Show the UI
+    showUI();
+
+    // Inform UI of readiness
+    figma.ui.postMessage({
+      type: 'plugin-ready',
+      totalPromptCount: ALL_PROMPTS.length,
+      batchSize: BATCH_SIZE,
+      categories: CATEGORIES
+    });
+  }).catch(function(e) {
     FAVORITES = [];
     console.log('No favorites found, starting fresh');
-  }
+    
+    // Show the UI
+    showUI();
 
-  // Show the UI
-  showUI();
-
-  // Inform UI of readiness
-  figma.ui.postMessage({
-    type: 'plugin-ready',
-    totalPromptCount: ALL_PROMPTS.length,
-    batchSize: BATCH_SIZE,
-    categories: CATEGORIES
+    // Inform UI of readiness
+    figma.ui.postMessage({
+      type: 'plugin-ready',
+      totalPromptCount: ALL_PROMPTS.length,
+      batchSize: BATCH_SIZE,
+      categories: CATEGORIES
+    });
   });
 }
 
