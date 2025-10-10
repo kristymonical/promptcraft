@@ -47,6 +47,7 @@
         .promptcraft-container {
             max-width: 100%;
             margin: 0 auto;
+            padding-bottom: 60px; /* Space for fixed bottom buttons */
         }
 
         .header {
@@ -161,6 +162,15 @@
             margin-bottom: 16px;
             border-bottom: 1px solid #eee;
             padding-bottom: 8px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            white-space: nowrap;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
         }
 
         .tab {
@@ -172,6 +182,8 @@
             color: #666;
             border-bottom: 2px solid transparent;
             transition: all 0.2s;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         .tab:hover {
@@ -508,16 +520,13 @@
             margin-bottom: 16px;
         }
 
-        /* Search and Filter Styles */
+        /* Search Styles */
         .search-section {
             margin-bottom: var(--spacing-md);
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
         }
 
         .search-input-wrapper {
-            flex: 1;
+            width: 100%;
         }
 
         .search-input {
@@ -535,24 +544,141 @@
             box-shadow: 0 0 0 2px rgba(24, 160, 251, 0.1);
         }
 
-        .filter-wrapper {
-            flex: 0 0 auto;
+        /* Fixed Bottom Buttons */
+        .fixed-bottom-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--background-color);
+            border-top: 1px solid var(--border-color);
+            padding: var(--spacing-sm);
+            display: flex;
+            gap: var(--spacing-sm);
+            z-index: 100;
         }
 
-        .filter-select {
+        .fixed-bottom-buttons .button {
+            flex: 1;
+            margin: 0;
+        }
+
+        /* Fullscreen Form Overlay */
+        .fullscreen-form-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--background-color);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+        }
+
+        .fullscreen-form-container {
+            max-width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            border-radius: var(--border-radius);
+            transition: all 0.2s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-button:hover {
+            background: var(--hover-background);
+            color: var(--text-color);
+        }
+
+        .fullscreen-form {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fullscreen-form .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .fullscreen-form .form-group:last-of-type {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .fullscreen-form .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .fullscreen-form .input {
             width: 100%;
             padding: var(--spacing-sm);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             font-size: 14px;
             font-family: inherit;
-            background: var(--background-color);
+            transition: border-color 0.2s ease;
         }
 
-        .filter-select:focus {
+        .fullscreen-form .input:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(24, 160, 251, 0.1);
+        }
+
+        .fullscreen-form .input.large {
+            min-height: 200px;
+            resize: vertical;
+        }
+
+        .fullscreen-form .input.medium {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: auto;
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .form-actions .button {
+            flex: 1;
         }
 
         /* No results state */
@@ -919,20 +1045,18 @@
                 };
             }, [hasMore, isLoadingMore, filteredPrompts.length, activeTab]);
 
-            // Handle form submission
-            const handleSendToMake = () => {
-                const textToSend = selectedPrompt ? selectedPrompt.description : formData.description;
-                if (!textToSend.trim()) return;
+            // Handle copy prompt functionality
+            const handleCopyPrompt = async () => {
+                const textToCopy = selectedPrompt ? selectedPrompt.description : formData.description;
+                if (!textToCopy.trim()) return;
 
-                parent.postMessage({
-                    pluginMessage: {
-                        type: 'send-to-make',
-                        data: {
-                            prompt: textToSend.trim(),
-                            timestamp: new Date().toISOString()
-                        }
-                    }
-                }, '*');
+                try {
+                    await navigator.clipboard.writeText(textToCopy.trim());
+                    showToast('Prompt copied to clipboard!');
+                } catch (error) {
+                    console.error('Failed to copy:', error);
+                    showToast('Failed to copy prompt');
+                }
             };
 
             // Mock AI generator function
@@ -1075,59 +1199,9 @@
             // Render individual prompt item
             const PromptItem = ({ prompt, isLast }) => {
                 const isSelected = selectedPrompt?.id === prompt.id;
-                const isEditing = editingPrompt?.id === prompt.id;
                 
                 if (isLast) {
                     console.log('Rendering last prompt item:', prompt.title);
-                }
-                
-                if (isEditing) {
-                    // Show editable form
-                    return h('div', {
-                        className: 'card selected editing',
-                        key: prompt.id,
-                        ref: isLast ? lastItemRef : null
-                    }, [
-                        h('div', { className: 'form-group' }, [
-                            h('input', {
-                                type: 'text',
-                                className: 'input bold',
-                                value: editData.title,
-                                onChange: (e) => setEditData({...editData, title: e.target.value})
-                            })
-                        ]),
-                        h('div', { className: 'form-group' }, [
-                            h('textarea', {
-                                className: 'input large',
-                                value: editData.description,
-                                onChange: (e) => setEditData({...editData, description: e.target.value})
-                            })
-                        ]),
-                        // Show category selector for custom prompts (those with 'custom-' prefix)
-                        prompt.id && prompt.id.startsWith('custom-') ? h('div', { className: 'form-group' }, [
-                            h('select', {
-                                className: 'input full-width',
-                                value: editData.category || prompt.category,
-                                onChange: (e) => setEditData({...editData, category: e.target.value})
-                            }, categories.filter(cat => cat !== 'All').map(cat => 
-                                h('option', { key: cat, value: cat }, cat)
-                            ))
-                        ]) : null,
-                        h('div', { className: 'form-row' }, [
-                            h('button', {
-                                className: 'button',
-                                onClick: handleEditPrompt,
-                                disabled: !editData.title.trim() || !editData.description.trim()
-                            }, 'Save'),
-                            h('button', {
-                                className: 'button secondary',
-                                onClick: () => {
-                                    setEditingPrompt(null);
-                                    setEditData({ title: '', description: '', category: '' });
-                                }
-                            }, 'Cancel')
-                        ])
-                    ]);
                 }
                 
                 // Show normal prompt card
@@ -1171,7 +1245,7 @@
                     h('div', { className: 'subtitle' }, `${totalCount} prompts`)
                 ]),
 
-                // Search and Filter Section
+                // Search Section
                 h('div', { className: 'search-section' }, [
                     h('div', { className: 'search-input-wrapper' }, [
                         h('input', {
@@ -1181,41 +1255,22 @@
                             value: searchQuery,
                             onChange: (e) => setSearchQuery(e.target.value)
                         })
-                    ]),
-                    h('div', { className: 'filter-wrapper' }, [
-                        h('select', {
-                            className: 'input filter-select',
-                            value: filterCategory,
-                            onChange: (e) => setFilterCategory(e.target.value)
-                        }, [
-                            h('option', { value: 'All' }, 'All Categories'),
-                            ...categories.filter(cat => cat !== 'All').map(cat => 
-                                h('option', { key: cat, value: cat }, cat)
-                            )
-                        ])
                     ])
                 ]),
 
-                // Top Action Buttons
-                h('div', { className: 'form-row' }, [
-                    !showCreatePrompt ? h('button', {
-                        className: 'button',
-                        onClick: () => setShowCreatePrompt(true)
-                    }, 'Create Prompt') : null,
-                    h('button', {
-                        className: `button ${(selectedPrompt || formData.description.trim()) ? 'active' : ''}`,
-                        onClick: handleSendToMake,
-                        disabled: !selectedPrompt && !formData.description.trim()
-                    }, 'Send to Make')
-                ].filter(Boolean)),
 
-                // Create Prompt Component (when shown)
-                showCreatePrompt ? h('div', {
-                    className: 'form add-prompt-form'
-                }, [
-                    h('h3', {}, 'Create Prompt'),
-                    
-                    // Mode Toggle
+                // Create Prompt Component (when shown) - takes over entire screen
+                showCreatePrompt ? h('div', { className: 'fullscreen-form-overlay' }, [
+                    h('div', { className: 'fullscreen-form-container' }, [
+                        h('div', { className: 'form-header' }, [
+                            h('h2', { className: 'form-title' }, 'Create Prompt'),
+                            h('button', {
+                                className: 'close-button',
+                                onClick: () => setShowCreatePrompt(false)
+                            }, '×')
+                        ]),
+                        h('div', { className: 'fullscreen-form' }, [
+                            // Mode Toggle
                     h('div', { className: 'form-row form-section large' }, [
                         h('button', {
                             className: `tab toggle ${createMode === 'manual' ? 'active' : ''}`,
@@ -1328,6 +1383,8 @@
                             }, 'Use This Prompt')
                         ]) : null
                     ]) : null
+                        ])
+                    ])
                 ]) : null,
 
 
@@ -1342,8 +1399,67 @@
                     )
                 ),
 
-                // Prompts list
-                h('div', { className: 'prompts-section' }, [
+                // Edit Prompt Form (when editing) - takes over entire screen
+                editingPrompt ? h('div', { className: 'fullscreen-form-overlay' }, [
+                    h('div', { className: 'fullscreen-form-container' }, [
+                        h('div', { className: 'form-header' }, [
+                            h('h2', { className: 'form-title' }, 'Edit Prompt'),
+                            h('button', {
+                                className: 'close-button',
+                                onClick: () => {
+                                    setEditingPrompt(null);
+                                    setEditData({ title: '', description: '', category: '' });
+                                }
+                            }, '×')
+                        ]),
+                        h('div', { className: 'fullscreen-form' }, [
+                            h('div', { className: 'form-group' }, [
+                                h('label', { className: 'form-label' }, 'Title'),
+                                h('input', {
+                                    type: 'text',
+                                    className: 'input',
+                                    placeholder: 'Enter prompt title',
+                                    value: editData.title,
+                                    onChange: (e) => setEditData({...editData, title: e.target.value})
+                                })
+                            ]),
+                            h('div', { className: 'form-group' }, [
+                                h('label', { className: 'form-label' }, 'Description'),
+                                h('textarea', {
+                                    className: 'input large',
+                                    placeholder: 'Enter prompt description',
+                                    value: editData.description,
+                                    onChange: (e) => setEditData({...editData, description: e.target.value})
+                                })
+                            ]),
+                            // Show category selector for custom prompts (those with 'custom-' prefix)
+                            editingPrompt.id && editingPrompt.id.startsWith('custom-') ? h('div', { className: 'form-group' }, [
+                                h('label', { className: 'form-label' }, 'Category'),
+                                h('select', {
+                                    className: 'input',
+                                    value: editData.category || editingPrompt.category,
+                                    onChange: (e) => setEditData({...editData, category: e.target.value})
+                                }, categories.filter(cat => cat !== 'All').map(cat => 
+                                    h('option', { key: cat, value: cat }, cat)
+                                ))
+                            ]) : null,
+                            h('div', { className: 'form-actions' }, [
+                                h('button', {
+                                    className: 'button secondary',
+                                    onClick: () => {
+                                        setEditingPrompt(null);
+                                        setEditData({ title: '', description: '', category: '' });
+                                    }
+                                }, 'Cancel'),
+                                h('button', {
+                                    className: 'button',
+                                    onClick: handleEditPrompt,
+                                    disabled: !editData.title.trim() || !editData.description.trim()
+                                }, 'Save Changes')
+                            ])
+                        ])
+                    ])
+                ]) : h('div', { className: 'prompts-section' }, [
                     h('h2', { className: 'section-title' }, 
                         (searchQuery.trim() || filterCategory !== 'All') 
                             ? `Search Results (${filteredPrompts.length})`
@@ -1383,7 +1499,20 @@
                                     ])
                                     : h('div', { className: 'empty-state' }, `No ${activeTab.toLowerCase()} prompts yet.`)
                     )
-                ])
+                ]),
+
+                // Fixed Bottom Buttons
+                h('div', { className: 'fixed-bottom-buttons' }, [
+                    !showCreatePrompt ? h('button', {
+                        className: 'button',
+                        onClick: () => setShowCreatePrompt(true)
+                    }, 'Create Prompt') : null,
+                    h('button', {
+                        className: `button ${(selectedPrompt || formData.description.trim()) ? 'active' : ''}`,
+                        onClick: handleCopyPrompt,
+                        disabled: !selectedPrompt && !formData.description.trim()
+                    }, 'Copy Prompt')
+                ].filter(Boolean))
             ]);
         }
 
