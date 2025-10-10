@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <style>
         /* CSS Variables for theme preparation */
@@ -657,27 +658,32 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            color: #ccc;
-            transition: color 0.2s ease;
             padding: 4px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: background-color 0.2s ease;
         }
 
         .star-icon:hover {
-            color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
+            background: rgba(245, 179, 1, 0.1);
         }
 
-        .star-icon.favorited {
-            color: #ffd700;
+        /* Material Icons Star Styling */
+        .material-icons.star {
+            font-size: 14px;
+            color: #ccc;
+            cursor: pointer;
+            transition: color 0.2s ease;
         }
 
-        .star-icon.favorited:hover {
-            color: #ffb300;
+        .material-icons.star.active {
+            color: #f5b301;
+        }
+
+        .material-icons.star:hover {
+            color: #f5b301;
         }
 
         .toast {
@@ -720,14 +726,14 @@
             const [prompts, setPrompts] = useState([]);
             const [filteredPrompts, setFilteredPrompts] = useState([]);
             const [activeTab, setActiveTab] = useState('All');
-            const [categories, setCategories] = useState(['All', 'My Library', 'UX Research', 'Accessibility', 'Prototyping', 'User Testing', 'Ideation']);
+            const [categories, setCategories] = useState(['All', 'My Library', 'Prototype Review & UX Feedback', 'Collaboration & Handoff', 'Accessibility & QA', 'Experimentation & Iteration', 'Design Ops & Governance']);
             const [searchQuery, setSearchQuery] = useState('');
             const [filterCategory, setFilterCategory] = useState('All');
             const [favorites, setFavorites] = useState([]);
             const [formData, setFormData] = useState({
                 title: '',
                 description: '',
-                category: 'UX Research'
+                category: 'Prototype Review & UX Feedback'
             });
             const [selectedPrompt, setSelectedPrompt] = useState(null);
             const [editingPrompt, setEditingPrompt] = useState(null);
@@ -1014,22 +1020,22 @@
                     'onboarding': {
                         title: 'User Onboarding Flow Design',
                         description: 'Create a comprehensive user onboarding flow that guides new users through key features. Include welcome screens, feature highlights, progress indicators, and clear next steps. Focus on reducing time-to-value and improving user retention.',
-                        category: 'UX Research'
+                        category: 'Prototype Review & UX Feedback'
                     },
                     'mobile': {
                         title: 'Mobile CTA Optimization',
                         description: 'Design and optimize call-to-action buttons for mobile interfaces. Consider touch targets, visual hierarchy, color psychology, and accessibility. Include A/B testing recommendations and conversion tracking strategies.',
-                        category: 'Prototyping'
+                        category: 'Experimentation & Iteration'
                     },
                     'accessibility': {
                         title: 'Accessibility Audit Checklist',
                         description: 'Develop a comprehensive accessibility audit checklist for web and mobile applications. Include WCAG 2.1 AA compliance checks, keyboard navigation, screen reader compatibility, color contrast, and inclusive design principles.',
-                        category: 'Accessibility'
+                        category: 'Accessibility & QA'
                     },
                     'testing': {
                         title: 'User Testing Protocol',
                         description: 'Create a structured user testing protocol for validating design decisions. Include participant recruitment, test scenarios, data collection methods, analysis frameworks, and actionable insights generation.',
-                        category: 'User Testing'
+                        category: 'Prototype Review & UX Feedback'
                     }
                 };
 
@@ -1044,7 +1050,7 @@
                 return {
                     title: 'AI-Generated UX Prompt',
                     description: `Based on your request: "${input}". This is a mock AI-generated prompt. In a real implementation, this would be generated by ${model} using advanced prompt engineering techniques.`,
-                    category: 'UX Research'
+                    category: 'Prototype Review & UX Feedback'
                 };
             };
 
@@ -1090,7 +1096,7 @@
                 setFormData({
                     title: '',
                     description: '',
-                    category: 'UX Research'
+                    category: 'Prototype Review & UX Feedback'
                 });
                 setShowCreatePrompt(false);
                 setCreateMode('manual');
@@ -1188,7 +1194,11 @@
                         className: `star-icon ${favorites.includes(prompt.id) ? 'favorited' : ''}`,
                         onClick: (e) => handleToggleFavorite(prompt.id, e),
                         title: favorites.includes(prompt.id) ? 'Remove from My Library' : 'Add to My Library'
-                    }, '⭐'),
+                    }, [
+                        h('span', {
+                            className: `material-icons star ${favorites.includes(prompt.id) ? 'active' : ''}`
+                        }, 'star')
+                    ]),
                     h('div', { className: 'prompt-title' }, prompt.title || 'Untitled Prompt'),
                     h('div', { className: 'prompt-description' }, prompt.description || 'No description'),
                     h('div', { className: 'prompt-meta' }, [
@@ -1301,7 +1311,7 @@
                                     setFormData({
                                         title: '',
                                         description: '',
-                                        category: 'UX Research'
+                                        category: 'Prototype Review & UX Feedback'
                                     });
                                 }
                             }, 'Cancel')
