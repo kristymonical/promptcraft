@@ -371,6 +371,118 @@ figma.ui.onmessage = function(msg) {
       }
       break;
 
+    case 'save-nav-settings':
+      try {
+        const navSettings = msg.payload || { categories: [], prompts: {} };
+        
+        // Save to figma.clientStorage
+        figma.clientStorage.setAsync('nav-settings', navSettings).then(function() {
+          console.log('Nav settings saved:', navSettings);
+          
+          figma.ui.postMessage({
+            type: 'nav-settings-saved',
+            payload: navSettings
+          });
+        }).catch(function(error) {
+          console.error('Failed to save nav settings:', error);
+        });
+      } catch (error) {
+        console.error('Error in save-nav-settings:', error);
+      }
+      break;
+
+    case 'load-nav-settings':
+      figma.clientStorage.getAsync('nav-settings').then(function(storedSettings) {
+        if (storedSettings && storedSettings.categories && storedSettings.categories.length > 0) {
+          // Settings exist - apply them
+          console.log('Nav settings applied:', storedSettings);
+          figma.ui.postMessage({
+            type: 'apply-nav-settings',
+            payload: storedSettings
+          });
+        } else {
+          // No settings - show personalization modal
+          console.log('Onboarding modal triggered');
+          
+          // Show onboarding notification
+          figma.notify('Personalize your Figma Make prototyping workflow!', {
+            timeout: 3000
+          });
+          
+          // Send empty settings first
+          figma.ui.postMessage({
+            type: 'apply-nav-settings',
+            payload: { categories: [], prompts: {} }
+          });
+          
+          // Then trigger personalization modal
+          figma.ui.postMessage({
+            type: 'show-personalize-modal'
+          });
+        }
+      }).catch(function(error) {
+        console.error('Failed to load nav settings:', error);
+        
+        // Show onboarding on error
+        console.log('Onboarding modal triggered');
+        figma.notify('Personalize your Figma Make prototyping workflow!', {
+          timeout: 3000
+        });
+        
+        figma.ui.postMessage({
+          type: 'apply-nav-settings',
+          payload: { categories: [], prompts: {} }
+        });
+        
+        figma.ui.postMessage({
+          type: 'show-personalize-modal'
+        });
+      });
+      break;
+
+    case 'edit-prompt':
+      try {
+        const editData = msg.data;
+        const promptIndex = ALL_PROMPTS.findIndex(function(p) { return p.id === editData.id; });
+        
+        if (promptIndex !== -1) {
+          // Update the prompt
+          ALL_PROMPTS[promptIndex] = Object.assign({}, ALL_PROMPTS[promptIndex], {
+            title: editData.title,
+            description: editData.description,
+            category: editData.category || ALL_PROMPTS[promptIndex].category
+          });
+          
+          // Save to storage
+          figma.clientStorage.setAsync('prompts', ALL_PROMPTS).then(function() {
+            console.log('Prompt updated:', editData.title);
+            figma.notify(`Updated "${editData.title}"`);
+            
+            // Reload prompts for the current active category
+            currentOffset = 0;
+            const updatedData = getPrompts(currentOffset, BATCH_SIZE, currentCategory);
+            figma.ui.postMessage({
+              type: 'prompts-loaded',
+              prompts: updatedData.prompts,
+              totalCount: updatedData.totalCount,
+              hasMore: updatedData.hasMore,
+              offset: updatedData.offset,
+              limit: updatedData.limit,
+              category: updatedData.category
+            });
+            
+            currentOffset = BATCH_SIZE;
+          });
+        } else {
+          console.warn('Prompt not found for editing:', editData.id);
+          figma.notify('Prompt not found');
+        }
+      } catch (error) {
+        console.error('Failed to edit prompt:', error);
+        figma.notify('Failed to edit prompt');
+      }
+      break;
+
     case 'close-plugin':
       figma.closePlugin();
       break;
@@ -447,30 +559,29 @@ function loadFavorites() {
     FAVORITES = Array.isArray(storedFavorites) ? storedFavorites : [];
     console.log('Favorites loaded:', FAVORITES.length);
     
-    // Show the UI
-    showUI();
-
-    // Inform UI of readiness
-    figma.ui.postMessage({
-      type: 'plugin-ready',
-      totalPromptCount: ALL_PROMPTS.length,
-      batchSize: BATCH_SIZE,
-      categories: CATEGORIES
-    });
+    // Check for nav settings
+    loadNavSettings();
   }).catch(function(e) {
     FAVORITES = [];
     console.log('No favorites found, starting fresh');
     
-    // Show the UI
-    showUI();
+    // Check for nav settings
+    loadNavSettings();
+  });
+}
 
-    // Inform UI of readiness
-    figma.ui.postMessage({
-      type: 'plugin-ready',
-      totalPromptCount: ALL_PROMPTS.length,
-      batchSize: BATCH_SIZE,
-      categories: CATEGORIES
-    });
+// Load nav settings and show UI
+function loadNavSettings() {
+  // Just show the UI - don't send messages yet
+  // The UI will request settings when it's ready
+  showUI();
+  
+  // Inform UI of readiness
+  figma.ui.postMessage({
+    type: 'plugin-ready',
+    totalPromptCount: ALL_PROMPTS.length,
+    batchSize: BATCH_SIZE,
+    categories: CATEGORIES
   });
 }
 
