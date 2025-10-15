@@ -33,8 +33,12 @@ promptcraft-plugin/
 ├── ui.html                 # Frontend UI (Preact + modular architecture)
 ├── data/
 │   └── ux-prompts-full.json  # Prompt data (90 curated prompts)
+├── docs/                   # Documentation folder
+│   ├── features/           # Feature documentation
+│   ├── development/        # Development guides
+│   └── internal/           # Internal audits & summaries
 ├── package.json            # Project dependencies
-└── README.md              # Documentation
+└── README.md              # Main documentation
 ```
 
 ## Installation
@@ -190,6 +194,13 @@ Feel free to submit issues or pull requests to improve the plugin!
 ## License
 
 MIT License - Feel free to use and modify as needed!
+
+## Documentation
+
+Additional documentation is available in the [`/docs`](./docs) folder:
+- **Features** - Implementation guides for specific features
+- **Development** - Development and debugging guides  
+- **Internal** - Audit reports and improvement summaries
 
 ## Support
 
