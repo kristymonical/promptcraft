@@ -380,13 +380,15 @@
             color: var(--text-secondary);
             margin-bottom: var(--spacing-xs);
             line-height: 1.4;
+            padding-top: var(--spacing-xs);
+            padding-bottom: var(--spacing-xs);
         }
 
         .prompt-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
         }
 
@@ -1903,9 +1905,8 @@
                         }, 'star')
                     ]),
                     h('div', { className: 'prompt-title' }, prompt.title || 'Untitled Prompt'),
-                    h('div', { className: 'prompt-description' }, prompt.description || 'No description'),
                     h('div', { className: 'prompt-meta' }, [
-                        h('span', {}, `${prompt.category} • ${prompt.model}`)
+                        h('span', {}, `${prompt.category}`)
                         // Tags hidden for now
                         // h('div', { className: 'prompt-tags' }, 
                         //     (prompt.tags || []).map(tag => 
@@ -1915,6 +1916,8 @@
                         //     )
                         // )
                     ]),
+                    h('div', { className: 'prompt-description' }, prompt.description || 'No description'),
+                   
                     h('button', {
                         className: 'button secondary small',
                         onClick: (e) => {
