@@ -1738,16 +1738,22 @@
                     
                     if (successful) {
                         showToast('Prompt copied to clipboard!');
+                        // Deselect the prompt after copying
+                        setSelectedPrompt(null);
                     } else {
                         // Fallback: show the text in a prompt for manual copying
                         prompt('Copy this prompt text:', textToCopy.trim());
                         showToast('Text selected for manual copying');
+                        // Deselect the prompt after copying
+                        setSelectedPrompt(null);
                     }
                 } catch (error) {
                     console.error('Failed to copy:', error);
                     // Fallback: show the text in a prompt for manual copying
                     prompt('Copy this prompt text:', textToCopy.trim());
                     showToast('Text selected for manual copying');
+                    // Deselect the prompt after copying
+                    setSelectedPrompt(null);
                 }
             };
 
