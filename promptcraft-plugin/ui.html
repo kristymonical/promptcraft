@@ -1380,6 +1380,16 @@
             // Personalization handlers
             const handleCustomizeNavClick = () => {
                 console.log('Customize nav clicked');
+                
+                // Restore selected categories from current settings
+                if (navSettings && navSettings.categories) {
+                    const categoriesObj = {};
+                    navSettings.categories.forEach(function(cat) {
+                        categoriesObj[cat] = true;
+                    });
+                    setSelectedCategories(categoriesObj);
+                }
+                
                 setShowPersonalizeModal(true);
                 setShowSettingsMenu(false);
                 
@@ -1430,15 +1440,19 @@
             const handleSkipPersonalization = () => {
                 setShowPersonalizeModal(false);
                 
-                // Send empty settings
-                parent.postMessage({
-                    pluginMessage: {
-                        type: 'save-nav-settings',
-                        payload: {
-                            categories: []
+                // Only send empty settings if this is onboarding (no existing settings)
+                // If settings exist, this is a "Cancel" action - just close modal
+                if (!navSettings || !navSettings.categories || navSettings.categories.length === 0) {
+                    // Send empty settings for onboarding skip
+                    parent.postMessage({
+                        pluginMessage: {
+                            type: 'save-nav-settings',
+                            payload: {
+                                categories: []
+                            }
                         }
-                    }
-                }, '*');
+                    }, '*');
+                }
             };
 
             // Get visible categories based on nav settings
@@ -2297,7 +2311,7 @@
                             h('button', {
                                 id: 'skip-personalize',
                                 onClick: handleSkipPersonalization
-                            }, 'Skip'),
+                            }, navSettings && navSettings.categories && navSettings.categories.length > 0 ? 'Cancel' : 'Skip'),
                             h('button', {
                                 id: 'save-personalize',
                                 onClick: handleSavePersonalization
