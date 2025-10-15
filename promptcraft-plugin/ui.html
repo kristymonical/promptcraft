@@ -1494,6 +1494,11 @@
             useEffect(() => {
                 modules.getModule('favorites').loadFavorites();
                 
+                // Request nav settings from backend (now that UI is ready)
+                parent.postMessage({
+                    pluginMessage: { type: 'load-nav-settings' }
+                }, '*');
+                
                 // Check if first load (show personalization modal)
                 // TEMP: Disabled for debugging prompts display issue
                 console.log('Modal disabled for debugging');
@@ -1515,6 +1520,11 @@
                     console.log('Visible categories after settings change:', getVisibleCategories());
                 }
             }, [navSettings]);
+
+            // Debug selectedCategories changes
+            useEffect(() => {
+                console.log('Selected categories changed:', selectedCategories);
+            }, [selectedCategories]);
 
             // Handle search and filter changes using modules
             useEffect(() => {
@@ -1628,6 +1638,29 @@
                         case 'favorites-loaded':
                             setFavorites(msg.favorites || []);
                             modules.getModule('favorites').setFavorites(msg.favorites || []);
+                            break;
+
+                        case 'apply-nav-settings':
+                            console.log('Applying nav settings from backend:', msg.payload);
+                            if (msg.payload && msg.payload.categories) {
+                                // Convert categories array to selectedCategories object
+                                const categoriesObj = {};
+                                msg.payload.categories.forEach(function(cat) {
+                                    categoriesObj[cat] = true;
+                                });
+                                setSelectedCategories(categoriesObj);
+                                setNavSettings(msg.payload);
+                                console.log('Nav settings restored:', msg.payload);
+                            }
+                            break;
+
+                        case 'show-personalize-modal':
+                            console.log('Showing personalize modal from backend');
+                            setShowPersonalizeModal(true);
+                            break;
+
+                        case 'nav-settings-saved':
+                            console.log('Nav settings saved confirmation from backend');
                             break;
                     }
                 };
