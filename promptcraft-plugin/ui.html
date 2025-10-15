@@ -222,12 +222,12 @@
         }
 
         .button.active {
-            background: var(--primary-color);
+            background: var(--secondary-color);
             color: var(--secondary-text-color);
             box-shadow: 0 2px 4px rgba(24, 160, 251, 0.2);
         }
         .button.active:hover:not(:disabled) {
-            background: var(--primary-hover);
+            background: var(--secondary-hover);
             color: var(--secondary-text-color);
             box-shadow: 0 2px 4px rgba(24, 160, 251, 0.2);
         }
@@ -1957,7 +1957,7 @@
                             className: 'input search-input',
                             placeholder: 'Search prompts...',
                             value: searchQuery,
-                            onChange: handleSearchChange
+                            onInput: handleSearchChange
                         })
                     ])
                 ]),
@@ -1996,7 +1996,7 @@
                                 className: 'input',
                                 placeholder: 'Prompt Title',
                                 value: formData.title,
-                                onChange: (e) => setFormData({...formData, title: e.target.value}),
+                                onInput: (e) => setFormData({...formData, title: e.target.value}),
                                 required: true
                             })
                         ]),
@@ -2005,7 +2005,7 @@
                                 className: 'input',
                                 placeholder: 'Prompt Description',
                                 value: formData.description,
-                                onChange: (e) => setFormData({...formData, description: e.target.value}),
+                                onInput: (e) => setFormData({...formData, description: e.target.value}),
                                 required: true
                             })
                         ]),
@@ -2021,12 +2021,13 @@
                         h('div', { className: 'form-row' }, [
                             h('button', {
                                 type: 'submit',
-                                className: 'button',
+                                className: `button ${formData.title.trim() && formData.description.trim() ? 'active' : ''}`,
                                 disabled: !formData.title.trim() || !formData.description.trim()
                             }, 'Create Prompt'),
                             h('button', {
                                 type: 'button',
-                                className: 'button secondary',
+                                className: 'button',
+                                style: { background: 'var(--primary-color)', color: 'var(--secondary-text-color)' },
                                 onClick: () => {
                                     setShowCreatePrompt(false);
                                     setFormData({
@@ -2046,7 +2047,7 @@
                                 className: 'input medium',
                                 placeholder: 'Describe what you need help with (e.g., onboarding flow, mobile CTA copy)',
                                 value: aiInput,
-                                onChange: (e) => setAiInput(e.target.value)
+                                onInput: (e) => setAiInput(e.target.value)
                             })
                         ]),
                         h('div', { className: 'form-group form-section large' }, [
@@ -2061,12 +2062,13 @@
                         ]),
                         h('div', { className: 'form-row' }, [
                             h('button', {
-                                className: 'button',
+                                className: `button ${aiInput.trim() ? 'active' : ''}`,
                                 onClick: handleGeneratePrompt,
                                 disabled: !aiInput.trim()
                             }, 'Generate Prompt'),
                             h('button', {
-                                className: 'button secondary',
+                                className: 'button',
+                                style: { background: 'var(--primary-color)', color: 'var(--secondary-text-color)' },
                                 onClick: () => {
                                     setShowCreatePrompt(false);
                                     setAiInput('');
@@ -2126,7 +2128,7 @@
                                     className: 'input',
                                     placeholder: 'Enter prompt title',
                                     value: editData.title,
-                                    onChange: (e) => setEditData({...editData, title: e.target.value})
+                                    onInput: (e) => setEditData({...editData, title: e.target.value})
                                 })
                             ]),
                             h('div', { className: 'form-group' }, [
@@ -2135,7 +2137,7 @@
                                     className: 'input large',
                                     placeholder: 'Enter prompt description',
                                     value: editData.description,
-                                    onChange: (e) => setEditData({...editData, description: e.target.value})
+                                    onInput: (e) => setEditData({...editData, description: e.target.value})
                                 })
                             ]),
                             // Always show category selector for debugging
