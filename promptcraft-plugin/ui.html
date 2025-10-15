@@ -646,7 +646,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding-bottom: 80px; /* Space for fixed form actions */
+            padding-bottom: 40px; /* Space for fixed form actions */
         }
 
         .fullscreen-form .form-group {
@@ -1874,6 +1874,14 @@
                 });
             };
 
+            // Check if edit form has changes
+            const hasEditChanges = () => {
+                if (!editingPrompt) return false;
+                return editData.title !== editingPrompt.title ||
+                       editData.description !== editingPrompt.description ||
+                       editData.category !== editingPrompt.category;
+            };
+
             // Handle editing prompt
             const handleEditPrompt = () => {
                 if (!editingPrompt || !editData.title.trim() || !editData.description.trim()) return;
@@ -2201,16 +2209,17 @@
                             ]),
                             h('div', { className: 'form-actions' }, [
                                 h('button', {
-                                    className: 'button secondary',
+                                    className: 'button',
+                                    style: { background: 'var(--primary-color)', color: 'var(--secondary-text-color)' },
                                     onClick: () => {
                                         setEditingPrompt(null);
                                         setEditData({ title: '', description: '', category: '' });
                                     }
                                 }, 'Cancel'),
                                 h('button', {
-                                    className: 'button',
+                                    className: `button ${hasEditChanges() && editData.title.trim() && editData.description.trim() ? 'active' : ''}`,
                                     onClick: handleEditPrompt,
-                                    disabled: !editData.title.trim() || !editData.description.trim()
+                                    disabled: !editData.title.trim() || !editData.description.trim() || !hasEditChanges()
                                 }, 'Save Changes')
                             ])
                         ])
