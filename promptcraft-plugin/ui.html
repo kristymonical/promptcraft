@@ -23,8 +23,8 @@
             --text-color: #1e1e1f;
             --text-secondary:  #555663;
             --text-muted: #888;
-            --border-color: #cbcdd5;
-            --hover-background: #f5f5f5;
+            --border-color: #EFEFEF;
+            --hover-background: #f4f8f6;
             --selected-background: #e6f3ff;
             --form-background: #f8f9fa;
             --highlight-background: #f0f8ff;
@@ -62,7 +62,68 @@
 
         .header {
             margin-bottom: 20px;
-            text-align: center;
+            display: flex;
+            align-items:start;
+            justify-content: space-between;
+          
+        }
+
+        .header-left {
+            flex: 1;
+            text-align: left;
+        }
+
+        .settings-icon {
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            transition: background-color 0.2s ease;
+            position: relative;
+        }
+
+        .settings-icon:hover {
+            background-color: var(--hover-background);
+        }
+
+        .settings-icon .material-icons {
+            font-size: 24px;
+            color: var(--text-secondary);
+        }
+         .settings-icon .material-icons:hover {
+            font-size: 24px;
+            color: var(--secondary-color);
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 45px;
+            right: 16px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            min-width: 200px;
+            z-index: 1000;
+        }
+
+        .settings-menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .settings-menu-item:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .settings-menu-item .material-icons {
+            font-size: 20px;
+            color: var(--text-secondary);
         }
 
         .title {
@@ -161,6 +222,11 @@
         }
 
         .button.active {
+            background: var(--primary-color);
+            color: var(--secondary-text-color);
+            box-shadow: 0 2px 4px rgba(24, 160, 251, 0.2);
+        }
+        .button.active:hover:not(:disabled) {
             background: var(--primary-hover);
             color: var(--secondary-text-color);
             box-shadow: 0 2px 4px rgba(24, 160, 251, 0.2);
@@ -274,43 +340,32 @@
         }
 
         .prompts-list {
-            max-height: 400px;
-            overflow-y: auto;
             padding-right: var(--spacing-xs);
-        }
-
-        .prompts-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .prompts-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        .prompts-list::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-
-        .prompts-list::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+            padding-left: var(--spacing-xs);
+            padding-top: var(--spacing-sm);
+           
         }
 
         .card {
             position: relative;
             padding: var(--spacing-sm);
-            border-bottom: 1px solid var(--border-color);
+            border: 1px solid var(--border-color);
             cursor: pointer;
             transition: background-color 0.2s ease;
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-sm);
+            box-shadow: 0px 0px 2px 2px rgba(0,0,0,0.05 );
         }
 
         .card:hover {
-            background: var(--background-color-secondary);
+            background: var(--hover-background);
+          
         }
 
         .card.selected {
-            background: var(--background-color-secondary);
-            border-left: 3px solid var(--secondary-color);
+       
+            border: 1px solid var(--secondary-color);
+            box-shadow: 0px 0px 2px 4px rgba(81,188,143,0.1);
         }
 
         .prompt-title {
@@ -373,6 +428,7 @@
 
         .no-more {
             padding: var(--spacing-sm);
+            color: var(--secondary-color);
         }
 
         .empty-state {
@@ -665,31 +721,24 @@
             justify-content: center;
             transition: all 0.2s ease;
         }
-
-        .star-icon:hover {
-            background: rgba(245, 179, 1, 0.1);
-        }
+            .star-icon:hover {
+                background: none !important;
+            }
 
         /* Material Icons Star Styling */
         .material-icons.star {
             font-size: 14px;
-            color: var(--text-secondary);
+            color: #ccc;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .material-icons.star.active {
+        .material-icons.star:is(.active) {
             color: var(--secondary-color);
         }
 
-        .material-icons.star:hover {
-            color: var(--secondary-color);
-            background: rgba(245, 179, 1, 0.1);
-        }
-
-        .material-icons.star.active:hover {
-            color: var(--secondary-color);
-            background: rgba(245, 179, 1, 0.2);
+        .material-icons.star:not(.active) {
+            color: #ccc;
         }
 
         .toast {
@@ -707,6 +756,10 @@
             animation: slideIn 0.3s ease-out;
         }
 
+        .toast.success {
+            background: #28a745;
+        }
+
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -717,6 +770,174 @@
                 opacity: 1;
             }
         }
+
+        /* Personalization Modal */
+        #personalize-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            max-height: 500px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            z-index: 2000;
+            overflow-y: auto;
+            font-family: 'Inter', var(--font-family);
+            font-size: 14px;
+            color: #333;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            display: block;
+        }
+        
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .modal-header {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            padding: 16px 16px 8px 16px;
+            text-align: center;
+        }
+
+        .modal-content {
+            padding: 4px 16px 16px;
+        }
+
+        .modal-text {
+            font-size: 12px;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+    
+            text-align: center;
+        }
+
+        .modal-categories {
+            display: flex;
+             flex-direction: row;
+             flex-wrap: wrap;
+             justify-content: space-between;
+        }
+
+        .modal-categories .category-section {
+            display: flex;
+            flex-direction: column;
+            width: 49%;
+            flex-direction: column;
+            margin-bottom: 8px;
+        }
+
+        .modal-categories .category-section .category-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            cursor: pointer;
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            transition: all 0.2s ease;
+            gap: 12px;
+            flex-direction: column;
+            text-align: center;
+        }
+
+    
+        .modal-categories .category-section .category-item:not(.selected) {
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+
+        }
+        
+        .modal-categories .category-section .category-item.selected {
+            background: var(--background-color);
+            border: 1px solid var(--secondary-color);
+            box-shadow: 0px 0px 1px 2px rgba(81,188,143,0.05);
+        }
+
+        .modal-categories .category-section .category-item:hover {
+            background: var(--hover-background);
+            border: 1px solid var(--secondary-color);
+            box-shadow: 0px 0px 1px 2px rgba(81,188,143,0.1);
+        }
+
+        .category-icon {
+            font-size: 20px;
+            transition: color 0.2s ease;
+        }
+        
+        .category-item:not(.selected) .category-icon {
+            color: var(--text-muted);
+        }
+        
+        .category-item.selected .category-icon {
+            color: var(--secondary-color);
+        }
+
+        .category-label {
+            flex: 1;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+            border-top: 1px solid #eee;
+            justify-content: flex-end;
+            width:100%;
+            position:sticky;
+            background: var(--background-color);
+            bottom:0px;
+        }
+
+        #save-personalize {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Inter', var(--font-family);
+            width:100%;
+        }
+
+        #save-personalize:hover {
+            background: #0d8be6;
+        }
+
+        #skip-personalize {
+            background: #ccc;
+            color: #333;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Inter', var(--font-family);
+            width:100%;
+        }
+
+        #skip-personalize:hover {
+            background: #e0e0e0;
+        }
+
     </style>
     <script crossorigin src="https://unpkg.com/preact@10.5.14/dist/preact.umd.js"></script>
     <script crossorigin src="https://unpkg.com/preact@10.5.14/hooks/dist/hooks.umd.js"></script>
@@ -836,7 +1057,8 @@
                     this.favorites.push(promptId);
                 }
                 
-                this.handlers.onFavoritesChange(this.favorites);
+                // Pass a new array reference to trigger React re-render
+                this.handlers.onFavoritesChange([...this.favorites]);
             },
             
             isFavorited: function(promptId) {
@@ -963,6 +1185,108 @@
             const [categories] = useState(['All', 'My Library', 'Prototype Review & UX Feedback', 'Collaboration & Handoff', 'Accessibility & QA', 'Experimentation & Iteration', 'Design Ops & Governance']);
             const [isLoadingMore, setIsLoadingMore] = useState(false);
             
+            // Personalization state
+            const [showPersonalizeModal, setShowPersonalizeModal] = useState(false);
+            const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+            const [showTooltip, setShowTooltip] = useState(false);
+            const [tooltipShown, setTooltipShown] = useState(false);
+            const [selectedCategories, setSelectedCategories] = useState({});
+            const [navSettings, setNavSettings] = useState(null);
+            
+            // Personalization data
+            const personalizationData = {
+                'UX Research': [
+                    'Generate a user research plan for Figma Make',
+                    'Create interview questions for UX testing',
+                    'Analyze user feedback for design iterations',
+                    'Build a persona template with Gemini AI',
+                    'Generate empathy map from user data',
+                    'Create a customer journey map',
+                    'Design a user survey for product validation',
+                    'Summarize user research findings'
+                ],
+                'Accessibility': [
+                    'Generate a WCAG-compliant navbar with Figma Make\'s Gemini AI',
+                    'Create accessible color palettes',
+                    'Generate ARIA labels for components',
+                    'Check contrast ratios for readability',
+                    'Create keyboard navigation patterns',
+                    'Generate alt text for images',
+                    'Design focus states for interactive elements',
+                    'Create screen reader friendly layouts'
+                ],
+                'Prototyping': [
+                    'Create interactive prototype flows',
+                    'Generate micro-interactions with Figma Make',
+                    'Design transition animations',
+                    'Build responsive layouts',
+                    'Create component variants',
+                    'Generate prototype testing scenarios',
+                    'Design user flow diagrams',
+                    'Build clickable prototypes'
+                ],
+                'User Testing': [
+                    'Create usability test scripts',
+                    'Generate A/B testing variants',
+                    'Design feedback collection forms',
+                    'Build user testing scenarios',
+                    'Create task completion metrics',
+                    'Generate user testing reports',
+                    'Design heatmap analysis prompts',
+                    'Build user behavior tracking'
+                ],
+                'Ideation': [
+                    'Generate design concept variations',
+                    'Create brainstorming frameworks',
+                    'Design moodboard layouts',
+                    'Generate feature ideas',
+                    'Create design sprint materials',
+                    'Build innovation workshops',
+                    'Generate creative constraints',
+                    'Design ideation templates'
+                ],
+                'Code Generation': [
+                    'Generate React components from designs',
+                    'Create Tailwind CSS classes',
+                    'Build responsive HTML/CSS',
+                    'Generate Vue.js templates',
+                    'Create styled-components code',
+                    'Build CSS Grid layouts',
+                    'Generate JavaScript interactions',
+                    'Create TypeScript interfaces'
+                ],
+                'Image & Asset Creation': [
+                    'Generate placeholder images with AI',
+                    'Create icon sets from descriptions',
+                    'Design illustration styles',
+                    'Generate background patterns',
+                    'Create logo variations',
+                    'Build asset libraries',
+                    'Generate image exports',
+                    'Create design tokens'
+                ],
+                'Interactive Prototyping': [
+                    'Build drag-and-drop interfaces',
+                    'Create scroll animations',
+                    'Design hover states',
+                    'Generate click interactions',
+                    'Build form validations',
+                    'Create loading states',
+                    'Design modal interactions',
+                    'Build navigation transitions'
+                ],
+                'Advanced Iteration': [
+                    'Generate design system variants',
+                    'Create component libraries',
+                    'Build design automation scripts',
+                    'Generate design tokens',
+                    'Create version control workflows',
+                    'Build design handoff documentation',
+                    'Generate style guides',
+                    'Create design QA checklists'
+                ]
+            };
+            
             // Refs
             const lastItemRef = useRef(null);
             const observerRef = useRef(null);
@@ -1020,6 +1344,12 @@
             
             const modules = modulesRef.current;
 
+            // Debug state
+            console.log('Component render - showPersonalizeModal:', showPersonalizeModal);
+            console.log('Component render - navSettings:', navSettings);
+            console.log('Component render - prompts count:', prompts.length);
+            console.log('Component render - filteredPrompts count:', filteredPrompts.length);
+
             // Helper functions using modules
             const handleSearchChange = function(e) {
                 modules.getModule('search').handleSearchChange(e.target.value);
@@ -1045,10 +1375,109 @@
                 }
             };
 
+            // Personalization handlers
+            const handleCustomizeNavClick = () => {
+                console.log('Customize nav clicked');
+                setShowPersonalizeModal(true);
+                setShowSettingsMenu(false);
+                
+                if (!tooltipShown) {
+                    setShowTooltip(true);
+                    setTooltipShown(true);
+                    setTimeout(() => setShowTooltip(false), 3000);
+                }
+            };
+
+            const handleSettingsClick = () => {
+                setShowSettingsMenu(!showSettingsMenu);
+            };
+
+            const handleCategoryCheckbox = (category, checked) => {
+                setSelectedCategories(prev => ({
+                    ...prev,
+                    [category]: checked
+                }));
+            };
+
+            const handleSavePersonalization = () => {
+                const selectedCats = Object.keys(selectedCategories).filter(
+                    cat => selectedCategories[cat]
+                );
+                
+                const settings = {
+                    categories: selectedCats
+                };
+                
+                console.log('Nav settings saved:', settings);
+                console.log('Selected categories:', selectedCats);
+                
+                setNavSettings(settings);
+                setShowPersonalizeModal(false);
+                
+                // Send message to backend
+                parent.postMessage({
+                    pluginMessage: {
+                        type: 'save-nav-settings',
+                        payload: settings
+                    }
+                }, '*');
+                
+                showToast('Nav settings saved', true);
+            };
+
+            const handleSkipPersonalization = () => {
+                setShowPersonalizeModal(false);
+                
+                // Send empty settings
+                parent.postMessage({
+                    pluginMessage: {
+                        type: 'save-nav-settings',
+                        payload: {
+                            categories: []
+                        }
+                    }
+                }, '*');
+            };
+
+            // Get visible categories based on nav settings
+            const getVisibleCategories = () => {
+                // Always show 'All' and 'My Library'
+                const defaultCategories = ['All', 'My Library'];
+                
+                // If no settings saved, show existing categories
+                if (!navSettings || !navSettings.categories || navSettings.categories.length === 0) {
+                    return categories;
+                }
+                
+                // Map personalization categories to existing categories
+                const categoryMap = {
+                    'UX Research': 'Prototype Review & UX Feedback',
+                    'Accessibility': 'Accessibility & QA',
+                    'Prototyping': 'Experimentation & Iteration',
+                    'User Testing': 'Prototype Review & UX Feedback',
+                    'Ideation': 'Design Ops & Governance',
+                    'Code Generation': 'Collaboration & Handoff',
+                    'Image & Asset Creation': 'Design Ops & Governance',
+                    'Interactive Prototyping': 'Experimentation & Iteration',
+                    'Advanced Iteration': 'Design Ops & Governance'
+                };
+                
+                // Get unique mapped categories
+                const mappedCategories = [...new Set(
+                    navSettings.categories.map(cat => categoryMap[cat]).filter(Boolean)
+                )];
+                
+                // Combine default + mapped categories, remove duplicates
+                const visibleCategories = [...new Set([...defaultCategories, ...mappedCategories])];
+                
+                console.log('Visible categories:', visibleCategories);
+                return visibleCategories;
+            };
+
             // Toast notification function
-            const showToast = (message) => {
+            const showToast = (message, isSuccess) => {
                 const toast = document.createElement('div');
-                toast.className = 'toast';
+                toast.className = isSuccess ? 'toast success' : 'toast';
                 toast.textContent = message;
                 document.body.appendChild(toast);
                 
@@ -1062,7 +1491,28 @@
             // Initialize modules on mount
             useEffect(() => {
                 modules.getModule('favorites').loadFavorites();
+                
+                // Check if first load (show personalization modal)
+                // TEMP: Disabled for debugging prompts display issue
+                console.log('Modal disabled for debugging');
+                // setShowPersonalizeModal(true);
+                
+                // Uncomment this for production:
+                // const hasSeenPersonalization = localStorage.getItem('hasSeenPersonalization');
+                // if (!hasSeenPersonalization) {
+                //     console.log('Personalize modal opened');
+                //     setShowPersonalizeModal(true);
+                //     localStorage.setItem('hasSeenPersonalization', 'true');
+                // }
             }, []);
+
+            // Debug navSettings changes
+            useEffect(() => {
+                console.log('Nav settings changed:', navSettings);
+                if (navSettings) {
+                    console.log('Visible categories after settings change:', getVisibleCategories());
+                }
+            }, [navSettings]);
 
             // Handle search and filter changes using modules
             useEffect(() => {
@@ -1478,8 +1928,22 @@
             return h('div', { className: 'promptcraft-container' }, [
                 // Header
                 h('div', { className: 'header' }, [
-                    h('h1', { className: 'title' }, 'PromptCraft'),
-                    h('div', { className: 'subtitle' }, `${totalCount} prompts`)
+                    h('div', { className: 'header-left' }, [
+                        h('h1', { className: 'title' }, 'PromptCraft'),
+                        h('div', { className: 'subtitle' }, `${totalCount} prompts`)
+                    ]),
+                    h('div', { className: 'settings-icon', onClick: handleSettingsClick }, [
+                        h('span', { className: 'material-icons' }, 'settings')
+                    ]),
+                    showSettingsMenu ? h('div', { className: 'settings-menu' }, [
+                        h('div', {
+                            className: 'settings-menu-item',
+                            onClick: handleCustomizeNavClick
+                        }, [
+                            h('span', { className: 'material-icons' }, 'tune'),
+                            'Customize Nav'
+                        ])
+                    ]) : null
                 ]),
 
                 // Search Section
@@ -1626,15 +2090,17 @@
 
 
                 // Tabs for filtering
-                h('div', { className: 'tabs' },
-                    categories.map(cat =>
-                        h('button', {
-                            key: cat,
-                            className: `tab ${activeTab === cat ? 'active' : ''}`,
-                            onClick: () => handleTabChange(cat)
-                        }, cat)
+                h('div', { className: 'tabs-container', style: { marginBottom: '16px' } }, [
+                    h('div', { className: 'tabs', style: { overflowX: 'auto' } },
+                        getVisibleCategories().map(cat =>
+                            h('button', {
+                                key: cat,
+                                className: `tab ${activeTab === cat ? 'active' : ''}`,
+                                onClick: () => handleTabChange(cat)
+                            }, cat)
+                        )
                     )
-                ),
+                ]),
 
                 // Edit Prompt Form (when editing) - takes over entire screen
                 editingPrompt ? h('div', { className: 'fullscreen-form-overlay' }, [
@@ -1748,6 +2214,44 @@
                                     : h('div', { className: 'empty-state' }, `No ${activeTab.toLowerCase()} prompts yet.`)
                     )
                 ]),
+
+                // Personalization Modal
+                showPersonalizeModal ? [
+                    h('div', { className: 'modal-overlay', onClick: () => setShowPersonalizeModal(false) }),
+                    h('div', { id: 'personalize-modal' }, [
+                        h('div', { className: 'modal-header' }, 'Personalize Your Experience'),
+                        h('div', { className: 'modal-content' }, [
+                            h('div', { className: 'modal-text' }, 'Select categories for your Figma Make prototyping workflow'),
+                           
+                            h('div', { className: 'modal-categories' }, [
+                            // Category checkboxes
+                            Object.keys(personalizationData).map(category =>
+                                h('div', { className: 'category-section', key: category }, [
+                                    h('div', { 
+                                        className: `category-item ${selectedCategories[category] ? 'selected' : ''}`,
+                                        onClick: () => handleCategoryCheckbox(category, !selectedCategories[category])
+                                    }, [
+                                        h('span', {
+                                            className: 'material-icons category-icon'
+                                        }, selectedCategories[category] ? 'check_circle' : 'radio_button_unchecked'),
+                                        h('div', { className: 'category-label' }, category)
+                                    ])
+                                ])
+                            )
+                            ])
+                        ]),
+                        h('div', { className: 'modal-buttons' }, [
+                            h('button', {
+                                id: 'skip-personalize',
+                                onClick: handleSkipPersonalization
+                            }, 'Skip'),
+                            h('button', {
+                                id: 'save-personalize',
+                                onClick: handleSavePersonalization
+                            }, 'Save')
+                        ])
+                    ])
+                ] : null,
 
                 // Fixed Bottom Buttons
                 h('div', { className: 'fixed-bottom-buttons' }, [
