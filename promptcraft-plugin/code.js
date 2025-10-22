@@ -286,6 +286,9 @@ figma.ui.onmessage = function(msg) {
           });
           
           currentOffset = BATCH_SIZE;
+        }).catch(function(error) {
+          console.error('Storage failed while adding prompt:', error);
+          figma.notify('Storage failed, try again');
         });
       } catch (error) {
         console.error('Failed to add prompt:', error);
@@ -294,14 +297,19 @@ figma.ui.onmessage = function(msg) {
       break;
 
     case 'send-to-make':
-      // Notify placeholder
-      console.log('Sending to Make API:', msg.data);
-      figma.notify('Data sent to Make API successfully!');
-      
-      figma.ui.postMessage({
-        type: 'make-api-success',
-        message: 'Data sent to Make API (placeholder)'
-      });
+      try {
+        // Notify placeholder
+        console.log('Sending to Make API:', msg.data);
+        figma.notify('Data sent to Make API successfully!');
+        
+        figma.ui.postMessage({
+          type: 'make-api-success',
+          message: 'Data sent to Make API (placeholder)'
+        });
+      } catch (error) {
+        console.error('Failed to send to Make:', error);
+        figma.notify('Failed to add to canvas');
+      }
       break;
 
     case 'load-favorites':
@@ -315,6 +323,7 @@ figma.ui.onmessage = function(msg) {
         });
       }).catch(function(error) {
         console.error('Failed to load favorites:', error);
+        figma.notify('Storage failed, try again');
         FAVORITES = [];
         figma.ui.postMessage({
           type: 'favorites-loaded',
@@ -329,6 +338,7 @@ figma.ui.onmessage = function(msg) {
         console.log('Favorites saved:', FAVORITES.length);
       }).catch(function(error) {
         console.error('Failed to save favorites:', error);
+        figma.notify('Storage failed, try again');
       });
       break;
 
@@ -360,6 +370,9 @@ figma.ui.onmessage = function(msg) {
             });
             
             currentOffset = BATCH_SIZE;
+          }).catch(function(error) {
+            console.error('Storage failed while deleting prompt:', error);
+            figma.notify('Storage failed, try again');
           });
         } else {
           console.warn('Prompt not found for deletion:', promptId);
@@ -385,6 +398,7 @@ figma.ui.onmessage = function(msg) {
           });
         }).catch(function(error) {
           console.error('Failed to save nav settings:', error);
+          figma.notify('Storage failed, try again');
         });
       } catch (error) {
         console.error('Error in save-nav-settings:', error);
@@ -472,6 +486,9 @@ figma.ui.onmessage = function(msg) {
             });
             
             currentOffset = BATCH_SIZE;
+          }).catch(function(error) {
+            console.error('Storage failed while editing prompt:', error);
+            figma.notify('Storage failed, try again');
           });
         } else {
           console.warn('Prompt not found for editing:', editData.id);
@@ -530,6 +547,11 @@ function init() {
           ALL_PROMPTS = updatedPrompts;
           console.log(`Prompts loaded from storage: ${ALL_PROMPTS.length}`);
           console.log('Sample prompt:', ALL_PROMPTS[0]);
+          loadFavorites();
+        }).catch(function(error) {
+          console.error('Storage failed while updating prompts:', error);
+          figma.notify('Storage failed, try again');
+          ALL_PROMPTS = updatedPrompts;
           loadFavorites();
         });
       } else {

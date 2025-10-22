@@ -157,6 +157,13 @@
             flex: 1;
         }
 
+        .form-error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+        }
+
         .form-section {
             margin-bottom: var(--spacing-sm);
         }
@@ -745,11 +752,16 @@
 
         .toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--primary-color);
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 40px;
+            background: #4caf50;
             color: white;
-            padding: var(--spacing-sm) var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: var(--border-radius);
             font-size: 14px;
             font-weight: 500;
@@ -759,16 +771,20 @@
         }
 
         .toast.success {
-            background: #28a745;
+            background: #4caf50;
+        }
+
+        .toast.error {
+            background: #f44336;
         }
 
         @keyframes slideIn {
             from {
-                transform: translateX(100%);
+                transform: translateX(-50%) translateY(-20px);
                 opacity: 0;
             }
             to {
-                transform: translateX(0);
+                transform: translateX(-50%) translateY(0);
                 opacity: 1;
             }
         }
@@ -1179,6 +1195,11 @@
                 description: '',
                 category: 'Prototype Review & UX Feedback'
             });
+            const [formErrors, setFormErrors] = useState({
+                title: '',
+                description: '',
+                category: ''
+            });
             
             // Module state (synced with modules)
             const [searchQuery, setSearchQuery] = useState('');
@@ -1434,7 +1455,7 @@
                     }
                 }, '*');
                 
-                showToast('Nav settings saved', true);
+                showToast('Nav settings saved', 'success');
             };
 
             const handleSkipPersonalization = () => {
@@ -1491,9 +1512,9 @@
             };
 
             // Toast notification function
-            const showToast = (message, isSuccess) => {
+            const showToast = (message, type = 'success') => {
                 const toast = document.createElement('div');
-                toast.className = isSuccess ? 'toast success' : 'toast';
+                toast.className = type === 'error' ? 'toast error' : 'toast success';
                 toast.textContent = message;
                 document.body.appendChild(toast);
                 
@@ -1818,6 +1839,9 @@
 
                 const generated = generatePromptWithAI(aiInput, aiModel);
                 setGeneratedPrompt(generated);
+                
+                // Show success toast
+                showToast('AI prompt generated', 'success');
             };
 
             // Handle using generated prompt
@@ -1834,10 +1858,60 @@
                 setAiInput('');
             };
 
+            // Validate form fields
+            const validateForm = () => {
+                const errors = {
+                    title: '',
+                    description: '',
+                    category: ''
+                };
+                
+                if (formData.title.trim().length < 5) {
+                    errors.title = 'Required: Title (minimum 5 characters)';
+                }
+                
+                if (formData.description.trim().length < 10) {
+                    errors.description = 'Required: Description (minimum 10 characters)';
+                }
+                
+                if (!formData.category || formData.category.trim() === '') {
+                    errors.category = 'Required: Category must be selected';
+                }
+                
+                setFormErrors(errors);
+                return !errors.title && !errors.description && !errors.category;
+            };
+
+            // Check if form is valid
+            const isFormValid = () => {
+                return formData.title.trim().length >= 5 && 
+                       formData.description.trim().length >= 10 && 
+                       formData.category && formData.category.trim() !== '';
+            };
+
+            // Handle field blur to show errors
+            const handleFieldBlur = (field) => {
+                const errors = {...formErrors};
+                
+                if (field === 'title' && formData.title.trim().length > 0 && formData.title.trim().length < 5) {
+                    errors.title = 'Required: Title (minimum 5 characters)';
+                } else if (field === 'title' && formData.title.trim().length >= 5) {
+                    errors.title = '';
+                }
+                
+                if (field === 'description' && formData.description.trim().length > 0 && formData.description.trim().length < 10) {
+                    errors.description = 'Required: Description (minimum 10 characters)';
+                } else if (field === 'description' && formData.description.trim().length >= 10) {
+                    errors.description = '';
+                }
+                
+                setFormErrors(errors);
+            };
+
             // Handle adding a new prompt
             const handleAddPrompt = (e) => {
                 e.preventDefault();
-                if (!formData.title.trim() || !formData.description.trim()) return;
+                if (!validateForm()) return;
 
                 parent.postMessage({
                     pluginMessage: {
@@ -1856,10 +1930,18 @@
                     description: '',
                     category: 'Prototype Review & UX Feedback'
                 });
+                setFormErrors({
+                    title: '',
+                    description: '',
+                    category: ''
+                });
                 setShowCreatePrompt(false);
                 setCreateMode('manual');
                 setGeneratedPrompt(null);
                 setAiInput('');
+                
+                // Show success toast
+                showToast('Prompt added', 'success');
             };
 
             // Handle prompt selection
@@ -1915,6 +1997,9 @@
                 // Close editor
                 setEditingPrompt(null);
                 setEditData({ title: '', description: '', category: '' });
+                
+                // Show success toast
+                showToast('Prompt updated', 'success');
             };
 
             // Handle deleting prompt
@@ -2031,7 +2116,14 @@
                             h('h2', { className: 'form-title' }, 'Create Prompt'),
                             h('button', {
                                 className: 'close-button',
-                                onClick: () => setShowCreatePrompt(false)
+                                onClick: () => {
+                                    setShowCreatePrompt(false);
+                                    setFormErrors({
+                                        title: '',
+                                        description: '',
+                                        category: ''
+                                    });
+                                }
                             }, '×')
                         ]),
                         h('div', { className: 'fullscreen-form' }, [
@@ -2058,8 +2150,10 @@
                                 placeholder: 'Prompt Title',
                                 value: formData.title,
                                 onInput: (e) => setFormData({...formData, title: e.target.value}),
+                                onBlur: () => handleFieldBlur('title'),
                                 required: true
-                            })
+                            }),
+                            formErrors.title ? h('span', { className: 'form-error' }, formErrors.title) : null
                         ]),
                         h('div', { className: 'form-group' }, [
                             h('textarea', {
@@ -2067,8 +2161,10 @@
                                 placeholder: 'Prompt Description',
                                 value: formData.description,
                                 onInput: (e) => setFormData({...formData, description: e.target.value}),
+                                onBlur: () => handleFieldBlur('description'),
                                 required: true
-                            })
+                            }),
+                            formErrors.description ? h('span', { className: 'form-error' }, formErrors.description) : null
                         ]),
                         h('div', { className: 'form-group' }, [
                             h('select', {
@@ -2082,8 +2178,8 @@
                         h('div', { className: 'form-row' }, [
                             h('button', {
                                 type: 'submit',
-                                className: `button ${formData.title.trim() && formData.description.trim() ? 'active' : ''}`,
-                                disabled: !formData.title.trim() || !formData.description.trim()
+                                className: `button ${isFormValid() ? 'active' : ''}`,
+                                disabled: !isFormValid()
                             }, 'Create Prompt'),
                             h('button', {
                                 type: 'button',
@@ -2095,6 +2191,11 @@
                                         title: '',
                                         description: '',
                                         category: 'Prototype Review & UX Feedback'
+                                    });
+                                    setFormErrors({
+                                        title: '',
+                                        description: '',
+                                        category: ''
                                     });
                                 }
                             }, 'Cancel')
