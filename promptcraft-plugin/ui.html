@@ -23,6 +23,7 @@
             --text-color: #1e1e1f;
             --text-secondary:  #555663;
             --text-muted: #888;
+            --input-border-color: #b5b5b5;
             --border-color: #EFEFEF;
             --hover-background: #f4f8f6;
             --selected-background: #e6f3ff;
@@ -51,7 +52,7 @@
             line-height: 1.4;
             color: var(--text-color);
             background: var(--background-color);
-            padding: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-sm);
         }
 
         .promptcraft-container {
@@ -176,7 +177,7 @@
         input, textarea, select {
             width: 100%;
             padding: var(--spacing-sm);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--input-border-color);
             border-radius: var(--border-radius);
             font-size: 14px;
             font-family: inherit;
@@ -559,7 +560,7 @@
         .search-input {
             width: 100%;
             padding: var(--spacing-sm);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--input-border-color);
             border-radius: var(--border-radius);
             font-size: 14px;
             font-family: inherit;
@@ -675,16 +676,18 @@
         .fullscreen-form .input {
             width: 100%;
             padding: var(--spacing-sm);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--input-border-color);
             border-radius: var(--border-radius);
             font-size: 14px;
             font-family: inherit;
+      
             transition: border-color 0.2s ease;
         }
 
         .fullscreen-form .input:focus {
             outline: none;
             border-color: var(--primary-color);
+            background: var(--background-color);
             box-shadow: 0 0 0 2px rgba(24, 160, 251, 0.1);
         }
 
@@ -802,10 +805,12 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             z-index: 2000;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
             font-family: 'Inter', var(--font-family);
             font-size: 14px;
             color: #333;
+            overflow: hidden;
         }
 
         .modal-overlay {
@@ -829,10 +834,14 @@
             color: #333;
             padding: 16px 16px 8px 16px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .modal-content {
             padding: 4px 16px 16px;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .modal-text {
@@ -918,10 +927,9 @@
             padding: 16px;
             border-top: 1px solid #eee;
             justify-content: flex-end;
-            width:100%;
-            position:sticky;
+            width: 100%;
             background: var(--background-color);
-            bottom:0px;
+            flex-shrink: 0;
         }
 
         #save-personalize {
