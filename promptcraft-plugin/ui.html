@@ -376,11 +376,28 @@
             box-shadow: 0px 0px 2px 4px rgba(81,188,143,0.1);
         }
 
+        .prompt-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xs);
+        }
+
         .prompt-title {
             font-weight: 600;
             font-size: 14px;
             color: var(--text-color);
-            margin-bottom: var(--spacing-xs);
+            flex: 1;
+            height: 100%;
+        }
+
+        .export-checkbox {
+            position: relative;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
         }
 
         .prompt-description {
@@ -1109,6 +1126,21 @@
             opacity: 0.6;
         }
 
+        .export-prompts-trigger {
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            padding: 4px 12px;
+            box-shadow: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .export-prompts-trigger:hover:not(:disabled) {
+            background: var(--hover-background);
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
     </style>
     <script crossorigin src="https://unpkg.com/preact@10.5.14/dist/preact.umd.js"></script>
     <script crossorigin src="https://unpkg.com/preact@10.5.14/hooks/dist/hooks.umd.js"></script>
@@ -1526,10 +1558,6 @@
             const modules = modulesRef.current;
 
             // Debug state
-            console.log('Component render - showPersonalizeModal:', showPersonalizeModal);
-            console.log('Component render - navSettings:', navSettings);
-            console.log('Component render - prompts count:', prompts.length);
-            console.log('Component render - filteredPrompts count:', filteredPrompts.length);
 
             // Helper functions using modules
             const handleSearchChange = function(e) {
@@ -1665,7 +1693,6 @@
                 // Combine default + mapped categories, remove duplicates
                 const visibleCategories = [...new Set([...defaultCategories, ...mappedCategories])];
                 
-                console.log('Visible categories:', visibleCategories);
                 return visibleCategories;
             };
 
@@ -1710,7 +1737,6 @@
             useEffect(() => {
                 console.log('Nav settings changed:', navSettings);
                 if (navSettings) {
-                    console.log('Visible categories after settings change:', getVisibleCategories());
                 }
             }, [navSettings]);
 
@@ -1731,6 +1757,7 @@
                         activeTab, 
                         favorites
                     );
+                    
                     
                     setFilteredPrompts(filtered);
                     setTotalCount(filtered.length);
@@ -1781,11 +1808,21 @@
 
                     switch (msg.type) {
                 case 'prompts-loaded':
+                    console.log('prompts-loaded received:', {
+                        promptsCount: (msg.prompts || []).length,
+                        activeTab: activeTab,
+                        favoritesCount: favorites.length,
+                        favorites: favorites
+                    });
                     setPrompts(msg.prompts || []);
                     // Apply local filtering if search/filter is active
                     if (searchQuery.trim() || activeTab === 'My Library') {
                         const searchModule = modules.getModule('search');
                         const filtered = searchModule.filterPromptsLocally(msg.prompts || [], searchQuery, 'All', activeTab, favorites);
+                        console.log('Filtered for My Library:', {
+                            filteredCount: filtered.length,
+                            filtered: filtered.map(p => p.id)
+                        });
                         setFilteredPrompts(filtered);
                         setTotalCount(filtered.length);
                         setHasMore(false);
@@ -2302,7 +2339,6 @@
                 const isExportSelected = selectedExportPrompts.includes(prompt.id);
                 
                 if (isLast) {
-                    console.log('Rendering last prompt item:', prompt.title);
                 }
                 
                 // Show normal prompt card
@@ -2312,27 +2348,35 @@
                     ref: isLast ? lastItemRef : null,
                     onClick: exportMode ? (e) => handleExportPromptToggle(prompt.id, e) : () => handlePromptSelect(prompt)
                 }, [
-                    exportMode ? h('input', {
-                        type: 'checkbox',
-                        checked: isExportSelected,
-                        onChange: (e) => handleExportPromptToggle(prompt.id, e),
-                        onClick: (e) => e.stopPropagation(),
-                        style: { position: 'absolute', top: '12px', left: '12px', cursor: 'pointer', width: '18px', height: '18px' }
-                    }) : h('button', {
-                        className: `star-icon ${favorites.includes(prompt.id) ? 'favorited' : ''}`,
-                        onClick: (e) => handleToggleFavorite(prompt.id, e),
-                        title: favorites.includes(prompt.id) ? 'Remove from My Library' : 'Add to My Library'
-                    }, [
-                        h('span', {
-                            className: `material-icons star ${favorites.includes(prompt.id) ? 'active' : ''}`
-                        }, 'star')
+                    // Header with checkbox/star + title
+                    h('div', { className: 'prompt-header' }, [
+                        exportMode ? h('input', {
+                            type: 'checkbox',
+                            className: 'export-checkbox',
+                            checked: isExportSelected,
+                            onChange: (e) => handleExportPromptToggle(prompt.id, e),
+                            onClick: (e) => e.stopPropagation()
+                        }) : h('button', {
+                            className: `star-icon ${favorites.includes(prompt.id) ? 'favorited' : ''}`,
+                            onClick: (e) => handleToggleFavorite(prompt.id, e),
+                            title: favorites.includes(prompt.id) ? 'Remove from My Library' : 'Add to My Library'
+                        }, [
+                            h('span', {
+                                className: `material-icons star ${favorites.includes(prompt.id) ? 'active' : ''}`
+                            }, 'star')
+                        ]),
+                        h('div', { className: 'prompt-title' }, prompt.title || 'Untitled Prompt')
                     ]),
-                    h('div', { className: 'prompt-title', style: exportMode ? { paddingLeft: '24px' } : {} }, prompt.title || 'Untitled Prompt'),
+                    
+                    // Meta information
                     h('div', { className: 'prompt-meta' }, [
                         h('span', {}, `${prompt.category}`)
                     ]),
+                    
+                    // Description
                     h('div', { className: 'prompt-description' }, prompt.description || 'No description'),
                    
+                    // Edit button (hidden in export mode)
                     !exportMode ? h('button', {
                         className: 'button secondary small',
                         onClick: (e) => {
@@ -2620,7 +2664,7 @@
                         activeTab === 'My Library' ? (
                             exportMode ? h('span', { style: { fontSize: '13px', color: 'var(--text-muted)' } }, `${selectedExportPrompts.length} selected`)
                             : h('button', {
-                                className: 'export-library-button',
+                                className: 'export-library-button export-prompts-trigger',
                                 onClick: handleToggleExportMode
                             }, 'Export Prompts')
                         ) : null

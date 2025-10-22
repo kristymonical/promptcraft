@@ -267,8 +267,11 @@ figma.ui.onmessage = function(msg) {
         // Add to current prompts array
         ALL_PROMPTS.unshift(newPrompt); // Add to beginning
         
-        // Save to storage
-        figma.clientStorage.setAsync('prompts', ALL_PROMPTS).then(function() {
+        // Save only custom prompts to storage
+        const customPrompts = ALL_PROMPTS.filter(function(p) {
+          return p.id && p.id.toString().startsWith('custom-');
+        });
+        figma.clientStorage.setAsync('prompts', customPrompts).then(function() {
           console.log('Prompt added:', newPrompt.title);
           figma.notify(`Added "${newPrompt.title}" to prompts`);
           
@@ -351,8 +354,11 @@ figma.ui.onmessage = function(msg) {
           const deletedPrompt = ALL_PROMPTS[promptIndex];
           ALL_PROMPTS.splice(promptIndex, 1);
           
-          // Save updated prompts to storage
-          figma.clientStorage.setAsync('prompts', ALL_PROMPTS).then(function() {
+          // Save only custom prompts to storage
+          const customPrompts = ALL_PROMPTS.filter(function(p) {
+            return p.id && p.id.toString().startsWith('custom-');
+          });
+          figma.clientStorage.setAsync('prompts', customPrompts).then(function() {
             console.log('Prompt deleted:', deletedPrompt.title);
             figma.notify(`Deleted "${deletedPrompt.title}"`);
             
@@ -467,8 +473,11 @@ figma.ui.onmessage = function(msg) {
             category: editData.category || ALL_PROMPTS[promptIndex].category
           });
           
-          // Save to storage
-          figma.clientStorage.setAsync('prompts', ALL_PROMPTS).then(function() {
+          // Save only custom prompts to storage
+          const customPrompts = ALL_PROMPTS.filter(function(p) {
+            return p.id && p.id.toString().startsWith('custom-');
+          });
+          figma.clientStorage.setAsync('prompts', customPrompts).then(function() {
             console.log('Prompt updated:', editData.title);
             figma.notify(`Updated "${editData.title}"`);
             
@@ -515,61 +524,21 @@ function init() {
 
   figma.clientStorage.getAsync('prompts').then(function(stored) {
     if (Array.isArray(stored) && stored.length > 0) {
-      // Check if stored data has old category names and update them
-      let needsUpdate = false;
-      const updatedPrompts = stored.map(function(prompt) {
-        if (prompt.category === 'UX Research') {
-          needsUpdate = true;
-          return Object.assign({}, prompt, { category: 'Prototype Review & UX Feedback' });
-        }
-        if (prompt.category === 'Accessibility') {
-          needsUpdate = true;
-          return Object.assign({}, prompt, { category: 'Accessibility & QA' });
-        }
-        if (prompt.category === 'Prototyping') {
-          needsUpdate = true;
-          return Object.assign({}, prompt, { category: 'Experimentation & Iteration' });
-        }
-        if (prompt.category === 'User Testing') {
-          needsUpdate = true;
-          return Object.assign({}, prompt, { category: 'Prototype Review & UX Feedback' });
-        }
-        if (prompt.category === 'Ideation') {
-          needsUpdate = true;
-          return Object.assign({}, prompt, { category: 'Design Ops & Governance' });
-        }
-        return prompt;
+      // Filter only custom prompts (those with 'custom-' prefix)
+      const customPrompts = stored.filter(function(prompt) {
+        return prompt.id && prompt.id.toString().startsWith('custom-');
       });
       
-      if (needsUpdate) {
-        console.log('Updating stored prompts with new category names');
-        return figma.clientStorage.setAsync('prompts', updatedPrompts).then(function() {
-          ALL_PROMPTS = updatedPrompts;
-          console.log(`Prompts loaded from storage: ${ALL_PROMPTS.length}`);
-          console.log('Sample prompt:', ALL_PROMPTS[0]);
-          loadFavorites();
-        }).catch(function(error) {
-          console.error('Storage failed while updating prompts:', error);
-          figma.notify('Storage failed, try again');
-          ALL_PROMPTS = updatedPrompts;
-          loadFavorites();
-        });
-      } else {
-        ALL_PROMPTS = stored;
-        console.log(`Prompts loaded from storage: ${ALL_PROMPTS.length}`);
-        console.log('Sample prompt:', ALL_PROMPTS[0]);
-        loadFavorites();
-      }
+      // Merge hard-coded prompts with custom prompts
+      ALL_PROMPTS = HARD_CODED_FALLBACK.concat(customPrompts);
+      loadFavorites();
     } else {
       ALL_PROMPTS = HARD_CODED_FALLBACK;
-      console.log('Using hardcoded prompts:', ALL_PROMPTS.length);
-      console.log('Sample prompt:', ALL_PROMPTS[0]);
       loadFavorites();
     }
   }).catch(function(e) {
     ALL_PROMPTS = HARD_CODED_FALLBACK;
-    console.log('Using hardcoded prompts due to error:', e);
-    console.log('Sample prompt:', ALL_PROMPTS[0]);
+    console.error('Error loading prompts from storage:', e);
     loadFavorites();
   });
 
@@ -581,8 +550,28 @@ function loadFavorites() {
     FAVORITES = Array.isArray(storedFavorites) ? storedFavorites : [];
     console.log('Favorites loaded:', FAVORITES.length);
     
-    // Check for nav settings
-    loadNavSettings();
+    // Clean up invalid favorites (IDs that don't exist in ALL_PROMPTS)
+    const validPromptIds = ALL_PROMPTS.map(function(p) { return p.id; });
+    const validFavorites = FAVORITES.filter(function(fav) {
+      return validPromptIds.indexOf(fav) !== -1;
+    });
+    
+    if (validFavorites.length !== FAVORITES.length) {
+      const removedCount = FAVORITES.length - validFavorites.length;
+      console.log('Cleaned up ' + removedCount + ' invalid favorite IDs');
+      FAVORITES = validFavorites;
+      
+      // Save cleaned favorites back to storage
+      figma.clientStorage.setAsync('favorites', FAVORITES).then(function() {
+        loadNavSettings();
+      }).catch(function(e) {
+        console.error('Failed to save cleaned favorites:', e);
+        loadNavSettings();
+      });
+    } else {
+      // Check for nav settings
+      loadNavSettings();
+    }
   }).catch(function(e) {
     FAVORITES = [];
     console.log('No favorites found, starting fresh');
