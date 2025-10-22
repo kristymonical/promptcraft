@@ -964,6 +964,151 @@
             background: #e0e0e0;
         }
 
+        /* Export Modal */
+        #export-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            max-height: 80vh;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Inter', var(--font-family);
+            font-size: 14px;
+            color: #333;
+            overflow: hidden;
+        }
+
+        .export-content {
+            padding: 4px 16px 16px;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .export-prompts-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 8px;
+        }
+
+        .export-prompt-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: background 0.2s ease;
+        }
+
+        .export-prompt-item:hover {
+            background: var(--hover-background);
+        }
+
+        .export-prompt-item input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .export-prompt-title {
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+
+        .export-format-section {
+            margin-bottom: 16px;
+        }
+
+        .export-format-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .export-format-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .export-format-option {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .export-format-option.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .export-tier-warning {
+            font-size: 11px;
+            color: #f44336;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .export-button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Inter', var(--font-family);
+            width: 100%;
+        }
+
+        .export-button:hover {
+            background: #0d8be6;
+        }
+
+        .export-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .export-library-button {
+            background: var(--secondary-color);
+            color: var(--secondary-text-color);
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: var(--font-family);
+            border-radius: var(--border-radius);
+            transition: background-color 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-library-button:hover:not(:disabled) {
+            background: var(--secondary-hover);
+            color: var(--secondary-text-color);
+        }
+
+        .export-library-button:disabled {
+            background: var(--disabled-color);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
     </style>
     <script crossorigin src="https://unpkg.com/preact@10.5.14/dist/preact.umd.js"></script>
     <script crossorigin src="https://unpkg.com/preact@10.5.14/hooks/dist/hooks.umd.js"></script>
@@ -1223,6 +1368,11 @@
             const [tooltipShown, setTooltipShown] = useState(false);
             const [selectedCategories, setSelectedCategories] = useState({});
             const [navSettings, setNavSettings] = useState(null);
+            
+            // Export state
+            const [exportMode, setExportMode] = useState(false);
+            const [selectedExportPrompts, setSelectedExportPrompts] = useState([]);
+            const [userTier, setUserTier] = useState('free');
             
             // Personalization data
             const personalizationData = {
@@ -2032,11 +2182,124 @@
                 }
             };
 
+            // Check user tier
+            const checkUserTier = async () => {
+                try {
+                    if (typeof figma !== 'undefined' && figma.payments && figma.payments.getUserFirstRanPaidFeatureAtAsync) {
+                        const paidFeatureDate = await figma.payments.getUserFirstRanPaidFeatureAtAsync();
+                        setUserTier(paidFeatureDate ? 'pro' : 'free');
+                    } else {
+                        setUserTier('free');
+                    }
+                } catch (error) {
+                    console.error('Error checking user tier:', error);
+                    setUserTier('free');
+                }
+            };
+
+            // Toggle export mode
+            const handleToggleExportMode = () => {
+                console.log('Export initiated');
+                if (!exportMode) {
+                    checkUserTier();
+                }
+                setExportMode(!exportMode);
+                setSelectedExportPrompts([]);
+            };
+
+            // Handle export prompt selection
+            const handleExportPromptToggle = (promptId, e) => {
+                if (e) e.stopPropagation();
+                
+                const maxPrompts = userTier === 'pro' ? Infinity : 5;
+                
+                if (selectedExportPrompts.includes(promptId)) {
+                    setSelectedExportPrompts(selectedExportPrompts.filter(id => id !== promptId));
+                } else {
+                    if (selectedExportPrompts.length < maxPrompts) {
+                        setSelectedExportPrompts([...selectedExportPrompts, promptId]);
+                    } else {
+                        showToast('Upgrade to Pro for unlimited exports', 'error');
+                    }
+                }
+            };
+
+            // Select all prompts
+            const handleSelectAll = () => {
+                const maxPrompts = userTier === 'pro' ? Infinity : 5;
+                const availablePrompts = filteredPrompts.slice(0, maxPrompts);
+                
+                if (selectedExportPrompts.length === availablePrompts.length) {
+                    setSelectedExportPrompts([]);
+                } else {
+                    setSelectedExportPrompts(availablePrompts.map(p => p.id));
+                    if (filteredPrompts.length > maxPrompts && userTier === 'free') {
+                        showToast('Free tier limited to 5 prompts', 'error');
+                    }
+                }
+            };
+
+            // Export prompts to file
+            const handleExportPrompts = (format) => {
+                if (selectedExportPrompts.length === 0) {
+                    showToast('Please select at least one prompt', 'error');
+                    return;
+                }
+
+                const maxPrompts = userTier === 'pro' ? Infinity : 5;
+                if (selectedExportPrompts.length > maxPrompts) {
+                    showToast('Upgrade to Pro for unlimited exports', 'error');
+                    return;
+                }
+
+                // Get selected prompts
+                const exportData = filteredPrompts.filter(p => selectedExportPrompts.includes(p.id));
+
+                let content = '';
+                let filename = '';
+                let mimeType = '';
+
+                if (format === 'json') {
+                    content = JSON.stringify(exportData, null, 2);
+                    filename = 'promptcraft_export.json';
+                    mimeType = 'application/json';
+                } else if (format === 'csv') {
+                    // CSV format
+                    const headers = ['ID', 'Title', 'Description', 'Category', 'Tags'];
+                    const rows = exportData.map(p => [
+                        p.id,
+                        `"${(p.title || '').replace(/"/g, '""')}"`,
+                        `"${(p.description || '').replace(/"/g, '""')}"`,
+                        p.category || '',
+                        (p.tags || []).join(';')
+                    ]);
+                    content = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+                    filename = 'promptcraft_export.csv';
+                    mimeType = 'text/csv';
+                }
+
+                // Create download
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showToast('Prompts exported', 'success');
+                setExportMode(false);
+                setSelectedExportPrompts([]);
+            };
+
 
 
             // Render individual prompt item
             const PromptItem = ({ prompt, isLast }) => {
                 const isSelected = selectedPrompt?.id === prompt.id;
+                const isExportSelected = selectedExportPrompts.includes(prompt.id);
                 
                 if (isLast) {
                     console.log('Rendering last prompt item:', prompt.title);
@@ -2047,9 +2310,15 @@
                     className: `card ${isSelected ? 'selected' : ''}`,
                     key: prompt.id,
                     ref: isLast ? lastItemRef : null,
-                    onClick: () => handlePromptSelect(prompt)
+                    onClick: exportMode ? (e) => handleExportPromptToggle(prompt.id, e) : () => handlePromptSelect(prompt)
                 }, [
-                    h('button', {
+                    exportMode ? h('input', {
+                        type: 'checkbox',
+                        checked: isExportSelected,
+                        onChange: (e) => handleExportPromptToggle(prompt.id, e),
+                        onClick: (e) => e.stopPropagation(),
+                        style: { position: 'absolute', top: '12px', left: '12px', cursor: 'pointer', width: '18px', height: '18px' }
+                    }) : h('button', {
                         className: `star-icon ${favorites.includes(prompt.id) ? 'favorited' : ''}`,
                         onClick: (e) => handleToggleFavorite(prompt.id, e),
                         title: favorites.includes(prompt.id) ? 'Remove from My Library' : 'Add to My Library'
@@ -2058,27 +2327,19 @@
                             className: `material-icons star ${favorites.includes(prompt.id) ? 'active' : ''}`
                         }, 'star')
                     ]),
-                    h('div', { className: 'prompt-title' }, prompt.title || 'Untitled Prompt'),
+                    h('div', { className: 'prompt-title', style: exportMode ? { paddingLeft: '24px' } : {} }, prompt.title || 'Untitled Prompt'),
                     h('div', { className: 'prompt-meta' }, [
                         h('span', {}, `${prompt.category}`)
-                        // Tags hidden for now
-                        // h('div', { className: 'prompt-tags' }, 
-                        //     (prompt.tags || []).map(tag => 
-                        //         h('span', { 
-                        //             className: `tag ${tag.replace('#', '')}` 
-                        //         }, tag)
-                        //     )
-                        // )
                     ]),
                     h('div', { className: 'prompt-description' }, prompt.description || 'No description'),
                    
-                    h('button', {
+                    !exportMode ? h('button', {
                         className: 'button secondary small',
                         onClick: (e) => {
                             e.stopPropagation();
                             handleOpenEditor(prompt);
                         }
-                    }, 'Edit')
+                    }, 'Edit') : null
                 ]);
             };
 
@@ -2348,13 +2609,58 @@
                         ])
                     ])
                 ]) : h('div', { className: 'prompts-section' }, [
-                    h('h2', { className: 'section-title' }, 
-                        searchQuery.trim()
-                            ? `Search Results (${filteredPrompts.length})`
-                            : activeTab === 'My Library'
-                                ? `My Library (${favorites.length})`
-                                : `${activeTab} Prompts`
-                    ),
+                    h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: exportMode ? '8px' : '16px' } }, [
+                        h('h2', { className: 'section-title', style: { margin: '0' } }, 
+                            searchQuery.trim()
+                                ? `Search Results (${filteredPrompts.length})`
+                                : activeTab === 'My Library'
+                                    ? `My Library (${favorites.length})`
+                                    : `${activeTab} Prompts`
+                        ),
+                        activeTab === 'My Library' ? (
+                            exportMode ? h('span', { style: { fontSize: '13px', color: 'var(--text-muted)' } }, `${selectedExportPrompts.length} selected`)
+                            : h('button', {
+                                className: 'export-library-button',
+                                onClick: handleToggleExportMode
+                            }, 'Export Prompts')
+                        ) : null
+                    ]),
+                    exportMode && activeTab === 'My Library' ? h('div', { 
+                        style: { 
+                            display: 'flex', 
+                            gap: '12px', 
+                            alignItems: 'center',
+                            marginBottom: '16px',
+                            padding: '8px 0',
+                            borderBottom: '1px solid var(--border-color)'
+                        } 
+                    }, [
+                        h('button', {
+                            className: 'export-library-button',
+                            onClick: handleSelectAll,
+                            style: { fontSize: '13px', padding: '6px 12px' }
+                        }, selectedExportPrompts.length === filteredPrompts.slice(0, userTier === 'pro' ? Infinity : 5).length ? 'Deselect All' : 'Select All'),
+                        h('button', {
+                            className: 'export-library-button',
+                            onClick: () => handleExportPrompts('csv'),
+                            disabled: selectedExportPrompts.length === 0,
+                            style: { 
+                                fontSize: '13px', 
+                                padding: '6px 12px'
+                            }
+                        }, 'Export'),
+                        h('button', {
+                            className: 'export-library-button',
+                            onClick: handleToggleExportMode,
+                            style: { 
+                                fontSize: '13px', 
+                                padding: '6px 12px',
+                                background: 'transparent',
+                                color: 'var(--text-secondary)',
+                                boxShadow: 'none'
+                            }
+                        }, 'Cancel')
+                    ]) : null,
                     h('div', { className: 'prompts-list' },
                         isLoading
                             ? h('div', { className: 'loading' }, 'Loading prompts...')
